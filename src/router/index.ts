@@ -25,7 +25,7 @@ const router = createRouter({
       name: 'category',
       component: () => import('@/pages/CategoryPage.vue')
     },
-    // Six Working Tools
+    // Working Financial Tools
     {
       path: '/stock-average-calculator/',
       name: 'stock-average-calculator',
@@ -55,6 +55,26 @@ const router = createRouter({
       path: '/how-long-will-my-money-last/',
       name: 'how-long-will-my-money-last',
       component: () => import('@/pages/RetirementLongevityPage.vue')
+    },
+    {
+      path: '/retirement-savings-calculator/',
+      name: 'retirement-savings-calculator',
+      component: () => import('@/pages/RetirementGoalPage.vue')
+    },
+    {
+      path: '/loan-payment-calculator/',
+      name: 'loan-payment-calculator',
+      component: () => import('@/pages/LoanPaymentPage.vue')
+    },
+    {
+      path: '/debt-payoff-planner/',
+      name: 'debt-payoff-planner',
+      component: () => import('@/pages/DebtPayoffPage.vue')
+    },
+    {
+      path: '/break-even-calculator/',
+      name: 'break-even-calculator',
+      component: () => import('@/pages/BreakEvenPage.vue')
     },
     // Educational Section
     {

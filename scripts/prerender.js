@@ -120,7 +120,7 @@ for (const [key, cat] of Object.entries(categories)) {
   })
 }
 
-// 4. Six Tools
+// 4. All Financial Tools
 for (const t of tools) {
   routes.push({
     path: t.path,

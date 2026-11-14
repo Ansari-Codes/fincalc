@@ -9,6 +9,10 @@ import {
   CreditCard, 
   LineChart, 
   Clock, 
+  Target,
+  Calculator,
+  TrendingDown,
+  PieChart,
   ArrowRight 
 } from '@lucide/vue'
 
@@ -24,6 +28,10 @@ const iconComponent = computed(() => {
     case 'CreditCard': return CreditCard
     case 'LineChart': return LineChart
     case 'Clock': return Clock
+    case 'Target': return Target
+    case 'Calculator': return Calculator
+    case 'TrendingDown': return TrendingDown
+    case 'PieChart': return PieChart
     default: return LineChart
   }
 })

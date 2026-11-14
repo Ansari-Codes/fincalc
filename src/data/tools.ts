@@ -96,7 +96,7 @@ export const tools: ToolItem[] = [
         answer: 'Yes. Transaction fees, maintenance costs, and commissions reduce your net profit and increase your total cost basis, directly affecting real ROI.'
       }
     ],
-    relatedToolSlugs: ['stock-average-calculator', 'commission-calculator'],
+    relatedToolSlugs: ['stock-average-calculator', 'commission-calculator', 'break-even-calculator'],
     relatedArticleSlugs: ['how-to-calculate-roi', 'how-to-calculate-average-stock-cost']
   },
   {
@@ -134,7 +134,7 @@ export const tools: ToolItem[] = [
         answer: 'In a marginal tiered structure, you only earn the higher commission rate on the dollar amount that falls within that specific tier bracket, rather than retroactively increasing the commission on earlier dollars.'
       }
     ],
-    relatedToolSlugs: ['roi-calculator', 'stock-average-calculator'],
+    relatedToolSlugs: ['break-even-calculator', 'roi-calculator'],
     relatedArticleSlugs: ['flat-vs-tiered-commission', 'how-to-calculate-roi']
   },
   {
@@ -173,8 +173,8 @@ export const tools: ToolItem[] = [
         answer: 'Exact statement charges vary depending on the exact number of days in the statement billing cycle, the timing of mid-month payments, new purchase dates, and whether an interest-free grace period applies.'
       }
     ],
-    relatedToolSlugs: ['compound-interest-calculator', 'roi-calculator'],
-    relatedArticleSlugs: ['apr-vs-interest-rate']
+    relatedToolSlugs: ['debt-payoff-planner', 'loan-payment-calculator'],
+    relatedArticleSlugs: ['apr-vs-interest-rate', 'debt-snowball-vs-debt-avalanche']
   },
   {
     id: 'compound-interest-calculator',
@@ -212,8 +212,8 @@ export const tools: ToolItem[] = [
         answer: 'Yes. When you enable regular monthly or annual contributions, each addition starts compounding from the moment it is contributed through the remainder of the timeline.'
       }
     ],
-    relatedToolSlugs: ['how-long-will-my-money-last', 'stock-average-calculator', 'roi-calculator'],
-    relatedArticleSlugs: ['how-long-will-retirement-savings-last', 'how-to-calculate-roi']
+    relatedToolSlugs: ['retirement-savings-calculator', 'how-long-will-my-money-last', 'stock-average-calculator'],
+    relatedArticleSlugs: ['how-to-calculate-retirement-savings-goal', 'how-long-will-retirement-savings-last']
   },
   {
     id: 'how-long-will-my-money-last',
@@ -251,7 +251,163 @@ export const tools: ToolItem[] = [
         answer: 'No. Real market returns fluctuate significantly from year to year. A steady average return does not simulate bear markets or the timing of market downturns.'
       }
     ],
-    relatedToolSlugs: ['compound-interest-calculator', 'roi-calculator'],
-    relatedArticleSlugs: ['how-long-will-retirement-savings-last']
+    relatedToolSlugs: ['retirement-savings-calculator', 'compound-interest-calculator'],
+    relatedArticleSlugs: ['how-long-will-retirement-savings-last', 'how-to-calculate-retirement-savings-goal']
+  },
+  {
+    id: 'retirement-savings-calculator',
+    slug: 'retirement-savings-calculator',
+    path: '/retirement-savings-calculator/',
+    name: 'Retirement Savings Goal Calculator',
+    title: 'Retirement Savings Goal Calculator – Estimate Required Contributions',
+    shortDescription: 'Estimate the periodic contributions needed to reach your retirement target.',
+    fullDescription: 'Calculate the monthly or annual contributions needed to achieve your retirement nest egg goal. Factor in existing savings, expected return, timing, and annual step-up contribution increases.',
+    category: 'retirement',
+    categoryName: 'Retirement',
+    icon: 'Target',
+    formula: 'Ordinary Annuity: PMT = [FV − PV(1+r)^n] × [r / ((1+r)^n − 1)]\nAnnuity Due: PMT_due = PMT / (1+r)\nZero Interest: PMT = (FV − PV) / n',
+    assumptions: [
+      'Applies a constant expected annual rate of return across all accumulation years.',
+      'Periodic rate is calculated as Annual Return / 12 for monthly contributions, or Annual Return for yearly contributions.',
+      'Excludes statutory IRS contribution caps (e.g. IRC 402(g) 401(k) limits or IRA maximums), employer match vesting rules, and tax deductions.',
+      'All calculations are performed client-side in your browser for financial privacy.'
+    ],
+    faqs: [
+      {
+        question: 'How do I calculate how much I need to save for retirement each month?',
+        answer: 'Project the future value of your current savings at your assumed return rate. Subtract that value from your target nest egg to determine the future shortfall. Then use the sinking fund annuity formula to determine the required periodic contribution.'
+      },
+      {
+        question: 'What is the difference between beginning and end of period contributions?',
+        answer: 'Contributing at the beginning of each period (annuity due) gives your money one extra compounding cycle to grow, resulting in slightly lower required contributions compared to end-of-period deposits.'
+      },
+      {
+        question: 'What does the annual contribution increase percentage do?',
+        answer: 'It models stepping up your contributions each year as your salary grows. Starting with lower contributions that step up annually helps you reach the target while keeping initial contributions manageable.'
+      },
+      {
+        question: 'Does this calculator account for IRS contribution limits?',
+        answer: 'No. This calculator computes mathematical requirements. In practice, federal tax-advantaged accounts have annual contribution limits (such as 401(k) and IRA limits).'
+      }
+    ],
+    relatedToolSlugs: ['how-long-will-my-money-last', 'compound-interest-calculator'],
+    relatedArticleSlugs: ['how-to-calculate-retirement-savings-goal', 'how-long-will-retirement-savings-last']
+  },
+  {
+    id: 'loan-payment-calculator',
+    slug: 'loan-payment-calculator',
+    path: '/loan-payment-calculator/',
+    name: 'Loan Payment Calculator',
+    title: 'Loan Payment Calculator – Estimate Monthly Payments & Payoff Schedule',
+    shortDescription: 'Calculate fixed-rate loan payments, interest costs, and amortization schedules.',
+    fullDescription: 'Calculate fixed-rate monthly loan payments and generate complete month-by-month amortization schedules. Explore how additional monthly payments accelerate debt payoff and save interest.',
+    category: 'credit-debt',
+    categoryName: 'Credit & Debt',
+    icon: 'CreditCard',
+    formula: 'Monthly Payment: M = P × [r / (1 − (1+r)^−n)]\nZero Interest: M = P / n\nwhere r = APR / 12 / 100, n = total months',
+    assumptions: [
+      'Assumes a fixed interest rate and standard monthly compounding (APR / 12).',
+      'Excludes loan origination fees, appraisal charges, closing costs, property taxes, insurance escrow, and prepayment penalties.',
+      'Extra monthly payments are applied entirely toward the outstanding principal balance.',
+      'Does not model variable interest rate adjustments or complex lender interest-day counting conventions (e.g. 365/360).'
+    ],
+    faqs: [
+      {
+        question: 'How is a fixed-rate loan payment calculated?',
+        answer: 'The standard amortization formula M = P × [r / (1 − (1+r)^−n)] determines the fixed monthly installment that covers both monthly accrued interest and scheduled principal reduction.'
+      },
+      {
+        question: 'How do extra payments affect my loan?',
+        answer: 'Because monthly interest is calculated on your remaining balance, prepaying principal immediately lowers future interest charges, shortening your loan term and reducing total lifetime interest.'
+      },
+      {
+        question: 'What is an amortization schedule?',
+        answer: 'An amortization schedule is a complete table showing every payment over the loan lifespan, detailing how each payment is divided between interest and principal, alongside the declining balance.'
+      },
+      {
+        question: 'Does this calculator support 0% APR loans?',
+        answer: 'Yes. For 0% financing (such as interest-free automotive or promotional loans), the monthly payment simplifies to principal divided by total term months.'
+      }
+    ],
+    relatedToolSlugs: ['debt-payoff-planner', 'credit-card-apr-calculator'],
+    relatedArticleSlugs: ['how-loan-amortization-works', 'apr-vs-interest-rate']
+  },
+  {
+    id: 'debt-payoff-planner',
+    slug: 'debt-payoff-planner',
+    path: '/debt-payoff-planner/',
+    name: 'Debt Payoff Planner',
+    title: 'Debt Payoff Planner – Compare Snowball vs. Avalanche Strategies',
+    shortDescription: 'Compare debt snowball and debt avalanche repayment schedules.',
+    fullDescription: 'Compare Debt Snowball (lowest balance first) and Debt Avalanche (highest APR first) payoff strategies. Simulate month-by-month debt elimination, calculate interest savings, and see your debt-free date.',
+    category: 'credit-debt',
+    categoryName: 'Credit & Debt',
+    icon: 'TrendingDown',
+    formula: 'Snowball: Smallest balance prioritized first\nAvalanche: Highest APR prioritized first\nRollover: Paid-off minimums roll into the next priority debt',
+    assumptions: [
+      'Assumes a monthly APR / 12 periodic interest calculation for each active debt.',
+      'All active accounts must meet at least their minimum monthly payments.',
+      'Extra monthly cashflow and rolled-over payments from paid-off debts are applied 100% to the top-priority account.',
+      'Assumes no new charges, purchases, or balance transfer fees are added during the repayment simulation.'
+    ],
+    faqs: [
+      {
+        question: 'What is the difference between Debt Snowball and Debt Avalanche?',
+        answer: 'The Debt Snowball prioritizes the smallest outstanding balance first, creating quick psychological wins. The Debt Avalanche prioritizes the highest interest rate (APR) first, saving you the most money in total interest.'
+      },
+      {
+        question: 'What is debt rollover (the snowball effect)?',
+        answer: 'When you eliminate a debt, you do not stop spending that money; you roll that account’s entire minimum payment into the next priority debt, accelerating subsequent payoffs exponentially.'
+      },
+      {
+        question: 'Which repayment strategy is mathematically better?',
+        answer: 'Mathematically, the Debt Avalanche always results in equal or lower total interest paid and an equal or faster payoff time because it eliminates high-cost compounding interest first.'
+      },
+      {
+        question: 'What happens if my minimum payment does not cover interest?',
+        answer: 'If the minimum payment is less than monthly accrued interest, the loan enters negative amortization and your balance grows. The calculator alerts you if any debt has an insufficient minimum payment.'
+      }
+    ],
+    relatedToolSlugs: ['loan-payment-calculator', 'credit-card-apr-calculator'],
+    relatedArticleSlugs: ['debt-snowball-vs-debt-avalanche', 'how-loan-amortization-works']
+  },
+  {
+    id: 'break-even-calculator',
+    slug: 'break-even-calculator',
+    path: '/break-even-calculator/',
+    name: 'Business Break-Even Calculator',
+    title: 'Break-Even Calculator – Calculate Break-Even Units & Revenue',
+    shortDescription: 'Calculate the sales volume or revenue required to cover business costs.',
+    fullDescription: 'Determine the exact unit sales and dollar revenue your business needs to cover all fixed and variable costs. Explore contribution margins, target profit volumes, and margin of safety.',
+    category: 'business-finance',
+    categoryName: 'Business Finance',
+    icon: 'PieChart',
+    formula: 'Contribution Margin (CM) = Price − Variable Cost\nBreak-Even Units = Fixed Costs ÷ CM\nBreak-Even Revenue = Break-Even Units × Price',
+    assumptions: [
+      'Assumes constant selling price and constant variable cost per unit regardless of sales volume.',
+      'All units produced are assumed to be sold (no change in finished inventory levels).',
+      'Assumes fixed costs remain constant over the relevant operating range.',
+      'Physical units are rounded upward (ceiling) to the next whole unit for operational feasibility.'
+    ],
+    faqs: [
+      {
+        question: 'What is a break-even point?',
+        answer: 'The break-even point is the operational stage where total revenue equals total expenses, resulting in zero net profit and zero net loss. Any sales beyond this point generate operating profit.'
+      },
+      {
+        question: 'What is contribution margin?',
+        answer: 'Contribution margin is the selling price per unit minus the variable cost per unit. It represents the portion of sales revenue from each unit that contributes toward covering fixed overhead costs and generating profit.'
+      },
+      {
+        question: 'What is the Margin of Safety?',
+        answer: 'Margin of Safety is the difference between your expected (or actual) sales volume and your break-even volume. It shows how much sales can drop before the business begins operating at a financial loss.'
+      },
+      {
+        question: 'What happens if variable cost exceeds selling price?',
+        answer: 'If variable cost per unit is greater than selling price, contribution margin is negative. Every unit sold loses money, and the business can never reach break-even regardless of sales volume.'
+      }
+    ],
+    relatedToolSlugs: ['commission-calculator', 'roi-calculator'],
+    relatedArticleSlugs: ['how-to-calculate-break-even-point', 'how-to-calculate-roi']
   }
 ]
