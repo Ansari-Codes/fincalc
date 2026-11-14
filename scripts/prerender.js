@@ -16,9 +16,9 @@ import {
   generateArticleSchema 
 } from '../src/utils/structuredData.ts'
 
-// Base URL helper for GitHub Pages / subpaths
-const base = process.env.BASE_URL || '/fincalc/'
-const cleanBase = base.endsWith('/') ? base.slice(0, -1) : base
+// Base URL helper for subpaths (default '/')
+const base = process.env.BASE_URL || '/'
+const cleanBase = base === '/' ? '' : (base.endsWith('/') ? base.slice(0, -1) : base)
 const withBase = (p) => `${cleanBase}${p}`
 
 // Check if dist exists

@@ -5,7 +5,7 @@ import { fileURLToPath, URL } from 'node:url'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: process.env.BASE_URL || '/fincalc/',
+  base: process.env.BASE_URL || '/',
   plugins: [
     vue(),
     tailwindcss(),

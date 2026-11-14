@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://ansari-codes.github.io/fincalc/sitemap.xml
+Sitemap: https://ansari-codes.github.io/sitemap.xml

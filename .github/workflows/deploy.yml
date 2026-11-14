@@ -40,7 +40,7 @@ jobs:
 
       - name: Build and prerender static pages
         env:
-          BASE_URL: /fincalc/
+          BASE_URL: /
         run: npm run build
 
       - name: Setup Pages
