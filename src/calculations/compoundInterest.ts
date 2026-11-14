@@ -27,22 +27,81 @@ export interface CompoundInterestResult {
   totalPrincipal: number
   totalContributions: number
   totalInterestEarned: number
+  isValid: boolean
+  validationErrors: string[]
   yearlyBreakdown: CompoundYearData[]
 }
 
 /**
+ * ============================================================================
  * Compound Interest Calculator
- * Accurately models compound growth with optional recurring contributions,
- * flexible compounding frequencies (daily, monthly, quarterly, annual),
- * and contribution timing (beginning or end of period).
+ * ============================================================================
+ * 
+ * Mathematical Models:
+ * 1. Single Deposit (No regular additions):
+ *    A = P * (1 + r / n)^(n * t)
+ *    Where:
+ *      P = Initial Principal
+ *      r = Annual interest rate (decimal)
+ *      n = Compounding periods per year (365 for daily, 12 for monthly, 4 for quarterly, 1 for annually)
+ *      t = Years
+ * 
+ * 2. Regular Additions with Periodic Compounding:
+ *    Simulated period-by-period where contributions occur at the beginning or end
+ *    of each period, and interest is calculated on the running balance at rate = r / n.
+ * 
+ * Core Financial Assumptions:
+ * - Constant Rate: The specified return rate remains static across all projection years.
+ * - Reinvestment: 100% of interest earned is reinvested without cash distributions.
+ * - Tax & Fee Exclusions: Calculations reflect gross nominal growth before income taxes,
+ *   capital gains taxes, or investment management fees.
+ * - Timing: Contributions are credited either at the beginning or end of each interval.
+ * 
+ * Numerical Precision & Boundary Rules:
+ * - 0% Interest Rate: Supported; growth consists purely of principal + contributions.
+ * - $0 Starting Principal: Supported; growth begins solely with regular additions.
+ * - Maximum Horizon: Capped at 100 years.
+ * - Negative inputs are guarded and produce clear validation errors.
  */
 export function calculateCompoundInterest(input: CompoundInterestInput): CompoundInterestResult {
-  const principal = Math.max(0, Number(input.initialPrincipal) || 0)
-  const contribution = Math.max(0, Number(input.contributionAmount) || 0)
+  const errors: string[] = []
+
+  if (!input) {
+    return {
+      futureValue: 0,
+      totalPrincipal: 0,
+      totalContributions: 0,
+      totalInterestEarned: 0,
+      isValid: false,
+      validationErrors: ['No calculation input provided.'],
+      yearlyBreakdown: []
+    }
+  }
+
+  const rawPrincipal = typeof input.initialPrincipal === 'number' && isFinite(input.initialPrincipal) ? input.initialPrincipal : 0
+  const rawContribution = typeof input.contributionAmount === 'number' && isFinite(input.contributionAmount) ? input.contributionAmount : 0
+  const rawRate = typeof input.annualInterestRate === 'number' && isFinite(input.annualInterestRate) ? input.annualInterestRate : 0
+  const rawYears = typeof input.years === 'number' && isFinite(input.years) ? input.years : 1
+
+  if (rawPrincipal < 0) {
+    errors.push('Initial principal cannot be negative.')
+  }
+  if (rawContribution < 0) {
+    errors.push('Contribution amount cannot be negative.')
+  }
+  if (rawRate < 0) {
+    errors.push('Interest rate cannot be negative.')
+  }
+  if (rawYears <= 0) {
+    errors.push('Time period must be at least 1 year.')
+  }
+
+  const principal = Math.max(0, rawPrincipal)
+  const contribution = Math.max(0, rawContribution)
   const contribFreq = input.contributionFrequency || 'monthly'
-  const annualRate = Math.max(0, Number(input.annualInterestRate) || 0) / 100
+  const annualRate = Math.max(0, rawRate) / 100
   const compoundFreq = input.compoundingFrequency || 'monthly'
-  const years = Math.min(100, Math.max(1, Math.floor(Number(input.years) || 1)))
+  const years = Math.min(100, Math.max(1, Math.floor(rawYears)))
   const timing = input.contributionTiming || 'end'
 
   const n = {
@@ -52,7 +111,7 @@ export function calculateCompoundInterest(input: CompoundInterestInput): Compoun
     annually: 1
   }[compoundFreq]
 
-  // If no regular contributions, use the direct closed-form formula per year for exact precision
+  // If no regular contributions, use direct closed-form formula for mathematical exactness
   if (contribution === 0) {
     let currentBalance = principal
     let totalInterestSoFar = 0
@@ -60,7 +119,7 @@ export function calculateCompoundInterest(input: CompoundInterestInput): Compoun
 
     for (let y = 1; y <= years; y++) {
       const yearStartBalance = currentBalance
-      // Balance at end of year y: P * (1 + r/n)^(n*y)
+      // Formula: P * (1 + r/n)^(n*y)
       const yearEndBalance = principal * Math.pow(1 + annualRate / n, n * y)
       const yearInterest = yearEndBalance - yearStartBalance
       totalInterestSoFar += yearInterest
@@ -82,17 +141,13 @@ export function calculateCompoundInterest(input: CompoundInterestInput): Compoun
       totalPrincipal: principal,
       totalContributions: 0,
       totalInterestEarned: totalInterestSoFar,
+      isValid: errors.length === 0,
+      validationErrors: errors,
       yearlyBreakdown
     }
   }
 
-  // When regular contributions are present, simulate period-by-period
-  // We use compounding periods as the base step.
-  // Effective periodic rate = annualRate / n
-  // Number of compound steps per year = n
-  // For monthly contributions, if n=12, each step has 1 contribution.
-  // If n=365, monthly contribution occurs every ~30.4 days (or 12 times a year evenly spaced).
-  // If n=1 (annually), contributions are added per year.
+  // With recurring contributions, simulate period-by-period
   let balance = principal
   let totalContributions = 0
   let totalInterestSoFar = 0
@@ -106,10 +161,7 @@ export function calculateCompoundInterest(input: CompoundInterestInput): Compoun
     let yearContrib = 0
     let yearInterest = 0
 
-    // Standard simulation: step by step for the n periods of the year
-    // Determine how many contributions fall into each compound period
     for (let p = 1; p <= n; p++) {
-      // Check contributions occurring in this compounding slice
       const contribsInThisPeriod = (contribsPerYear >= n)
         ? contribsPerYear / n
         : ((p * contribsPerYear) % n < contribsPerYear ? 1 : 0)
@@ -150,6 +202,8 @@ export function calculateCompoundInterest(input: CompoundInterestInput): Compoun
     totalPrincipal: principal,
     totalContributions,
     totalInterestEarned: totalInterestSoFar,
+    isValid: errors.length === 0,
+    validationErrors: errors,
     yearlyBreakdown
   }
 }

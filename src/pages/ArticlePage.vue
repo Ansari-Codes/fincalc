@@ -2,12 +2,13 @@
 import { computed, watchEffect } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
 import { updatePageSeo } from '@/utils/seo'
+import { generateArticleSchema } from '@/utils/structuredData'
 import { articles } from '@/data/articles'
 import { tools } from '@/data/tools'
 import Breadcrumbs from '@/components/ui/Breadcrumbs.vue'
 import FAQAccordion from '@/components/ui/FAQAccordion.vue'
 import ArticleCard from '@/components/ui/ArticleCard.vue'
-import { ArrowRight, Calculator, Calendar, Clock } from 'lucide-vue-next'
+import { ArrowRight, Calculator, Calendar, Clock } from '@lucide/vue'
 
 const route = useRoute()
 const slug = computed(() => String(route.params.slug || ''))
@@ -17,7 +18,9 @@ watchEffect(() => {
   if (article.value) {
     updatePageSeo({
       title: `${article.value.title} – Financial Guide`,
-      description: article.value.metaDescription
+      description: article.value.metaDescription,
+      path: article.value.path,
+      jsonLd: generateArticleSchema(article.value)
     })
   }
 })

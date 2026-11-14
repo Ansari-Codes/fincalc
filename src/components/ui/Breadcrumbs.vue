@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
-import { ChevronRight, Home } from 'lucide-vue-next'
+import { ChevronRight, Home } from '@lucide/vue'
 
 export interface BreadcrumbItem {
   name: string

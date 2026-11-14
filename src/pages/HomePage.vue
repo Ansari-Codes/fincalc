@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { updatePageSeo } from '@/utils/seo'
+import { generateWebsiteSchema } from '@/utils/structuredData'
 import { siteConfig } from '@/config/site'
 import { tools } from '@/data/tools'
 import { articles } from '@/data/articles'
@@ -14,7 +15,7 @@ import {
   ArrowRight, 
   ShieldCheck, 
   Lock 
-} from 'lucide-vue-next'
+} from '@lucide/vue'
 
 const router = useRouter()
 const searchQuery = ref('')
@@ -22,7 +23,9 @@ const searchQuery = ref('')
 onMounted(() => {
   updatePageSeo({
     title: 'Financial Tools – Practical Calculators for Everyday Decisions',
-    description: siteConfig.description
+    description: siteConfig.description,
+    path: '/',
+    jsonLd: generateWebsiteSchema()
   })
 })
 

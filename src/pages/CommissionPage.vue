@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { updatePageSeo } from '@/utils/seo'
+import { generateCalculatorSchema } from '@/utils/structuredData'
 import { formatCurrency, formatPercent, formatNumber, copyToClipboard } from '@/utils/formatters'
 import { calculateCommission, type CommissionMode, type CommissionTier } from '@/calculations/commission'
 import Breadcrumbs from '@/components/ui/Breadcrumbs.vue'
@@ -15,15 +16,18 @@ import {
   Check, 
   Plus, 
   Trash2, 
-  ArrowRight 
-} from 'lucide-vue-next'
+  ArrowRight,
+  AlertCircle 
+} from '@lucide/vue'
 
 const currentTool = tools.find(t => t.slug === 'commission-calculator')!
 
 onMounted(() => {
   updatePageSeo({
     title: currentTool.title,
-    description: currentTool.fullDescription
+    description: currentTool.fullDescription,
+    path: currentTool.path,
+    jsonLd: generateCalculatorSchema(currentTool)
   })
 })
 
@@ -48,13 +52,24 @@ const tiers = ref<CommissionTier[]>([
 ])
 
 function addTier() {
-  const lastTier = tiers.value[tiers.value.length - 1]
-  const newThreshold = lastTier && isFinite(lastTier.threshold) ? lastTier.threshold + 50000 : 150000
-  tiers.value.push({
-    id: Date.now().toString(),
-    threshold: newThreshold,
-    rate: 10
-  })
+  const uncappedIndex = tiers.value.findIndex(t => !isFinite(t.threshold))
+  if (uncappedIndex !== -1) {
+    const prevThreshold = uncappedIndex > 0 ? tiers.value[uncappedIndex - 1].threshold : 0
+    const newThreshold = prevThreshold + 50000
+    tiers.value.splice(uncappedIndex, 0, {
+      id: Date.now().toString(),
+      threshold: newThreshold,
+      rate: 10
+    })
+  } else {
+    const last = tiers.value[tiers.value.length - 1]
+    const lastThreshold = last && isFinite(last.threshold) ? last.threshold : 100000
+    tiers.value.push({
+      id: Date.now().toString(),
+      threshold: lastThreshold + 50000,
+      rate: 12
+    })
+  }
 }
 
 function removeTier(index: number) {
@@ -148,6 +163,14 @@ async function handleCopy() {
       >
         Graduated Tiers (Marginal)
       </button>
+    </div>
+
+    <!-- Validation Warning Banner -->
+    <div v-if="!result.isValid && result.validationErrors.length > 0" class="mb-6 p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs space-y-1.5">
+      <div v-for="(err, i) in result.validationErrors" :key="i" class="flex items-center gap-2">
+        <AlertCircle class="w-4 h-4 text-amber-600 shrink-0" />
+        <span>{{ err }}</span>
+      </div>
     </div>
 
     <!-- Main Calculator Grid -->
@@ -292,12 +315,16 @@ async function handleCopy() {
                 </div>
                 <div class="col-span-5">
                   <label class="block text-[11px] text-[#667085] mb-0.5">Threshold (Up To)</label>
+                  <div v-if="!isFinite(tier.threshold)" class="py-1 px-2.5 text-xs bg-white border border-dashed border-[#CBD5E1] rounded-lg text-[#0F766E] font-medium">
+                    Over previous (Uncapped)
+                  </div>
                   <input
+                    v-else
                     v-model.number="tier.threshold"
                     type="number"
                     min="0"
                     class="w-full px-2.5 py-1.5 text-xs bg-white border border-[#E4E9F0] rounded-lg num-tabular"
-                    :placeholder="idx === tiers.length - 1 ? 'Infinity / Remainder' : '50,000'"
+                    placeholder="50,000"
                   />
                 </div>
                 <div class="col-span-4">

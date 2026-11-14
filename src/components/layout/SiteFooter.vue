@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
 import { siteConfig } from '@/config/site'
-import { Calculator } from 'lucide-vue-next'
+import { Calculator } from '@lucide/vue'
 
 const currentYear = new Date().getFullYear()
 </script>

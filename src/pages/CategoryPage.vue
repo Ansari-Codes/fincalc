@@ -18,7 +18,8 @@ watchEffect(() => {
   if (category.value) {
     updatePageSeo({
       title: category.value.title,
-      description: category.value.intro
+      description: category.value.intro,
+      path: category.value.path
     })
   }
 })

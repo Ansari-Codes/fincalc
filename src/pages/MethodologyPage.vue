@@ -4,7 +4,7 @@ import { updatePageSeo } from '@/utils/seo'
 import { siteConfig } from '@/config/site'
 import Breadcrumbs from '@/components/ui/Breadcrumbs.vue'
 import { tools } from '@/data/tools'
-import { CheckCircle2 } from 'lucide-vue-next'
+import { CheckCircle2 } from '@lucide/vue'
 
 onMounted(() => {
   updatePageSeo({

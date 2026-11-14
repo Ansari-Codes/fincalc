@@ -2,7 +2,7 @@
 import { onMounted } from 'vue'
 import { updatePageSeo } from '@/utils/seo'
 import { RouterLink } from 'vue-router'
-import { AlertCircle, Home, Calculator } from 'lucide-vue-next'
+import { AlertCircle, Home, Calculator } from '@lucide/vue'
 
 onMounted(() => {
   updatePageSeo({

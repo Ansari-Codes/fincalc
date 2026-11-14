@@ -3,7 +3,7 @@ import { ref, onMounted } from 'vue'
 import { updatePageSeo } from '@/utils/seo'
 import { siteConfig } from '@/config/site'
 import Breadcrumbs from '@/components/ui/Breadcrumbs.vue'
-import { Mail, CheckCircle2 } from 'lucide-vue-next'
+import { Mail, CheckCircle2 } from '@lucide/vue'
 
 onMounted(() => {
   updatePageSeo({

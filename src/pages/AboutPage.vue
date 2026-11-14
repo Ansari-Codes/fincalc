@@ -3,7 +3,7 @@ import { onMounted } from 'vue'
 import { updatePageSeo } from '@/utils/seo'
 import { siteConfig } from '@/config/site'
 import Breadcrumbs from '@/components/ui/Breadcrumbs.vue'
-import { ShieldCheck, Lock, Cpu, BookOpen } from 'lucide-vue-next'
+import { ShieldCheck, Lock, Cpu, BookOpen } from '@lucide/vue'
 
 onMounted(() => {
   updatePageSeo({

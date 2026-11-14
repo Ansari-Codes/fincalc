@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { updatePageSeo } from '@/utils/seo'
+import { generateCalculatorSchema } from '@/utils/structuredData'
 import { formatCurrency, formatPercent, copyToClipboard } from '@/utils/formatters'
 import { 
   calculateCompoundInterest, 
@@ -18,15 +19,18 @@ import {
   RotateCcw, 
   Copy, 
   Check, 
-  ArrowRight 
-} from 'lucide-vue-next'
+  ArrowRight,
+  AlertCircle 
+} from '@lucide/vue'
 
 const currentTool = tools.find(t => t.slug === 'compound-interest-calculator')!
 
 onMounted(() => {
   updatePageSeo({
     title: currentTool.title,
-    description: currentTool.fullDescription
+    description: currentTool.fullDescription,
+    path: currentTool.path,
+    jsonLd: generateCalculatorSchema(currentTool)
   })
 })
 
@@ -101,6 +105,14 @@ async function handleCopy() {
       <p class="text-base sm:text-lg text-[#667085] max-w-3xl leading-relaxed">
         {{ currentTool.fullDescription }}
       </p>
+    </div>
+
+    <!-- Validation Warning Banner -->
+    <div v-if="!result.isValid && result.validationErrors.length > 0" class="mb-6 p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs space-y-1.5">
+      <div v-for="(err, i) in result.validationErrors" :key="i" class="flex items-center gap-2">
+        <AlertCircle class="w-4 h-4 text-amber-600 shrink-0" />
+        <span>{{ err }}</span>
+      </div>
     </div>
 
     <!-- Main Calculator Grid -->
@@ -323,11 +335,17 @@ async function handleCopy() {
       </div>
 
       <!-- Accessible SVG Chart -->
-      <div class="w-full h-48 sm:h-64 mb-8 relative border-b border-l border-[#E4E9F0] flex items-end justify-between px-2 pt-6">
+      <div 
+        role="img" 
+        :aria-label="`Compound growth trajectory chart showing total principal versus accumulated interest over ${years} years. A complete data table follows below.`"
+        class="w-full h-48 sm:h-64 mb-8 relative border-b border-l border-[#E4E9F0] flex items-end justify-between px-2 pt-6"
+      >
+        <span class="sr-only">Growth chart showing portfolio value scaling from initial principal to {{ formatCurrency(result.futureValue, currency) }}.</span>
         <div
           v-for="item in result.yearlyBreakdown.filter((_, i) => result.yearlyBreakdown.length <= 15 || i % Math.ceil(result.yearlyBreakdown.length / 15) === 0 || i === result.yearlyBreakdown.length - 1)"
           :key="item.year"
           class="flex-1 max-w-[40px] flex flex-col items-center justify-end h-full group relative"
+          :aria-label="`Year ${item.year}: Ending balance ${formatCurrency(item.endingBalance, currency)}, Cumulative interest ${formatCurrency(item.totalInterestSoFar, currency)}`"
         >
           <!-- Tooltip on hover -->
           <div class="absolute -top-12 hidden group-hover:block bg-[#172033] text-white text-[10px] py-1 px-2 rounded shadow whitespace-nowrap z-10 num-tabular">

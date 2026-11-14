@@ -5,7 +5,7 @@ import { updatePageSeo } from '@/utils/seo'
 import { tools } from '@/data/tools'
 import ToolCard from '@/components/ui/ToolCard.vue'
 import Breadcrumbs from '@/components/ui/Breadcrumbs.vue'
-import { Search } from 'lucide-vue-next'
+import { Search } from '@lucide/vue'
 
 const route = useRoute()
 

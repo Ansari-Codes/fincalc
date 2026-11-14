@@ -4,7 +4,7 @@ import { updatePageSeo } from '@/utils/seo'
 import { articles } from '@/data/articles'
 import ArticleCard from '@/components/ui/ArticleCard.vue'
 import Breadcrumbs from '@/components/ui/Breadcrumbs.vue'
-import { BookOpen } from 'lucide-vue-next'
+import { BookOpen } from '@lucide/vue'
 
 onMounted(() => {
   updatePageSeo({

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { updatePageSeo } from '@/utils/seo'
+import { generateCalculatorSchema } from '@/utils/structuredData'
 import { formatCurrency, formatPercent, copyToClipboard } from '@/utils/formatters'
 import { calculateRoi } from '@/calculations/roi'
 import Breadcrumbs from '@/components/ui/Breadcrumbs.vue'
@@ -13,15 +14,18 @@ import {
   RotateCcw, 
   Copy, 
   Check, 
-  ArrowRight 
-} from 'lucide-vue-next'
+  ArrowRight,
+  AlertCircle 
+} from '@lucide/vue'
 
 const currentTool = tools.find(t => t.slug === 'roi-calculator')!
 
 onMounted(() => {
   updatePageSeo({
     title: currentTool.title,
-    description: currentTool.fullDescription
+    description: currentTool.fullDescription,
+    path: currentTool.path,
+    jsonLd: generateCalculatorSchema(currentTool)
   })
 })
 
@@ -87,6 +91,14 @@ async function handleCopy() {
       <p class="text-base sm:text-lg text-[#667085] max-w-3xl leading-relaxed">
         {{ currentTool.fullDescription }}
       </p>
+    </div>
+
+    <!-- Validation Warning Banner -->
+    <div v-if="!result.isValid && result.validationErrors.length > 0" class="mb-6 p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs space-y-1.5">
+      <div v-for="(err, i) in result.validationErrors" :key="i" class="flex items-center gap-2">
+        <AlertCircle class="w-4 h-4 text-amber-600 shrink-0" />
+        <span>{{ err }}</span>
+      </div>
     </div>
 
     <!-- Main Calculator Grid -->

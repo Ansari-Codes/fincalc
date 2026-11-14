@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { siteConfig } from '@/config/site'
-import { Menu, X, ArrowRight, Calculator } from 'lucide-vue-next'
+import { Menu, X, ArrowRight, Calculator } from '@lucide/vue'
 
 const route = useRoute()
 const mobileMenuOpen = ref(false)

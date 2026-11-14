@@ -3,7 +3,7 @@ import { onMounted } from 'vue'
 import { updatePageSeo } from '@/utils/seo'
 import { siteConfig } from '@/config/site'
 import Breadcrumbs from '@/components/ui/Breadcrumbs.vue'
-import { AlertTriangle } from 'lucide-vue-next'
+import { AlertTriangle } from '@lucide/vue'
 
 onMounted(() => {
   updatePageSeo({

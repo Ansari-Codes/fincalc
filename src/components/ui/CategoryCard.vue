@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
-import { TrendingUp, CreditCard, Clock, Briefcase, ArrowRight } from 'lucide-vue-next'
+import { TrendingUp, CreditCard, Clock, Briefcase, ArrowRight } from '@lucide/vue'
 
 const props = defineProps<{
   id: string

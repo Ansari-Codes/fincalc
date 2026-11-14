@@ -10,7 +10,7 @@ import {
   LineChart, 
   Clock, 
   ArrowRight 
-} from 'lucide-vue-next'
+} from '@lucide/vue'
 
 const props = defineProps<{
   tool: ToolItem
