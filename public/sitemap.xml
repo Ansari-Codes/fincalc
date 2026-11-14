@@ -1,165 +1,165 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://financialtools.local/</loc>
+    <loc>https://ansari-codes.github.io/fincalc/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://financialtools.local/tools/</loc>
+    <loc>https://ansari-codes.github.io/fincalc/tools/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://financialtools.local/tools/investing/</loc>
+    <loc>https://ansari-codes.github.io/fincalc/tools/investing/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://financialtools.local/tools/credit-debt/</loc>
+    <loc>https://ansari-codes.github.io/fincalc/tools/credit-debt/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://financialtools.local/tools/retirement/</loc>
+    <loc>https://ansari-codes.github.io/fincalc/tools/retirement/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://financialtools.local/tools/business-finance/</loc>
+    <loc>https://ansari-codes.github.io/fincalc/tools/business-finance/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <!-- Financial Calculators -->
   <url>
-    <loc>https://financialtools.local/stock-average-calculator/</loc>
+    <loc>https://ansari-codes.github.io/fincalc/stock-average-calculator/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://financialtools.local/roi-calculator/</loc>
+    <loc>https://ansari-codes.github.io/fincalc/roi-calculator/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://financialtools.local/commission-calculator/</loc>
+    <loc>https://ansari-codes.github.io/fincalc/commission-calculator/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://financialtools.local/credit-card-apr-calculator/</loc>
+    <loc>https://ansari-codes.github.io/fincalc/credit-card-apr-calculator/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://financialtools.local/compound-interest-calculator/</loc>
+    <loc>https://ansari-codes.github.io/fincalc/compound-interest-calculator/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://financialtools.local/how-long-will-my-money-last/</loc>
+    <loc>https://ansari-codes.github.io/fincalc/how-long-will-my-money-last/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://financialtools.local/retirement-savings-calculator/</loc>
+    <loc>https://ansari-codes.github.io/fincalc/retirement-savings-calculator/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://financialtools.local/loan-payment-calculator/</loc>
+    <loc>https://ansari-codes.github.io/fincalc/loan-payment-calculator/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://financialtools.local/debt-payoff-planner/</loc>
+    <loc>https://ansari-codes.github.io/fincalc/debt-payoff-planner/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://financialtools.local/break-even-calculator/</loc>
+    <loc>https://ansari-codes.github.io/fincalc/break-even-calculator/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <!-- Educational Guides -->
   <url>
-    <loc>https://financialtools.local/learn/</loc>
+    <loc>https://ansari-codes.github.io/fincalc/learn/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://financialtools.local/learn/how-to-calculate-average-stock-cost/</loc>
+    <loc>https://ansari-codes.github.io/fincalc/learn/how-to-calculate-average-stock-cost/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://financialtools.local/learn/how-to-calculate-roi/</loc>
+    <loc>https://ansari-codes.github.io/fincalc/learn/how-to-calculate-roi/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://financialtools.local/learn/apr-vs-interest-rate/</loc>
+    <loc>https://ansari-codes.github.io/fincalc/learn/apr-vs-interest-rate/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://financialtools.local/learn/flat-vs-tiered-commission/</loc>
+    <loc>https://ansari-codes.github.io/fincalc/learn/flat-vs-tiered-commission/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://financialtools.local/learn/how-long-will-retirement-savings-last/</loc>
+    <loc>https://ansari-codes.github.io/fincalc/learn/how-long-will-retirement-savings-last/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://financialtools.local/learn/how-to-calculate-retirement-savings-goal/</loc>
+    <loc>https://ansari-codes.github.io/fincalc/learn/how-to-calculate-retirement-savings-goal/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://financialtools.local/learn/how-loan-amortization-works/</loc>
+    <loc>https://ansari-codes.github.io/fincalc/learn/how-loan-amortization-works/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://financialtools.local/learn/debt-snowball-vs-debt-avalanche/</loc>
+    <loc>https://ansari-codes.github.io/fincalc/learn/debt-snowball-vs-debt-avalanche/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://financialtools.local/learn/how-to-calculate-break-even-point/</loc>
+    <loc>https://ansari-codes.github.io/fincalc/learn/how-to-calculate-break-even-point/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <!-- Platform Trust & Policies -->
   <url>
-    <loc>https://financialtools.local/about/</loc>
+    <loc>https://ansari-codes.github.io/fincalc/about/</loc>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://financialtools.local/methodology/</loc>
+    <loc>https://ansari-codes.github.io/fincalc/methodology/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://financialtools.local/financial-disclaimer/</loc>
+    <loc>https://ansari-codes.github.io/fincalc/financial-disclaimer/</loc>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://financialtools.local/contact/</loc>
+    <loc>https://ansari-codes.github.io/fincalc/contact/</loc>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://financialtools.local/privacy/</loc>
+    <loc>https://ansari-codes.github.io/fincalc/privacy/</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://financialtools.local/terms/</loc>
+    <loc>https://ansari-codes.github.io/fincalc/terms/</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>

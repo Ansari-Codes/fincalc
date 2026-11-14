@@ -16,6 +16,11 @@ import {
   generateArticleSchema 
 } from '../src/utils/structuredData.ts'
 
+// Base URL helper for GitHub Pages / subpaths
+const base = process.env.BASE_URL || '/fincalc/'
+const cleanBase = base.endsWith('/') ? base.slice(0, -1) : base
+const withBase = (p) => `${cleanBase}${p}`
+
 // Check if dist exists
 if (!fs.existsSync(distDir)) {
   console.error('dist directory not found. Please run vite build first.')
@@ -36,14 +41,14 @@ routes.push({
   bodyHtml: `
     <header class="py-4 border-b border-gray-200 bg-white">
       <div class="max-w-[1200px] mx-auto px-4 flex justify-between items-center">
-        <a href="/" class="font-bold text-xl text-teal-800">${siteConfig.name}</a>
+        <a href="${withBase('/')}" class="font-bold text-xl text-teal-800">${siteConfig.name}</a>
         <nav class="space-x-4 text-sm font-medium">
-          <a href="/tools/">Tools</a>
-          <a href="/tools/investing/">Investing</a>
-          <a href="/tools/credit-debt/">Credit & Debt</a>
-          <a href="/tools/retirement/">Retirement</a>
-          <a href="/tools/business-finance/">Business</a>
-          <a href="/learn/">Learn</a>
+          <a href="${withBase('/tools/')}">Tools</a>
+          <a href="${withBase('/tools/investing/')}">Investing</a>
+          <a href="${withBase('/tools/credit-debt/')}">Credit & Debt</a>
+          <a href="${withBase('/tools/retirement/')}">Retirement</a>
+          <a href="${withBase('/tools/business-finance/')}">Business</a>
+          <a href="${withBase('/learn/')}">Learn</a>
         </nav>
       </div>
     </header>
@@ -55,7 +60,7 @@ routes.push({
           <div class="p-6 bg-white border border-gray-200 rounded-xl">
             <h2 class="text-lg font-bold text-gray-900 mb-2">${t.name}</h2>
             <p class="text-sm text-gray-600 mb-4">${t.shortDescription}</p>
-            <a href="${t.path}" class="text-teal-700 font-semibold text-sm">Open Calculator &rarr;</a>
+            <a href="${withBase(t.path)}" class="text-teal-700 font-semibold text-sm">Open Calculator &rarr;</a>
           </div>
         `).join('')}
       </div>
@@ -78,7 +83,7 @@ routes.push({
             <span class="text-xs font-semibold text-teal-800 uppercase">${t.categoryName}</span>
             <h2 class="text-xl font-bold text-gray-900 my-2">${t.name}</h2>
             <p class="text-sm text-gray-600 mb-4">${t.shortDescription}</p>
-            <a href="${t.path}" class="text-teal-700 font-semibold text-sm">Open Calculator &rarr;</a>
+            <a href="${withBase(t.path)}" class="text-teal-700 font-semibold text-sm">Open Calculator &rarr;</a>
           </div>
         `).join('')}
       </div>
@@ -102,7 +107,7 @@ for (const [key, cat] of Object.entries(categories)) {
             <div class="p-6 bg-white border border-gray-200 rounded-xl">
               <h2 class="text-xl font-bold text-gray-900 mb-2">${t.name}</h2>
               <p class="text-sm text-gray-600 mb-4">${t.shortDescription}</p>
-              <a href="${t.path}" class="text-teal-700 font-semibold text-sm">Open Calculator &rarr;</a>
+              <a href="${withBase(t.path)}" class="text-teal-700 font-semibold text-sm">Open Calculator &rarr;</a>
             </div>
           `).join('')}
         </div>
@@ -168,7 +173,7 @@ routes.push({
             <span class="text-xs font-semibold text-teal-800 uppercase">${a.category}</span>
             <h2 class="text-xl font-bold text-gray-900 my-2">${a.title}</h2>
             <p class="text-sm text-gray-600 mb-4">${a.summary}</p>
-            <a href="${a.path}" class="text-teal-700 font-semibold text-sm">Read Guide &rarr;</a>
+            <a href="${withBase(a.path)}" class="text-teal-700 font-semibold text-sm">Read Guide &rarr;</a>
           </div>
         `).join('')}
       </div>
@@ -284,10 +289,10 @@ routes.push({
 })
 
 // Prerender all routes
-console.log(`Prerendering ${routes.length} static HTML routes...`)
+console.log(`Prerendering ${routes.length} static HTML routes with base "${base}"...`)
 
 for (const r of routes) {
-  const canonicalUrl = `${siteConfig.url}${r.path}`
+  const canonicalUrl = `${siteConfig.url.replace(/\/$/, '')}${r.path}`
   let html = templateHtml
 
   // Replace Title
@@ -327,7 +332,7 @@ for (const r of routes) {
 // Generate 404.html
 const notFoundHtml = templateHtml
   .replace(/<title>.*?<\/title>/, `<title>Page Not Found (404) | ${siteConfig.name}</title>`)
-  .replace('<div id="app"></div>', `<div id="app"><div style="text-align:center;padding:50px;"><h1>404 - Page Not Found</h1><p><a href="/">Return Home</a></p></div></div>`)
+  .replace('<div id="app"></div>', `<div id="app"><div style="text-align:center;padding:50px;"><h1>404 - Page Not Found</h1><p><a href="${withBase('/')}">Return Home</a></p></div></div>`)
 fs.writeFileSync(path.resolve(distDir, '404.html'), notFoundHtml, 'utf-8')
 console.log('✓ Generated /404.html')
 

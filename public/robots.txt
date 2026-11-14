@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://financialtools.local/sitemap.xml
+Sitemap: https://ansari-codes.github.io/fincalc/sitemap.xml
