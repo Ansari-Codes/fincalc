@@ -508,39 +508,83 @@ async function handleCopy() {
     <!-- Educational & Explanatory Sections Below Calculator -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-16">
       <div class="lg:col-span-8 space-y-8">
-        <!-- How it works & Formula -->
+        <!-- Section 1: Simple vs Weighted Averaging -->
         <section class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm">
-          <h2 class="text-xl font-extrabold text-[#0F172A] mb-3">How the Stock Average Calculation Works</h2>
+          <h2 class="text-xl font-extrabold text-[#0F172A] mb-3">Why Simple Price Averaging Fails for Stock Purchases</h2>
           <p class="text-sm text-[#64748B] leading-relaxed mb-4">
-            When buying stock at various prices, simple averaging is distorted by share volume. A weighted average cost accounts for the proportion of total capital invested in each lot.
+            When buying shares of a stock or ETF across multiple transactions, investors pay different market prices. Many investors mistakenly take a simple arithmetic average of their execution prices. However, simple averaging completely ignores the number of shares bought in each trade.
           </p>
-          <div class="bg-[#F8FAFC] border border-[#CBD5E1] p-4 rounded-xl num-tabular text-xs sm:text-sm text-[#0F172A] mb-4 font-mono">
-            {{ currentTool.formula }}
+          <div class="p-4 bg-[#F8FAFC] border border-[#CBD5E1] rounded-2xl text-xs sm:text-sm text-[#0F172A] space-y-2 mb-4 leading-relaxed">
+            <p><strong>Consider this example:</strong> You buy 10 shares of a company at $50, and later purchase 90 shares of the same company at $100.</p>
+            <p>• <em>Simple Average:</em> ($50 + $100) ÷ 2 = <strong>$75.00</strong></p>
+            <p>• <em>Actual Weighted Average:</em> [(10 × $50) + (90 × $100)] ÷ 100 shares = ($500 + $9,000) ÷ 100 = <strong>$95.00</strong></p>
           </div>
           <p class="text-sm text-[#64748B] leading-relaxed">
-            By multiplying each lot's share quantity by its execution price, we determine the exact dollar capital expended. Dividing this cumulative expenditure by total shares yields your true break-even price.
+            Because 90% of your capital was invested at $100, your real break-even cost is $95.00, not $75.00. Using a simple average would lead you to believe you are in profit when you may still be at a net loss.
           </p>
         </section>
 
-        <!-- Worked Example -->
+        <!-- Section 2: Mathematical Methodology -->
         <section class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm">
-          <h2 class="text-xl font-extrabold text-[#0F172A] mb-3">Worked Example</h2>
-          <div class="space-y-3 text-sm text-[#64748B] leading-relaxed">
-            <p>Suppose you make two separate purchases of an index ETF:</p>
-            <ul class="list-disc list-inside space-y-1.5 pl-2 font-mono text-xs text-[#0F172A]">
-              <li>Lot 1: 20 shares at $150.00 each = $3,000.00</li>
-              <li>Lot 2: 30 shares at $130.00 each = $3,900.00</li>
-            </ul>
+          <h2 class="text-xl font-extrabold text-[#0F172A] mb-3">Weighted Average Cost Methodology</h2>
+          <p class="text-sm text-[#64748B] leading-relaxed mb-4">
+            The weighted average cost calculation aggregates the total dollars spent across every purchase lot (including any trading commissions or regulatory fees) and divides that total capital by the aggregate number of shares currently held:
+          </p>
+          <div class="bg-[#F8FAFC] border border-[#CBD5E1] p-4 rounded-xl num-tabular text-xs sm:text-sm text-[#0F172A] mb-4 font-mono whitespace-pre-line leading-relaxed">
+            {{ currentTool.formula }}
+          </div>
+          <p class="text-sm text-[#64748B] leading-relaxed">
+            Each lot's share quantity serves as its statistical weight. The more shares you purchase at a specific price, the more heavily that price influences your overall portfolio cost basis.
+          </p>
+        </section>
+
+        <!-- Section 3: Handling Transaction Fees -->
+        <section class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm">
+          <h2 class="text-xl font-extrabold text-[#0F172A] mb-3">Accounting for Brokerage Fees &amp; Commissions</h2>
+          <p class="text-sm text-[#64748B] leading-relaxed mb-4">
+            While many retail brokerages offer commission-free trading on standard US equities, options traders, international investors, OTC equity traders, and users paying wire or currency fees still face transaction expenses.
+          </p>
+          <p class="text-sm text-[#64748B] leading-relaxed mb-4">
+            When you enable the <strong class="text-[#0F172A]">"Include broker fees in cost basis"</strong> option, each lot's fees are added to the numerator of the formula. This raises your calculated average cost per share, showing you the exact gross selling price required to achieve a true net break-even after recouping all trading costs.
+          </p>
+        </section>
+
+        <!-- Section 4: DCA vs Averaging Down -->
+        <section class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm">
+          <h2 class="text-xl font-extrabold text-[#0F172A] mb-3">Dollar-Cost Averaging (DCA) vs. "Averaging Down"</h2>
+          <div class="space-y-4 text-sm text-[#64748B] leading-relaxed">
             <p>
-              Your total cash spent is $6,900.00 for 50 shares total.
+              <strong class="text-[#0F172A]">Dollar-Cost Averaging (DCA):</strong> A systematic investment strategy where you invest a fixed dollar amount at regular intervals (e.g., $500 every month), regardless of market fluctuations. Over time, you automatically purchase more shares when prices are low and fewer shares when prices are high, smoothing out volatility.
             </p>
-            <div class="p-3 bg-[#E7F4F1] rounded-xl font-mono text-sm text-[#0F766E] font-bold">
-              Weighted Average Cost = $6,900.00 ÷ 50 shares = $138.00 / share
-            </div>
-            <p class="text-xs text-[#64748B]">
-              (Note: a simple unweighted average of $150 and $130 would be $140.00, which ignores that you bought more shares at $130).
+            <p>
+              <strong class="text-[#0F172A]">Averaging Down:</strong> Buying more shares specifically because a stock has fallen in price. While averaging down reduces your average cost per share, it also increases your concentration risk in a deteriorating security. Ensure the underlying business fundamentals remain strong before committing additional capital.
             </p>
           </div>
+        </section>
+
+        <!-- Section 5: Tax Cost Basis vs Average Cost -->
+        <section class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm">
+          <h2 class="text-xl font-extrabold text-[#0F172A] mb-3">Average Cost vs. Official IRS Tax Cost Basis</h2>
+          <p class="text-sm text-[#64748B] leading-relaxed mb-4">
+            It is critical to distinguish an internal portfolio weighted average price from statutory tax cost basis rules when you liquidate shares:
+          </p>
+          <ul class="space-y-2.5 text-sm text-[#64748B] list-disc list-inside leading-relaxed mb-4">
+            <li>
+              <strong class="text-[#0F172A]">IRS Default (FIFO – Treas. Reg. § 1.1012-1(c)):</strong> Under US federal tax law (IRS Publication 550), if an investor does not adequately identify which specific lot is being sold, the IRS mandates the First-In, First-Out (FIFO) method. Oldest purchases are deemed sold first, resulting in capital gain/loss figures that often deviate widely from an arithmetic average.
+            </li>
+            <li>
+              <strong class="text-[#0F172A]">Specific Identification (SpecID):</strong> Investors can instruct their brokerage before trade settlement to sell designated lots (e.g., Highest-In, First-Out / HIFO to harvest losses, or long-term holdings to secure lower capital gains rates).
+            </li>
+            <li>
+              <strong class="text-[#0F172A]">Mutual Funds &amp; DRIPs (Treas. Reg. § 1.1012-1(e)):</strong> The average cost basis method is explicitly permitted for regulated investment company (mutual fund) shares and qualifying dividend reinvestment plans. However, for individual corporate stocks, average basis is not permitted for US tax reporting unless specific custodial exceptions apply.
+            </li>
+            <li>
+              <strong class="text-[#0F172A]">International Caveat:</strong> Tax laws differ outside the United States. For example, the UK HMRC requires "Section 104 holding" pooling (which is a form of average cost basis), while the Canada Revenue Agency (CRA) mandates an Adjusted Cost Base (ACB) pooling calculation. Always consult a licensed tax professional or relevant tax code for your jurisdiction.
+            </li>
+          </ul>
+          <p class="text-sm text-[#64748B] leading-relaxed">
+            Read our in-depth <RouterLink to="/learn/how-to-calculate-average-stock-cost/" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">Average Stock Cost Educational Guide</RouterLink> to explore IRS lot rules and numerical examples.
+          </p>
         </section>
 
         <!-- Assumptions & Limitations -->
@@ -555,22 +599,38 @@ async function handleCopy() {
 
         <!-- Tool FAQs -->
         <section>
-          <FAQAccordion :items="currentTool.faqs" title="Frequently Asked Questions" />
+          <FAQAccordion :items="currentTool.faqs" title="Frequently Asked Questions About Stock Averaging" />
         </section>
       </div>
 
       <!-- Sidebar Context / Quick Links (4 Cols) -->
       <div class="lg:col-span-4 space-y-6">
         <div class="bg-white rounded-3xl border border-[#E2E8F0] p-6 shadow-sm">
-          <h3 class="text-base font-bold text-[#0F172A] mb-2">Need a Related Guide?</h3>
+          <div class="text-xs font-bold uppercase tracking-wider text-[#0F766E] mb-2">Comprehensive Guide</div>
+          <h3 class="text-base font-bold text-[#0F172A] mb-2">How to Calculate Average Stock Cost</h3>
           <p class="text-xs text-[#64748B] leading-relaxed mb-4">
-            Learn why tax cost basis can diverge from internal average cost under IRS accounting guidelines.
+            Understand quantity-weighted averaging, broker commission adjustments, and why tax cost basis can diverge under IRS rules.
           </p>
           <RouterLink
             to="/learn/how-to-calculate-average-stock-cost/"
             class="inline-flex items-center gap-1.5 text-xs font-bold text-[#0F766E] hover:underline"
           >
-            <span>Read Stock Cost Basis Guide</span>
+            <span>Read Educational Guide</span>
+            <ArrowRight class="w-3.5 h-3.5" />
+          </RouterLink>
+        </div>
+
+        <div class="bg-white rounded-3xl border border-[#E2E8F0] p-6 shadow-sm">
+          <div class="text-xs font-bold uppercase tracking-wider text-[#0F766E] mb-2">Measure Net Gains</div>
+          <h3 class="text-base font-bold text-[#0F172A] mb-2">Return on Investment (ROI)</h3>
+          <p class="text-xs text-[#64748B] leading-relaxed mb-4">
+            Once you know your average share cost, calculate your total percentage profit or loss upon exit using our interactive ROI calculator.
+          </p>
+          <RouterLink
+            to="/roi-calculator/"
+            class="inline-flex items-center gap-1.5 text-xs font-bold text-[#0F766E] hover:underline"
+          >
+            <span>Open ROI Calculator</span>
             <ArrowRight class="w-3.5 h-3.5" />
           </RouterLink>
         </div>

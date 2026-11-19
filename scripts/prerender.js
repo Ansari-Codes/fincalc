@@ -153,6 +153,38 @@ for (const t of tools) {
             </div>
           `).join('')}
         </section>
+        ${t.relatedArticleSlugs && t.relatedArticleSlugs.length > 0 ? `
+          <section class="mt-8 bg-white p-8 rounded-xl border border-gray-200">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Helpful Educational Guides</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              ${articles.filter(a => t.relatedArticleSlugs.includes(a.slug)).map(a => `
+                <div class="p-4 border border-gray-100 rounded-lg">
+                  <span class="text-xs font-semibold text-teal-800 uppercase">${a.category}</span>
+                  <h3 class="font-bold text-base text-gray-900 mt-1 mb-2">
+                    <a href="${withBase(a.path)}" class="text-teal-700 hover:underline">${a.title}</a>
+                  </h3>
+                  <p class="text-xs text-gray-600">${a.summary}</p>
+                </div>
+              `).join('')}
+            </div>
+          </section>
+        ` : ''}
+        ${t.relatedToolSlugs && t.relatedToolSlugs.length > 0 ? `
+          <section class="mt-8 bg-white p-8 rounded-xl border border-gray-200">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Related Financial Calculators</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              ${tools.filter(other => t.relatedToolSlugs.includes(other.slug)).map(other => `
+                <div class="p-4 border border-gray-100 rounded-lg">
+                  <span class="text-xs font-semibold text-teal-800 uppercase">${other.categoryName}</span>
+                  <h3 class="font-bold text-base text-gray-900 mt-1 mb-2">
+                    <a href="${withBase(other.path)}" class="text-teal-700 hover:underline">${other.name}</a>
+                  </h3>
+                  <p class="text-xs text-gray-600">${other.shortDescription}</p>
+                </div>
+              `).join('')}
+            </div>
+          </section>
+        ` : ''}
       </main>
     `
   })
@@ -210,6 +242,19 @@ for (const a of articles) {
             </div>
           `).join('')}
         </article>
+        ${a.faqs && a.faqs.length > 0 ? `
+          <section class="mt-12 pt-8 border-t border-gray-200">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Frequently Asked Questions</h2>
+            <div class="space-y-6">
+              ${a.faqs.map(faq => `
+                <div class="border-b border-gray-100 pb-4">
+                  <h3 class="font-bold text-lg text-gray-900 mb-2">${faq.question}</h3>
+                  <div class="text-base text-gray-600 leading-relaxed">${faq.answer}</div>
+                </div>
+              `).join('')}
+            </div>
+          </section>
+        ` : ''}
       </main>
     `
   })

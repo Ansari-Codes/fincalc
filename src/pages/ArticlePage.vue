@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, watchEffect } from 'vue'
-import { useRoute, RouterLink } from 'vue-router'
+import { useRoute, useRouter, RouterLink } from 'vue-router'
 import { updatePageSeo } from '@/utils/seo'
 import { generateArticleSchema } from '@/utils/structuredData'
 import { articles } from '@/data/articles'
@@ -11,8 +11,30 @@ import ArticleCard from '@/components/ui/ArticleCard.vue'
 import { ArrowRight, Calculator, Calendar, Clock } from '@lucide/vue'
 
 const route = useRoute()
+const router = useRouter()
 const slug = computed(() => String(route.params.slug || ''))
 const article = computed(() => articles.find(a => a.slug === slug.value))
+
+function handleArticleClick(event: MouseEvent) {
+  const target = (event.target as HTMLElement)?.closest('a')
+  if (!target) return
+  const href = target.getAttribute('href')
+  if (
+    href &&
+    href.startsWith('/') &&
+    !href.startsWith('//') &&
+    !target.hasAttribute('target') &&
+    !target.hasAttribute('download') &&
+    !event.ctrlKey &&
+    !event.metaKey &&
+    !event.shiftKey &&
+    !event.altKey &&
+    event.button === 0
+  ) {
+    event.preventDefault()
+    router.push(href)
+  }
+}
 
 watchEffect(() => {
   if (article.value) {
@@ -44,7 +66,7 @@ const otherArticles = computed(() => {
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 mt-4 mb-20">
       <!-- Article Content (8 Cols) -->
-      <article class="lg:col-span-8">
+      <article class="lg:col-span-8" @click="handleArticleClick">
         <!-- Metadata Header -->
         <div class="mb-8 border-b border-[#E4E9F0] pb-8">
           <div class="flex items-center gap-3 text-xs text-[#667085] mb-3">
@@ -97,9 +119,7 @@ const otherArticles = computed(() => {
               {{ section.heading }}
             </h2>
 
-            <p v-for="(para, pIdx) in section.paragraphs" :key="pIdx" class="text-base sm:text-lg text-[#667085] leading-relaxed">
-              {{ para }}
-            </p>
+            <p v-for="(para, pIdx) in section.paragraphs" :key="pIdx" class="text-base sm:text-lg text-[#667085] leading-relaxed" v-html="para" />
 
             <!-- Formula Callout Box -->
             <div v-if="section.formulaBox" class="my-6 p-5 rounded-xl bg-[#F7F9FC] border border-[#E4E9F0]">

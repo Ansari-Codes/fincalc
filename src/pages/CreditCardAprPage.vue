@@ -539,17 +539,106 @@ async function handleCopy() {
     <!-- Explanatory & Guides -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-16">
       <div class="lg:col-span-8 space-y-8">
+        <!-- Section 1: Understanding APR -->
         <section class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm">
-          <h2 class="text-xl font-extrabold text-[#0F172A] mb-3">How Credit Card Interest is Modeled</h2>
+          <h2 class="text-xl font-extrabold text-[#0F172A] mb-3">Understanding Credit Card APR: What It Really Means</h2>
           <p class="text-sm text-[#64748B] leading-relaxed mb-4">
-            Under this educational model, annual percentage rate (APR) is divided by 12 to generate a periodic monthly rate. Monthly interest is assessed on the outstanding balance before deducting your scheduled monthly payment.
+            Annual Percentage Rate (APR) reflects the annualized cost of borrowing on your credit card. Unlike an annual card fee, APR is not charged as a single lump-sum expense. Instead, interest accrues continuously whenever an unpaid balance is carried beyond the monthly statement due date.
           </p>
-          <div class="bg-[#F8FAFC] border border-[#CBD5E1] p-4 rounded-xl num-tabular text-xs sm:text-sm text-[#0F172A] mb-4 font-mono">
+          <p class="text-sm text-[#64748B] leading-relaxed mb-4">
+            Most credit cards feature different APR tiers for different transaction types:
+          </p>
+          <ul class="space-y-2 text-sm text-[#64748B] list-disc list-inside leading-relaxed mb-4">
+            <li><strong class="text-[#0F172A]">Purchase APR:</strong> The standard rate charged on goods and services bought with your card. An interest-free grace period (typically 21–25 days) applies as long as you pay the statement balance in full every month.</li>
+            <li><strong class="text-[#0F172A]">Cash Advance APR:</strong> A significantly higher rate (often 25%–30%) applied immediately to ATM withdrawals or cash equivalents, with zero grace period.</li>
+            <li><strong class="text-[#0F172A]">Penalty APR:</strong> A punitive rate (frequently up to 29.99%) that lenders can trigger if you miss a payment by 60 days or more.</li>
+          </ul>
+        </section>
+
+        <!-- Section 2: Calculation Methodology -->
+        <section class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm">
+          <h2 class="text-xl font-extrabold text-[#0F172A] mb-3">How Credit Card Interest is Modeled &amp; Calculated</h2>
+          <p class="text-sm text-[#64748B] leading-relaxed mb-4">
+            This calculator models your debt amortization using a standard monthly periodic rate approximation. In this model, the stated annual APR is divided by 12 months to determine the monthly interest percentage:
+          </p>
+          <div class="bg-[#F8FAFC] border border-[#CBD5E1] p-4 rounded-xl num-tabular text-xs sm:text-sm text-[#0F172A] mb-4 font-mono whitespace-pre-line leading-relaxed">
             {{ currentTool.formula }}
           </div>
-          <p class="text-sm text-[#64748B] leading-relaxed">
-            Because interest charges are calculated on remaining debt, each payment you make reduces the principal, thereby decreasing the next month’s finance charge.
+          <p class="text-sm text-[#64748B] leading-relaxed mb-4">
+            Every billing cycle, the monthly interest charge is assessed on the remaining balance first. The rest of your payment goes toward principal reduction. When you make a higher monthly payment, more capital directly attacks the principal, causing the next month’s finance charge to shrink even faster.
           </p>
+          <div class="space-y-3 p-4 bg-teal-50 border border-teal-200 rounded-2xl text-xs text-[#0F766E] leading-relaxed">
+            <div>
+              <strong>Monthly Approximation vs. Daily Periodic Rate (DPR):</strong> This calculator divides your APR by 12 to provide an accessible, high-accuracy planning estimate. In actual banking practice, most US credit card issuers divide the APR by 365 (or 360 in rare contracts) to calculate a Daily Periodic Rate (DPR = APR ÷ 365). They apply this DPR to your Average Daily Balance (ADB) across the exact billing cycle (28 to 31 days). If balances fluctuate mid-cycle, actual statement charges may vary slightly from this monthly model.
+            </div>
+            <div>
+              <strong>Interest Compounding &amp; Grace Period Rules:</strong> Unpaid finance charges are added to your revolving balance at the close of each billing cycle (monthly compounding). If you pay your entire statement balance in full before the payment due date every month, card issuers grant an interest-free grace period (typically 21 to 25 days) on all new eligible purchases. Note that grace periods generally apply to standard retail purchases only—cash advances, convenience checks, and balance transfers typically begin accruing interest on the transaction date with zero grace period.
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 3: Practical Worked Examples -->
+        <section class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm">
+          <h2 class="text-xl font-extrabold text-[#0F172A] mb-3">Practical Payoff Examples: The Power of Extra Payments</h2>
+          <p class="text-sm text-[#64748B] leading-relaxed mb-3">
+            To understand the true cost of revolving credit card debt, consider a cardholder with a <strong class="text-[#0F172A]">$5,000.00 starting balance at a 24.0% APR</strong> ($2.0\% monthly periodic rate):
+          </p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
+            <!-- Scenario A: Statement Minimum Payment -->
+            <div class="p-5 rounded-2xl bg-[#F8FAFC] border border-[#CBD5E1]">
+              <div class="text-xs font-bold uppercase text-rose-600 mb-1">Scenario A: Card Issuer Minimum Payment</div>
+              <div class="text-2xl font-black text-[#0F172A] mb-1 num-tabular">3% of Balance ($25 floor)</div>
+              <p class="text-[11px] text-[#64748B] mb-3">Starts at $150.00/mo and declines as balance drops.</p>
+              <ul class="text-xs text-[#64748B] space-y-1.5 leading-relaxed">
+                <li>• Payoff Timeline: <strong class="text-[#0F172A]">224 Months (18.7 Years)</strong></li>
+                <li>• Total Interest Paid: <strong class="text-rose-600 font-bold">$8,413.92</strong></li>
+                <li>• Total Cash Paid: <strong class="text-[#0F172A]">$13,413.92</strong></li>
+                <li>• <strong class="text-rose-700">You pay $3,413 MORE in interest than the original $5,000 balance!</strong></li>
+              </ul>
+            </div>
+
+            <!-- Scenario B: Fixed Accelerated Payment -->
+            <div class="p-5 rounded-2xl bg-emerald-50 border border-emerald-200">
+              <div class="text-xs font-bold uppercase text-[#0F766E] mb-1">Scenario B: Fixed $250.00 / Month</div>
+              <div class="text-2xl font-black text-[#0F766E] mb-1 num-tabular">$250.00 / mo</div>
+              <p class="text-[11px] text-[#0F766E] mb-3">Fixed constant monthly payment until balance hits zero.</p>
+              <ul class="text-xs text-[#0F766E] space-y-1.5 leading-relaxed">
+                <li>• Payoff Timeline: <strong class="text-[#0F172A]">26 Months (2.2 Years)</strong></li>
+                <li>• Total Interest Paid: <strong class="text-[#0F172A]">$1,449.36</strong></li>
+                <li>• Total Cash Paid: <strong class="text-[#0F172A]">$6,449.36</strong></li>
+                <li>• <strong class="text-[#0F766E]">Saves $6,964.56 in interest</strong> and eliminates debt 16.5 years sooner.</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Explanatory Callout Box on Minimum Payment Mechanics -->
+          <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs text-[#475569] leading-relaxed">
+            <strong class="text-[#0F172A]">Why does the statement minimum take over 18 years?</strong>
+            Credit card companies calculate required minimum payments each month as a percentage of the <em>remaining balance</em> (commonly 2.5% to 3.0%, or 1% plus monthly finance charges, with a standard $25.00 floor). In Month 1, 3% of $5,000 is $150.00 ($100 interest + $50 principal). In Month 2, the payment automatically shrinks to $148.50. Because the required payment falls in tandem with your debt, principal reduction slows to a crawl. If you instead fix your payment at $150.00 every single month, you will be debt-free in 56 months (4.7 years) and pay $3,322.09 in total interest—saving over $5,000 compared to letting the minimum decline.
+          </div>
+        </section>
+
+        <!-- Section 4: Repayment Strategies -->
+        <section class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm">
+          <h2 class="text-xl font-extrabold text-[#0F172A] mb-3">Strategies to Eliminate High Credit Card APR Debt</h2>
+          <div class="space-y-4 text-sm text-[#64748B] leading-relaxed">
+            <p>
+              If you are carrying balances on multiple cards or loans, mathematical optimization can save substantial money:
+            </p>
+            <ul class="space-y-2.5 list-disc list-inside">
+              <li>
+                <strong class="text-[#0F172A]">The Debt Avalanche Strategy:</strong> Direct all extra monthly funds to the card with the highest APR while maintaining minimum payments on others. This mathematically minimizes total interest paid. Compare this with the Snowball method using our
+                <RouterLink to="/debt-payoff-planner/" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">Debt Payoff Planner</RouterLink>.
+              </li>
+              <li>
+                <strong class="text-[#0F172A]">Consolidation via Personal Loan:</strong> If you qualify for an unsecured fixed-rate personal loan with an APR of 9%–12%, consolidating high-APR card debt (22%+) locks in a fixed end-date and lowers interest costs. Calculate fixed payments with our
+                <RouterLink to="/loan-payment-calculator/" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">Loan Payment Calculator</RouterLink>.
+              </li>
+              <li>
+                <strong class="text-[#0F172A]">Restore Your Grace Period:</strong> Once you pay your balance down to zero and clear two consecutive statement cycles without carrying debt, your interest-free grace period is restored for all future eligible purchases.
+              </li>
+            </ul>
+          </div>
         </section>
 
         <!-- Assumptions & Limitations -->
@@ -563,21 +652,37 @@ async function handleCopy() {
         </section>
 
         <section>
-          <FAQAccordion :items="currentTool.faqs" title="Frequently Asked Questions" />
+          <FAQAccordion :items="currentTool.faqs" title="Frequently Asked Questions About Credit Card APR" />
         </section>
       </div>
 
       <div class="lg:col-span-4 space-y-6">
         <div class="bg-white rounded-3xl border border-[#E2E8F0] p-6 shadow-sm">
-          <h3 class="text-base font-bold text-[#0F172A] mb-2">APR vs. Interest Rate</h3>
+          <div class="text-xs font-bold uppercase tracking-wider text-[#0F766E] mb-2">In-Depth Guide</div>
+          <h3 class="text-base font-bold text-[#0F172A] mb-2">APR vs. Interest Rate: The Key Differences</h3>
           <p class="text-xs text-[#64748B] leading-relaxed mb-4">
-            Understand how daily periodic rates work, what loss of grace period means, and how to verify statement charges.
+            Understand how daily periodic rates work, what loss of grace period means, and how to verify statement finance charges.
           </p>
           <RouterLink
             to="/learn/apr-vs-interest-rate/"
             class="inline-flex items-center gap-1.5 text-xs font-bold text-[#0F766E] hover:underline"
           >
             <span>Read APR Educational Guide</span>
+            <ArrowRight class="w-3.5 h-3.5" />
+          </RouterLink>
+        </div>
+
+        <div class="bg-white rounded-3xl border border-[#E2E8F0] p-6 shadow-sm">
+          <div class="text-xs font-bold uppercase tracking-wider text-[#0F766E] mb-2">Multi-Card Strategy</div>
+          <h3 class="text-base font-bold text-[#0F172A] mb-2">Debt Payoff Planner</h3>
+          <p class="text-xs text-[#64748B] leading-relaxed mb-4">
+            Have multiple credit cards? Compare the Debt Avalanche and Debt Snowball methods side-by-side to find your fastest path to zero debt.
+          </p>
+          <RouterLink
+            to="/debt-payoff-planner/"
+            class="inline-flex items-center gap-1.5 text-xs font-bold text-[#0F766E] hover:underline"
+          >
+            <span>Open Debt Payoff Planner</span>
             <ArrowRight class="w-3.5 h-3.5" />
           </RouterLink>
         </div>

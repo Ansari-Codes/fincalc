@@ -533,11 +533,13 @@ async function handleCopy() {
       <FAQAccordion :items="currentTool.faqs" />
     </div>
 
-    <!-- Related Tools -->
-    <div class="mb-12">
-      <h2 class="text-xl font-bold text-[#0F172A] mb-4">Related Financial Calculators</h2>
-      <RelatedTools :tool-slugs="currentTool.relatedToolSlugs" />
-    </div>
+    <!-- Related Tools & Guides -->
+    <RelatedTools
+      :current-slug="currentTool.slug"
+      :tool-slugs="currentTool.relatedToolSlugs"
+      :article-slugs="currentTool.relatedArticleSlugs"
+      class="mb-12"
+    />
 
     <!-- Disclaimer -->
     <DisclaimerNotice />

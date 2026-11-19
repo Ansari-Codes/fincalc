@@ -22,35 +22,43 @@ export const tools: ToolItem[] = [
     slug: 'stock-average-calculator',
     path: '/stock-average-calculator/',
     name: 'Stock Average Calculator',
-    title: 'Stock Average Calculator – Calculate Your Average Share Cost',
-    shortDescription: 'Find the weighted average cost of multiple stock purchases.',
-    fullDescription: 'Calculate the average cost of shares across multiple purchases. Add purchase prices, quantities, and optional transaction costs to see total shares and average cost per share.',
+    title: 'Stock Average Calculator – Calculate Weighted Average Share Price',
+    shortDescription: 'Calculate the quantity-weighted average purchase price of your shares.',
+    fullDescription: 'Calculate your exact weighted average stock cost per share across multiple purchases. Account for share counts, purchase prices, and optional trading fees to find your real break-even price.',
     category: 'investing',
     categoryName: 'Investing',
     icon: 'TrendingUp',
-    formula: 'Weighted Average Cost = (Sum of Price × Shares + Fees) / Total Shares',
+    formula: 'Weighted Average Cost = (∑ (Purchase Price × Shares) + Total Fees) ÷ Total Shares',
     assumptions: [
-      'Calculates quantity-weighted arithmetic mean of purchase prices.',
-      'Optional transaction fees are included in average share cost when the toggle is enabled.',
-      'Does not imply or substitute for official tax-lot accounting (such as FIFO, LIFO, or Specific Identification) required by tax authorities.',
-      'Calculations run client-side in your browser; no portfolio holdings or quantities are sent to a server.'
+      'Uses the quantity-weighted arithmetic mean, weighting each purchase by the volume of shares acquired.',
+      'Optional broker commissions and transaction fees are amortized into the net cost basis when the toggle is enabled.',
+      'Does not replace official IRS tax-lot identification methods (FIFO, LIFO, or Specific Share ID) required for capital gains reporting on Form 1099-B.',
+      'All calculations run locally in your browser. No financial accounts, holdings, or tickers are stored or transmitted.'
     ],
     faqs: [
       {
-        question: 'How do I calculate my average stock price?',
-        answer: 'Multiply the share count of each purchase lot by its purchase price to determine the total dollars spent on that lot. Add all lot costs together, add any trading fees if desired, and divide the sum by your total number of shares.'
+        question: 'How do I calculate my average stock price across multiple buys?',
+        answer: 'Multiply the share quantity of each purchase lot by its execution price to find the dollar cost of that lot. Add all lot costs together, add any brokerage fees or commissions, and divide the total cash spent by the total number of shares owned.'
       },
       {
-        question: 'What happens when I buy more shares at a lower price?',
-        answer: 'Buying additional shares at a price below your current average cost reduces your overall weighted average cost per share. This strategy is commonly known as dollar-cost averaging down.'
+        question: 'Why does simple price averaging fail for stock purchases?',
+        answer: 'A simple average only adds the price tags and divides by the number of transactions, ignoring volume. If you buy 10 shares at $50 and 90 shares at $100, a simple average says $75, but your actual weighted cost is $95 because 90% of your capital was deployed at $100.'
       },
       {
-        question: 'Are transaction fees included in average cost?',
-        answer: 'Yes, this calculator includes an option to incorporate broker commissions and exchange fees into your average cost per share, helping you evaluate your true break-even price.'
+        question: 'What happens when I buy more shares at a lower price (averaging down)?',
+        answer: 'Buying additional shares at a market price below your existing average lowers your overall weighted cost basis. While this lowers the price needed to break even, it also increases your total capital exposure to that asset.'
       },
       {
-        question: 'Is average purchase cost the same as tax cost basis?',
-        answer: 'Not necessarily. While average cost is standard for mutual funds in the US, individual stocks typically default to First-In, First-Out (FIFO) or specific share identification unless you have elected a specific accounting method recognized by the IRS.'
+        question: 'How do broker fees affect my stock average cost?',
+        answer: 'Broker commissions, exchange fees, and regulatory levies increase the total cash you invested. Including them in your cost basis gives you your true net break-even price per share upon selling.'
+      },
+      {
+        question: 'Is average cost the same as IRS tax cost basis for stock sales?',
+        answer: 'Not necessarily. For US individual stocks, the IRS default accounting method is First-In, First-Out (FIFO) or Specific Identification unless you elect an alternative recognized method. Average cost is standard for mutual funds, but stock sales generally require lot tracking.'
+      },
+      {
+        question: 'Can I calculate the average price for fractional shares or cryptocurrency?',
+        answer: 'Yes. The weighted average cost formula applies universally to any asset accumulated in lots, including fractional shares of stock, index ETFs, and cryptocurrencies.'
       }
     ],
     relatedToolSlugs: ['roi-calculator', 'compound-interest-calculator'],
@@ -94,6 +102,10 @@ export const tools: ToolItem[] = [
       {
         question: 'Should fees be included in ROI?',
         answer: 'Yes. Transaction fees, maintenance costs, and commissions reduce your net profit and increase your total cost basis, directly affecting real ROI.'
+      },
+      {
+        question: 'How do dividends or rental income affect ROI?',
+        answer: 'All cash distributions, dividends, or rental income received during the holding period must be added to your ending proceeds. This captures your true total return rather than just price appreciation.'
       }
     ],
     relatedToolSlugs: ['stock-average-calculator', 'commission-calculator', 'break-even-calculator'],
@@ -132,6 +144,14 @@ export const tools: ToolItem[] = [
       {
         question: 'How do marginal commission tiers work?',
         answer: 'In a marginal tiered structure, you only earn the higher commission rate on the dollar amount that falls within that specific tier bracket, rather than retroactively increasing the commission on earlier dollars.'
+      },
+      {
+        question: 'What is an effective commission rate?',
+        answer: 'In a tiered compensation structure, your effective commission rate is total commission earnings divided by total sales volume, representing the blended percentage earned across all brackets.'
+      },
+      {
+        question: 'Can commission rates decrease at higher sales volumes?',
+        answer: 'Yes. While rare for individual direct sales representatives, regressive tiers are common in wholesale distribution and agency contracts where higher order volumes trigger bulk customer discounts with narrower margins.'
       }
     ],
     relatedToolSlugs: ['break-even-calculator', 'roi-calculator'],
@@ -142,35 +162,43 @@ export const tools: ToolItem[] = [
     slug: 'credit-card-apr-calculator',
     path: '/credit-card-apr-calculator/',
     name: 'Credit Card APR Calculator',
-    title: 'Credit Card APR Calculator – Estimate Monthly Interest',
-    shortDescription: 'Estimate interest costs from an APR and balance.',
-    fullDescription: 'Estimate credit-card interest from your balance and APR. Explore how payments may affect interest costs and payoff time.',
+    title: 'Credit Card APR Calculator – Calculate Monthly Interest & Payoff',
+    shortDescription: 'Estimate monthly credit card interest charges and see how extra payments save money.',
+    fullDescription: 'Calculate monthly credit card finance charges from your balance and APR. Explore payoff timelines, compare minimum payments against aggressive reduction, and see total interest savings.',
     category: 'credit-debt',
     categoryName: 'Credit & Debt',
     icon: 'CreditCard',
-    formula: 'Monthly Periodic Rate = APR / 12 / 100\nFirst Month Interest ≈ Current Balance × Monthly Periodic Rate',
+    formula: 'Monthly Periodic Rate = APR ÷ 12 ÷ 100\nEstimated Monthly Finance Charge ≈ Current Balance × Monthly Periodic Rate\nPrincipal Reduction = Monthly Payment − Interest Charge',
     assumptions: [
-      'Uses a monthly periodic rate approximation (APR / 12). Actual card issuers calculate interest using daily periodic rates (APR / 365) and average daily balance.',
-      'Assumes no penalty APRs, cash advance rates, late fees, or deferred interest rules are triggered.',
-      'Assumes regular on-time monthly payments.',
-      'This calculation is an estimate for educational purposes and does not connect to your bank or card issuer.'
+      'Calculates finance charges using a standard monthly periodic rate approximation (APR / 12). Card issuers compute charges daily using Average Daily Balance (ADB × APR / 365).',
+      'Assumes fixed regular monthly payments and on-time payments with no penalty APRs or late fees triggered.',
+      'Monthly payments are applied first to accrued monthly interest, with all remaining amounts reducing the principal balance.',
+      'This calculation is an educational estimate and operates entirely in your browser with zero data transmitted or retained.'
     ],
     faqs: [
       {
-        question: 'What is APR on a credit card?',
-        answer: 'Annual Percentage Rate (APR) represents the annualized interest rate charged on unpaid credit card balances carried past the monthly billing grace period.'
+        question: 'What is APR on a credit card and how does it work?',
+        answer: 'Annual Percentage Rate (APR) is the annualized interest rate charged on unpaid credit card balances carried past your monthly grace period. If you pay your statement balance in full every month by the due date, no APR interest is charged on standard purchases.'
       },
       {
-        question: 'How is monthly credit-card interest estimated?',
-        answer: 'A standard monthly approximation divides the APR by 12 and multiplies that fraction by your balance. For instance, a 24% APR yields an approximate 2% monthly rate ($20 on a $1,000 balance).'
+        question: 'How is monthly credit card interest calculated from APR?',
+        answer: 'Under the standard monthly approximation, your annual APR is divided by 12 to find the monthly periodic rate. For example, a 24% APR equals a 2% monthly rate. On a $3,000 carried balance, the estimated monthly interest charge is $3,000 × 0.02 = $60.00.'
       },
       {
-        question: 'Is APR divided by 12 or 365?',
-        answer: 'Most US card issuers divide APR by 365 to establish a Daily Periodic Rate (DPR), calculating daily charges based on your Average Daily Balance across the month. Dividing by 12 gives a close monthly approximation.'
+        question: 'Is credit card APR divided by 12 or 365?',
+        answer: 'Most credit card issuers in the US divide your APR by 365 to determine a Daily Periodic Rate (DPR). They then multiply this rate by your Average Daily Balance (ADB) across the billing cycle. Dividing by 12 provides a close, reliable monthly approximation for planning purposes.'
       },
       {
-        question: 'Why can my statement interest differ from this estimate?',
-        answer: 'Exact statement charges vary depending on the exact number of days in the statement billing cycle, the timing of mid-month payments, new purchase dates, and whether an interest-free grace period applies.'
+        question: 'How can I avoid paying APR interest on my credit card?',
+        answer: 'You can avoid paying credit card interest entirely by paying your full statement balance on or before the due date each billing cycle. This preserves your interest-free grace period (typically 21 to 25 days) on all new eligible purchases.'
+      },
+      {
+        question: 'What is a typical or good credit card APR?',
+        answer: 'Credit card APRs generally range between 15% and 29% depending on the cardholder’s credit profile, prime lending rates, and card type (rewards vs low-interest balance transfer cards). Strive to pay balances in full to avoid paying these rates.'
+      },
+      {
+        question: 'How much interest do I save by paying more than the minimum payment?',
+        answer: 'Because minimum payments primarily cover accrued interest with only a sliver reducing principal, paying even an extra $50 to $100 per month can save thousands of dollars in lifetime finance charges and cut years off your repayment timeline.'
       }
     ],
     relatedToolSlugs: ['debt-payoff-planner', 'loan-payment-calculator'],
@@ -210,6 +238,14 @@ export const tools: ToolItem[] = [
       {
         question: 'Are regular contributions included in compounding?',
         answer: 'Yes. When you enable regular monthly or annual contributions, each addition starts compounding from the moment it is contributed through the remainder of the timeline.'
+      },
+      {
+        question: 'What is the Rule of 72 shortcut for compound interest?',
+        answer: 'The Rule of 72 is an easy mental shortcut: divide 72 by your annual interest rate to find roughly how many years it takes for your investment to double. For example, at an 8% return, money doubles in approximately 72 ÷ 8 = 9 years.'
+      },
+      {
+        question: 'How does inflation impact compound investment returns?',
+        answer: 'Inflation erodes purchasing power over time. To understand real wealth accumulation, subtract your expected inflation rate from your nominal return rate (e.g. 8% nominal return minus 3% inflation yields a 5% real purchasing power return).'
       }
     ],
     relatedToolSlugs: ['retirement-savings-calculator', 'how-long-will-my-money-last', 'stock-average-calculator'],
@@ -249,6 +285,14 @@ export const tools: ToolItem[] = [
       {
         question: 'Does this calculator predict investment performance?',
         answer: 'No. Real market returns fluctuate significantly from year to year. A steady average return does not simulate bear markets or the timing of market downturns.'
+      },
+      {
+        question: 'What is sequence-of-returns risk and how does it affect longevity?',
+        answer: 'Sequence-of-returns risk is the danger of experiencing market downturns in the first 3 to 5 years of retirement. Selling depreciated assets to fund living expenses permanently reduces the portfolio shares available to rebound when the market recovers.'
+      },
+      {
+        question: 'How does the 4% rule compare to dynamic withdrawal guardrails?',
+        answer: 'The traditional 4% rule maintains a fixed initial withdrawal adjusted strictly for inflation. Dynamic guardrails adjust annual spending up or down based on market performance, substantially extending portfolio survival during extended bear markets.'
       }
     ],
     relatedToolSlugs: ['retirement-savings-calculator', 'compound-interest-calculator'],
@@ -288,6 +332,14 @@ export const tools: ToolItem[] = [
       {
         question: 'Does this calculator account for IRS contribution limits?',
         answer: 'No. This calculator computes mathematical requirements. In practice, federal tax-advantaged accounts have annual contribution limits (such as 401(k) and IRA limits).'
+      },
+      {
+        question: 'What is the 25x rule for setting a retirement target?',
+        answer: 'The 25x rule suggests saving 25 times your anticipated net annual living expenses in retirement. Based on the 4% safe withdrawal rate, a nest egg of this size has historically lasted 30+ years in balanced portfolios.'
+      },
+      {
+        question: 'How do employer 401(k) matching contributions help reach the target?',
+        answer: 'Employer match dollars count directly toward your total accumulation. Subtract annual employer matching funds from your required annual contribution to determine the net out-of-pocket savings needed from your paycheck.'
       }
     ],
     relatedToolSlugs: ['how-long-will-my-money-last', 'compound-interest-calculator'],
@@ -327,6 +379,14 @@ export const tools: ToolItem[] = [
       {
         question: 'Does this calculator support 0% APR loans?',
         answer: 'Yes. For 0% financing (such as interest-free automotive or promotional loans), the monthly payment simplifies to principal divided by total term months.'
+      },
+      {
+        question: 'How does a bi-weekly payment schedule save money on a mortgage or loan?',
+        answer: 'Making half-payments every two weeks results in 26 half-payments per year (equivalent to 13 full monthly payments). That single extra monthly payment per year accelerates principal reduction and can shave 4 to 6 years off a 30-year mortgage.'
+      },
+      {
+        question: 'What is the difference between an amortizing loan and a balloon loan?',
+        answer: 'An amortizing loan gradually pays off the entire balance across its scheduled term. A balloon loan features lower regular installments based on a long schedule, but requires paying off the remaining unpaid balance in a single massive lump sum at maturity.'
       }
     ],
     relatedToolSlugs: ['debt-payoff-planner', 'credit-card-apr-calculator'],
@@ -366,6 +426,14 @@ export const tools: ToolItem[] = [
       {
         question: 'What happens if my minimum payment does not cover interest?',
         answer: 'If the minimum payment is less than monthly accrued interest, the loan enters negative amortization and your balance grows. The calculator alerts you if any debt has an insufficient minimum payment.'
+      },
+      {
+        question: 'Can I combine the Snowball and Avalanche into a hybrid strategy?',
+        answer: 'Yes. Many people pay off 1 or 2 small nuisance balances first using the Snowball for quick psychological momentum, then switch to the Avalanche method to attack remaining high-APR accounts with mathematical efficiency.'
+      },
+      {
+        question: 'How should I treat 0% promotional balance transfer credit cards?',
+        answer: 'If a balance transfer carries 0% APR for a promotional window (e.g., 15 months), ensure the balance is paid off before the promotional window expires to prevent retroactive interest charges or a jump to standard 24%+ APR.'
       }
     ],
     relatedToolSlugs: ['loan-payment-calculator', 'credit-card-apr-calculator'],
@@ -405,6 +473,14 @@ export const tools: ToolItem[] = [
       {
         question: 'What happens if variable cost exceeds selling price?',
         answer: 'If variable cost per unit is greater than selling price, contribution margin is negative. Every unit sold loses money, and the business can never reach break-even regardless of sales volume.'
+      },
+      {
+        question: 'How do I calculate required sales for a target dollar profit?',
+        answer: 'Add your target dollar profit to your fixed overhead costs, then divide the total by your unit contribution margin: Required Units = (Fixed Costs + Target Profit) ÷ Contribution Margin.'
+      },
+      {
+        question: 'How do promotional discounts affect the break-even point?',
+        answer: 'Discounts reduce your selling price without lowering variable costs, which directly shrinks your unit contribution margin. A small price reduction often requires a disproportionately massive increase in sales volume to cover overhead.'
       }
     ],
     relatedToolSlugs: ['commission-calculator', 'roi-calculator'],
