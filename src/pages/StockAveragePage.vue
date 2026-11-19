@@ -570,7 +570,7 @@ async function handleCopy() {
           </p>
           <ul class="space-y-2.5 text-sm text-[#64748B] list-disc list-inside leading-relaxed mb-4">
             <li>
-              <strong class="text-[#0F172A]">IRS Default (FIFO – Treas. Reg. § 1.1012-1(c)):</strong> Under US federal tax law (IRS Publication 550), if an investor does not adequately identify which specific lot is being sold, the IRS mandates the First-In, First-Out (FIFO) method. Oldest purchases are deemed sold first, resulting in capital gain/loss figures that often deviate widely from an arithmetic average.
+              <strong class="text-[#0F172A]">IRS Default (FIFO – Treas. Reg. § 1.1012-1(c)):</strong> Under US federal tax law (<a href="https://www.irs.gov/publications/p550" target="_blank" rel="noopener noreferrer" class="font-bold underline hover:text-[#115E59]">IRS Publication 550</a>), if an investor does not adequately identify which specific lot is being sold, the IRS mandates the First-In, First-Out (FIFO) method. Oldest purchases are deemed sold first, resulting in capital gain/loss figures that often deviate widely from an arithmetic average.
             </li>
             <li>
               <strong class="text-[#0F172A]">Specific Identification (SpecID):</strong> Investors can instruct their brokerage before trade settlement to sell designated lots (e.g., Highest-In, First-Out / HIFO to harvest losses, or long-term holdings to secure lower capital gains rates).
@@ -579,7 +579,7 @@ async function handleCopy() {
               <strong class="text-[#0F172A]">Mutual Funds &amp; DRIPs (Treas. Reg. § 1.1012-1(e)):</strong> The average cost basis method is explicitly permitted for regulated investment company (mutual fund) shares and qualifying dividend reinvestment plans. However, for individual corporate stocks, average basis is not permitted for US tax reporting unless specific custodial exceptions apply.
             </li>
             <li>
-              <strong class="text-[#0F172A]">International Caveat:</strong> Tax laws differ outside the United States. For example, the UK HMRC requires "Section 104 holding" pooling (which is a form of average cost basis), while the Canada Revenue Agency (CRA) mandates an Adjusted Cost Base (ACB) pooling calculation. Always consult a licensed tax professional or relevant tax code for your jurisdiction.
+              <strong class="text-[#0F172A]">International Jurisdictions:</strong> Statutory rules differ substantially outside the United States. For example, the UK HMRC mandates <a href="https://www.gov.uk/government/publications/shares-and-capital-gains-tax-hs284-self-assessment-helpsheet" target="_blank" rel="noopener noreferrer" class="font-bold underline hover:text-[#115E59]">Section 104 holding pools (HMRC HS284)</a>, while the Canada Revenue Agency (CRA) mandates an Adjusted Cost Base (ACB) pooling calculation. Always consult a licensed tax professional or relevant tax code for your jurisdiction.
             </li>
           </ul>
           <p class="text-sm text-[#64748B] leading-relaxed">

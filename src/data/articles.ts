@@ -75,9 +75,9 @@ export const articles: ArticleItem[] = [
       {
         heading: 'Average cost vs. IRS tax cost basis rules',
         paragraphs: [
-          'It is crucial to recognize that an internal average cost calculation may not match your official tax reporting basis when you sell a portion of your position.',
-          'In the United States, under IRS Publication 550 and Treasury Regulation § 1.1012-1(c), the default accounting method for individual equities is First-In, First-Out (FIFO). Under FIFO, when you sell 50 shares from the example above, the IRS treats the earliest lot purchased at $40.00 as sold first, resulting in a different realized capital gain than if an average basis was applied.',
-          'Average cost accounting is generally permitted by the IRS under Treas. Reg. § 1.1012-1(e) for mutual funds and dividend reinvestment plans (DRIPs), while individual equities require specific share identification (SpecID) or default to FIFO. Outside the US, rules differ substantially: the UK HMRC uses Section 104 average holding pools, and the Canada Revenue Agency mandates Adjusted Cost Base (ACB) pooling. Always verify tax lots with your brokerage tax statements (such as Form 1099-B in the US) and consult a qualified tax advisor.'
+          'It is crucial to recognize that an internal weighted average cost calculation may not match your official tax reporting basis when you sell a portion of your position.',
+          'In the United States, under <a href="https://www.irs.gov/publications/p550" target="_blank" rel="noopener noreferrer" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">IRS Publication 550 (Investment Income and Expenses)</a> and Treasury Regulation § 1.1012-1(c), the default accounting method for individual equities is First-In, First-Out (FIFO). Under FIFO, when you sell 50 shares from the example above, the IRS treats the earliest lot purchased at $40.00 as sold first, resulting in a different realized capital gain than if an average basis was applied.',
+          'Average cost accounting is generally permitted by the IRS under Treas. Reg. § 1.1012-1(e) for mutual funds and dividend reinvestment plans (DRIPs), while individual equities require specific share identification (SpecID) or default to FIFO. Outside the US, statutory rules differ substantially: the UK HMRC mandates <a href="https://www.gov.uk/government/publications/shares-and-capital-gains-tax-hs284-self-assessment-helpsheet" target="_blank" rel="noopener noreferrer" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">Section 104 holding pools (HMRC HS284)</a>, and the Canada Revenue Agency (CRA) mandates Adjusted Cost Base (ACB) pooling. Always verify tax lots with your brokerage tax statements (such as Form 1099-B in the US) and consult a qualified tax advisor.'
         ]
       }
     ],
@@ -147,19 +147,14 @@ export const articles: ArticleItem[] = [
       {
         heading: 'Hypothetical worked examples',
         paragraphs: [
-          'Here are two practical real-world scenarios demonstrating how transaction costs and holding values determine net percentage returns:'
+          'Here are two practical real-world scenarios demonstrating how transaction costs, ongoing income, and holding duration determine true percentage returns:'
         ],
         exampleBox: {
-          title: 'Example 1: Stock Purchase with Trading Fees & Dividends',
+          title: 'Practical Scenarios: Equities vs. Multi-Year Property Improvement',
           details: [
-            'Initial Investment: 100 shares purchased at $50.00 each = $5,000.00.',
-            'Brokerage Commissions & Fees: $20.00 total.',
-            'Total Cost Basis: $5,020.00 (calculated using our <a href="/stock-average-calculator/" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">Stock Average Calculator</a>).',
-            'Final Proceeds: Sold 100 shares at $68.00 each = $6,800.00.',
-            'Additional Income: $150.00 received in quarterly cash dividends.',
-            'Total Value Returned: $6,800.00 + $150.00 = $6,950.00.',
-            'Net Profit: $6,950.00 − $5,020.00 = $1,930.00.',
-            'Total ROI (%): ($1,930.00 ÷ $5,020.00) × 100 = +38.45%.'
+            'Example 1 (Equities with Trading Fees & Dividends): Buy 100 shares at $50.00 each ($5,000.00) plus $20.00 brokerage commissions = $5,020.00 total cost basis. Sold 100 shares at $68.00 each ($6,800.00) plus collected $150.00 in cash dividends = $6,950.00 gross value returned. Net Profit = $6,950.00 − $5,020.00 = $1,930.00. Simple ROI = ($1,930.00 ÷ $5,020.00) × 100 = +38.45%.',
+            'Example 2 (Multi-Year Property Renovation): Invested $20,000.00 in rental unit upgrades. Over a 2-year holding period (t = 2), higher rent generated $6,000.00 in incremental cash flow ($250/mo × 24 mo) and increased resale value by $24,000.00. Gross Value Returned = $30,000.00. Net Profit = $30,000.00 − $20,000.00 = $10,000.00. Simple ROI = +50.00%. Annualized ROI = [(30,000 ÷ 20,000)^(1/2) − 1] × 100 = +22.47% per year.',
+            'Key Difference: Simple ROI treats returns as instantaneous, whereas Annualized ROI measures the compound rate per year—crucial for comparing a 1-year stock trade against a 2-year real estate project.'
           ]
         }
       },
@@ -240,10 +235,11 @@ export const articles: ArticleItem[] = [
       {
         heading: 'How credit card APR is modeled and calculated',
         paragraphs: [
-          'Because open-ended revolving credit cards do not typically charge upfront origination fees to establish a standard balance, a credit card’s stated APR is generally equal to its annualized interest rate. However, credit card companies do not calculate interest on an annual basis.',
-          'Most US card issuers divide the annual APR by 365 (or 360 in certain specialized commercial contracts) to establish a Daily Periodic Rate (DPR). At the end of each billing cycle, the DPR is applied to the cardholder’s Average Daily Balance (ADB) across the statement period. You can test your balance and payment schedule using our interactive <a href="/credit-card-apr-calculator/" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">Credit Card APR Calculator</a>.'
+          'Because open-ended revolving credit cards do not typically charge upfront origination fees to establish a standard balance, a credit card’s stated APR is generally equal to its annualized interest rate. However, credit card companies do not assess interest on an annual lump-sum basis.',
+          'According to the Consumer Financial Protection Bureau (CFPB), card issuers typically divide the annual APR by 365 (though certain commercial institutions use a 360-day year) to establish a <a href="https://www.consumerfinance.gov/ask-cfpb/what-is-a-daily-periodic-rate-on-a-credit-card-en-46/" target="_blank" rel="noopener noreferrer" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">Daily Periodic Rate (DPR)</a>. As explained by the <a href="https://www.consumerfinance.gov/ask-cfpb/how-does-my-credit-card-company-calculate-the-amount-of-interest-i-owe-en-51/" target="_blank" rel="noopener noreferrer" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">CFPB on credit card interest calculations</a>, issuers then multiply the DPR by the Average Daily Balance (ADB) across the billing cycle (typically 28 to 31 days).',
+          'While actual billing cycles depend on exact day counts and mid-cycle transaction timing, dividing APR by 12 provides a close monthly approximation for financial planning. You can model your balance and repayment schedule using our interactive <a href="/credit-card-apr-calculator/" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">Credit Card APR Calculator</a>.'
         ],
-        formulaBox: 'Daily Periodic Rate (DPR) = Stated APR ÷ 365\nMonthly Cycle Finance Charge = Average Daily Balance (ADB) × DPR × Days in Billing Cycle'
+        formulaBox: 'Daily Periodic Rate (DPR) = Stated APR ÷ 365 (or 360 depending on cardholder agreement)\nMonthly Statement Finance Charge = Average Daily Balance (ADB) × DPR × Days in Billing Cycle\nMonthly Planning Approximation: Interest ≈ Balance × (APR ÷ 12)'
       },
       {
         heading: 'The compounding effect: APR vs. Effective Annual Rate (EAR / APY)',
@@ -416,9 +412,10 @@ export const articles: ArticleItem[] = [
       {
         heading: 'The mathematical model of portfolio depletion',
         paragraphs: [
-          'In financial mathematics, a retirement portfolio undergoing periodic withdrawals operates as an amortizing capital fund. If regular withdrawals exceed the ongoing investment earnings ($W > P \times r$), the number of periods $n$ until complete portfolio exhaustion is modeled by the logarithmic depletion equation:'
+          'In financial mathematics, a retirement portfolio undergoing periodic withdrawals operates as an amortizing capital fund. If regular withdrawals exceed ongoing investment earnings ($W > P \\times r$), the number of periods $n$ until complete portfolio exhaustion is modeled by the logarithmic depletion equation:',
+          'Where withdrawals occur at the beginning of each period (annuity due), the initial distribution does not participate in that period’s market growth, slightly accelerating depletion as modeled below.'
         ],
-        formulaBox: 'Portfolio Depletion Periods:\nn = −ln[1 − (P × r ÷ W)] ÷ ln(1 + r)\nwhere:\nP = Initial Nest Egg Balance\nW = Periodic Withdrawal Amount\nr = Periodic Net Rate of Return (e.g. Annual Return ÷ 12)'
+        formulaBox: 'Ordinary Annuity (End-of-Period Withdrawals):\nn = −ln[1 − (P × r ÷ W)] ÷ ln(1 + r)\n\nAnnuity Due (Beginning-of-Period Withdrawals):\nn = −ln[1 − (P × r ÷ (W × (1 + r)))] ÷ ln(1 + r)\n\nwhere:\nP = Initial Nest Egg Balance (P_0)\nW = Periodic Withdrawal Amount\nr = Periodic Rate of Return (Nominal: Annual Rate ÷ 12; Effective: (1 + Annual Rate)^(1/12) − 1)\nn = Total Depletion Periods (Months = n; Years = n ÷ 12)\nCondition: Requires W > P × r. If W ≤ P × r, earnings cover withdrawals and the portfolio preserves principal indefinitely.'
       },
       {
         heading: 'Sequence-of-returns risk: Why market timing matters',
@@ -438,14 +435,16 @@ export const articles: ArticleItem[] = [
       {
         heading: 'Hypothetical worked example: $600,000 portfolio longevity',
         paragraphs: [
-          'To see how inflation and withdrawal rates dictate portfolio survival, consider a retiree with a $600,000 nest egg invested in a balanced 60/40 allocation yielding a net 5.5% annual return ($0.4583\%$ monthly).'
+          'To see how inflation and withdrawal rates dictate portfolio survival, consider a retiree with a $600,000 nest egg invested in a balanced 60/40 allocation yielding a net 5.5% annual return ($r = 0.055 \\div 12 = 0.004583$ nominal monthly).',
+          'Notice how withdrawal timing, inflation step-up, and compounding conventions alter the survival horizon:'
         ],
         exampleBox: {
           title: 'Longevity Comparison: $600,000 Portfolio at 5.5% Annual Return',
           details: [
-            'Baseline Scenario 1 (Static $3,200/mo, 0% inflation): The portfolio generates ~$2,750/mo in initial interest, drawing down ~$450/mo of principal. Portfolio sustains for 28.5 years (342 months).',
-            'Inflation Scenario 2 ($3,200/mo with 3.0% annual inflation step-up): Because annual withdrawals climb to $4,300/mo by Year 10 and $5,780/mo by Year 20, portfolio capital exhausts in 18.2 years (218 months).',
-            'Conservative Scenario 3 ($2,400/mo with 3.0% annual inflation): Under a disciplined 4.8% initial withdrawal rate, the portfolio easily sustains for over 35 years, leaving an endowment buffer.',
+            'Baseline Scenario 1 (Static $3,200/mo, 0% inflation): The portfolio generates $2,750.00/mo in initial nominal interest ($600,000 × 0.055 ÷ 12), drawing down $450.00/mo of principal. Under end-of-month withdrawals, capital sustains for 429 months (35.75 years / 35 years and 9 months). Under effective annual compounding, it sustains for 409 months (34.1 years).',
+            'Inflation Scenario 2 ($3,200/mo initial with 3.0% annual inflation step-up): Because annual withdrawals climb to $4,175/mo by Year 10 and $5,611/mo by Year 20, portfolio capital exhausts in 244 months (20.33 years / 20 years and 4 months) under nominal end-of-month withdrawals (241 months / 20.1 years under effective compounding).',
+            'Conservative Scenario 3 ($2,400/mo initial): At 0% inflation, because $2,400 is less than the $2,750 monthly interest, the portfolio never exhausts and principal expands indefinitely. With a 3.0% annual inflation escalation, capital sustains for 365 months (30.42 years / 30 years and 5 months) under nominal end-of-month withdrawals (356 months / 29.7 years under effective compounding).',
+            'Modeling Assumptions: Compounding models assume uniform annual returns without sequence volatility, end-of-period monthly distributions, and exclude income taxes, account custodial fees, and mandatory RMD rules.',
             'Target Planning: Determine the savings required to achieve this capital baseline using our <a href="/retirement-savings-calculator/" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">Retirement Savings Goal Calculator</a>.'
           ]
         }
@@ -525,18 +524,19 @@ export const articles: ArticleItem[] = [
       {
         heading: 'Comprehensive worked example: 30-year accumulation plan',
         paragraphs: [
-          'Consider an investor aged 35 targeting retirement at age 65 (30 years / 360 monthly periods). The target nest egg is $1,250,000, current savings are $60,000, and the expected average annual portfolio return is 7.0% ($r = 0.07 \div 12 = 0.005833$).'
+          'Consider an investor aged 35 targeting retirement at age 65 (30 years / 360 monthly periods). The target nest egg is $1,250,000.00, current savings are $60,000.00, and the expected nominal annual portfolio return is 7.0% compounded monthly ($r = 0.07 \\div 12 = 0.0058333$).'
         ],
         exampleBox: {
           title: '30-Year Retirement Savings Calculation Breakdown',
           details: [
             'Target Capital Goal: $1,250,000.00.',
-            'Future Value of Current $60,000 Savings: $60,000 × (1 + 0.005833)^360 = $60,000 × 8.1165 = $486,990.00.',
-            'Net Shortfall to be Funded by New Contributions: $1,250,000.00 − $486,990.00 = $763,010.00.',
-            'Sinking Fund Factor: 0.005833 ÷ ((1.005833)^360 − 1) = 0.005833 ÷ 7.1165 = 0.00081966.',
-            'Required Monthly Contribution (PMT): $763,010.00 × 0.00081966 = $625.41 per month.',
-            'Total Personal Cash Contributed over 30 Years: 360 × $625.41 = $225,147.60.',
-            'Compound Growth Contribution: $1,250,000 − ($60,000 + $225,147.60) = $964,852.40 (over 77% of the final wealth comes from pure investment compounding!).'
+            'Future Value of Current $60,000 Savings: $60,000.00 × (1 + 0.07 ÷ 12)^360 = $60,000.00 × 8.116497 = $486,989.85.',
+            'Net Shortfall to be Funded by Periodic Contributions: $1,250,000.00 − $486,989.85 = $763,010.15.',
+            'Sinking Fund Factor (Ordinary Annuity - End of Month): (0.07 ÷ 12) ÷ [(1 + 0.07 ÷ 12)^360 − 1] = 0.0058333 ÷ 7.116497 = 0.0008196889.',
+            'Required Monthly Contribution (PMT): $763,010.15 × 0.0008196889 = $625.43 per month (or $625.41 if factor is rounded to 0.00081966).',
+            'Total Personal Cash Contributed over 30 Years: 360 × $625.43 = $225,155.89.',
+            'Compound Investment Growth: $1,250,000.00 − ($60,000.00 + $225,155.89) = $964,844.11 (77.19% of final wealth is generated purely by investment compounding!).',
+            'Timing Sensitivity: If contributions are deposited at the beginning of each month (annuity due), required monthly savings drops to $621.81 ($625.43 ÷ (1 + 0.07 ÷ 12)).'
           ]
         }
       },
@@ -605,25 +605,27 @@ export const articles: ArticleItem[] = [
       {
         heading: 'The shifting amortization curve and the crossover point',
         paragraphs: [
-          'Because interest is calculated strictly on the remaining unpaid principal, the earliest months of a loan carry the heaviest finance charges. On a 30-year mortgage, the "crossover point"—the month where the principal portion finally exceeds the interest portion of your monthly check—typically does not occur until Year 16 to Year 18.',
+          'Because interest is calculated strictly on the remaining unpaid principal, the earliest months of a loan carry the heaviest finance charges. On a 30-year mortgage at 6.50% APR, the "crossover point"—the month where the principal portion finally exceeds the interest portion of your monthly payment—does not occur until Month 233 (Year 20, Month 5).',
           'Understanding this curve is critical for home buyers: if you purchase a home and sell or refinance after 5 to 7 years, you will have paid significant interest fees while barely touching the underlying loan balance.'
         ]
       },
       {
         heading: 'Hypothetical worked example: $300,000 mortgage at 6.50% APR',
         paragraphs: [
-          'To visualize the progression, consider a borrower with a $300,000 30-year fixed-rate mortgage at a 6.50% APR ($r = 0.065 \div 12 = 0.005417$). The required monthly payment is $1,896.20.'
+          'To visualize the progression, consider a borrower with a $300,000 30-year fixed-rate mortgage at a 6.50% APR ($r = 0.065 \\div 12 = 0.0054167$). The required monthly payment is $1,896.20.'
         ],
         exampleBox: {
           title: '30-Year Mortgage Amortization Progression ($300,000 at 6.50% APR)',
           details: [
             'Fixed Monthly Installment (M): $1,896.20 per month.',
             'Payment 1: Interest Charged = $1,625.00 (85.7%), Principal Reduction = $271.20 (14.3%). Ending Balance = $299,728.80.',
-            'Payment 120 (Year 10): Interest Charged = $1,402.15 (74.0%), Principal Reduction = $494.05 (26.0%). Ending Balance = $258,371.12.',
-            'Payment 204 (Year 17 - Crossover Point): Principal Repaid ($950.10) finally exceeds Interest Charged ($946.10).',
-            'Payment 240 (Year 20): Interest Charged = $902.50 (47.6%), Principal Reduction = $993.70 (52.4%). Ending Balance = $165,688.40.',
-            'Payment 360 (Final Month): Interest Charged = $10.21 (0.5%), Principal Reduction = $1,885.99 (99.5%). Ending Balance = $0.00.',
-            'Total Lifetime Interest Paid: $382,633.47 (Borrower pays $82,633 MORE in interest than the initial $300,000 borrowed!).'
+            'Payment 120 (Year 10): Interest Charged = $1,380.41 (72.8%), Principal Reduction = $515.80 (27.2%). Ending Balance = $254,328.38.',
+            'Payment 204 (Year 17): Interest Charged = $1,084.21 (57.2%), Principal Reduction = $811.99 (42.8%). Ending Balance = $199,350.68.',
+            'Payment 232 (Year 20, Month 4): Interest Charged = $951.62, Principal Reduction = $944.58. Ending Balance = $174,739.06.',
+            'Payment 233 (Year 20, Month 5 - Crossover Point): Principal Repaid ($949.70) finally exceeds Interest Charged ($946.50). Ending Balance = $173,789.36.',
+            'Payment 240 (Year 20, Month 12): Interest Charged = $909.90 (48.0%), Principal Reduction = $986.30 (52.0%). Ending Balance = $166,995.85.',
+            'Payment 360 (Final Month): Interest Charged = $10.22 (0.5%), Principal Reduction = $1,885.99 (99.5%). Ending Balance = $0.00.',
+            'Total Lifetime Interest Paid: $382,633.47 (Borrower pays $82,633.47 MORE in interest than the initial $300,000 borrowed!).'
           ]
         }
       },
@@ -631,7 +633,7 @@ export const articles: ArticleItem[] = [
         heading: 'Prepayment economics: How extra payments save thousands',
         paragraphs: [
           'Because monthly finance charges depend entirely on the outstanding principal balance, any additional money paid beyond the mandatory monthly installment goes 100% toward principal reduction (provided your loan has no prepayment penalties).',
-          'In the $300,000 mortgage above, adding an extra $250 per month toward principal from Day 1 eliminates 73 monthly payments (over 6 years of debt) and saves more than $91,000 in lifetime interest charges. You can explore payoff acceleration options with our <a href="/debt-payoff-planner/" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">Debt Payoff Planner</a>.'
+          'In the $300,000 mortgage above, adding an extra $250.00 per month toward principal from Day 1 ($2,146.20 total monthly installment) eliminates 98 monthly payments (retiring the mortgage in 262 months / 21 years and 10 months, over 8 years early) and saves $120,336.94 in lifetime interest charges, slashing total interest from $382,633.47 to $262,296.53. You can model custom prepayment schedules with our <a href="/loan-payment-calculator/" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">Loan Payment Calculator</a>.'
         ]
       },
       {
@@ -722,9 +724,10 @@ export const articles: ArticleItem[] = [
             'Debt A: $1,500 Credit Card at 24.0% APR (Minimum Payment: $45.00).',
             'Debt B: $4,000 Personal Loan at 14.0% APR (Minimum Payment: $115.00).',
             'Debt C: $8,000 Auto Loan at 6.0% APR (Minimum Payment: $180.00).',
-            'Snowball Sequence: Targets Debt A ($1,500) -> Debt B ($4,000) -> Debt C ($8,000). First debt cleared in 6 months; second in 16 months; fully debt-free in 31 months. Total Interest Paid: ~$1,640.00.',
-            'Avalanche Sequence: Targets Debt A (24% APR) -> Debt B (14% APR) -> Debt C (6% APR). In this case, because the smallest balance happens to carry the highest APR, Avalanche and Snowball align on the first debt.',
-            'Key Insight: When high-APR debt also carries a larger balance, the Avalanche typically saves $500 to $2,000+ in interest and finishes 2 to 6 months sooner than the Snowball.'
+            'Total Budget: $540.00 per month ($340.00 mandatory minimums + $200.00 extra cash).',
+            'Aligned Sequence: Because Debt A happens to have both the smallest balance ($1,500) and the highest rate (24%), both Snowball and Avalanche execute identical ordering: Debt A → Debt B → Debt C.',
+            'Payoff Milestones: Debt A is retired in Month 7 ($116.63 interest). Debt B is retired in Month 18 ($533.86 interest). Debt C is cleared in Month 28 ($744.63 interest). Entire household is debt-free in 28 months with $1,395.12 total lifetime interest.',
+            'Divergent Scenario Comparison: In portfolios where the highest-rate debt has a larger balance (e.g. $2k @ 8%, $5k @ 22%, $9k @ 5% with $250 extra/mo), Avalanche eliminates the 22% balance first, finishing in 29 months and paying $1,700.42 interest, whereas Snowball takes 30 months and pays $2,006.64 interest (Avalanche saves $306.22 and 1 full month).'
           ]
         }
       },

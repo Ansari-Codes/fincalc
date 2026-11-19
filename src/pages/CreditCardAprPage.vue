@@ -569,10 +569,10 @@ async function handleCopy() {
           </p>
           <div class="space-y-3 p-4 bg-teal-50 border border-teal-200 rounded-2xl text-xs text-[#0F766E] leading-relaxed">
             <div>
-              <strong>Monthly Approximation vs. Daily Periodic Rate (DPR):</strong> This calculator divides your APR by 12 to provide an accessible, high-accuracy planning estimate. In actual banking practice, most US credit card issuers divide the APR by 365 (or 360 in rare contracts) to calculate a Daily Periodic Rate (DPR = APR ÷ 365). They apply this DPR to your Average Daily Balance (ADB) across the exact billing cycle (28 to 31 days). If balances fluctuate mid-cycle, actual statement charges may vary slightly from this monthly model.
+              <strong>Monthly Approximation vs. Daily Periodic Rate (DPR):</strong> This calculator divides your APR by 12 to provide an accessible, high-accuracy planning estimate. In actual banking practice, as detailed by the Consumer Financial Protection Bureau (<a href="https://www.consumerfinance.gov/ask-cfpb/what-is-a-daily-periodic-rate-on-a-credit-card-en-46/" target="_blank" rel="noopener noreferrer" class="font-bold underline hover:text-[#115E59]">CFPB DPR Guidance</a>), most US credit card issuers divide the APR by 365 (or 360 in specialized commercial agreements) to calculate a Daily Periodic Rate. Depending on the cardholder agreement, issuers assess interest using either the Average Daily Balance (ADB) method or the Daily Balance method across the exact billing cycle (28 to 31 days). See the <a href="https://www.consumerfinance.gov/ask-cfpb/how-does-my-credit-card-company-calculate-the-amount-of-interest-i-owe-en-51/" target="_blank" rel="noopener noreferrer" class="font-bold underline hover:text-[#115E59]">CFPB Interest Calculation Guide</a> for statutory specifics.
             </div>
             <div>
-              <strong>Interest Compounding &amp; Grace Period Rules:</strong> Unpaid finance charges are added to your revolving balance at the close of each billing cycle (monthly compounding). If you pay your entire statement balance in full before the payment due date every month, card issuers grant an interest-free grace period (typically 21 to 25 days) on all new eligible purchases. Note that grace periods generally apply to standard retail purchases only—cash advances, convenience checks, and balance transfers typically begin accruing interest on the transaction date with zero grace period.
+              <strong>Interest Compounding &amp; Grace Period Rules:</strong> Compounding conventions vary by issuer: some add accrued interest to the balance daily, while others roll accrued charges into the principal at monthly statement close. If you pay your entire statement balance in full before the payment due date every month, card issuers grant an interest-free grace period (typically 21 to 25 days) on all new eligible retail purchases. Note that grace periods generally apply to standard purchases only—cash advances, convenience checks, and balance transfers typically begin accruing interest on the transaction date with zero grace period.
             </div>
           </div>
         </section>
@@ -588,12 +588,18 @@ async function handleCopy() {
             <div class="p-5 rounded-2xl bg-[#F8FAFC] border border-[#CBD5E1]">
               <div class="text-xs font-bold uppercase text-rose-600 mb-1">Scenario A: Card Issuer Minimum Payment</div>
               <div class="text-2xl font-black text-[#0F172A] mb-1 num-tabular">3% of Balance ($25 floor)</div>
-              <p class="text-[11px] text-[#64748B] mb-3">Starts at $150.00/mo and declines as balance drops.</p>
+              <p class="text-[11px] text-[#64748B] mb-3">Recurrence: max($25, 3% of balance after interest).</p>
               <ul class="text-xs text-[#64748B] space-y-1.5 leading-relaxed">
+                <li>• Month 1 Payment: <strong class="text-[#0F172A]">$153.00</strong> ($100 int + $53 prin)</li>
+                <li>• Month 25 Payment: <strong class="text-[#0F172A]">$118.47</strong> (Bal: $3,830.61)</li>
+                <li>• Month 50 Payment: <strong class="text-[#0F172A]">$90.76</strong> (Bal: $2,934.71)</li>
+                <li>• Month 100 Payment: <strong class="text-[#0F172A]">$53.27</strong> (Bal: $1,722.51)</li>
+                <li>• Month 171 ($25 Floor Triggered): <strong class="text-[#0F172A]">$25.00</strong> (Bal: $808.29)</li>
+                <li>• Month 224 (Final Payoff): <strong class="text-[#0F172A]">$13.32</strong> (Debt cleared)</li>
                 <li>• Payoff Timeline: <strong class="text-[#0F172A]">224 Months (18.7 Years)</strong></li>
                 <li>• Total Interest Paid: <strong class="text-rose-600 font-bold">$8,413.92</strong></li>
                 <li>• Total Cash Paid: <strong class="text-[#0F172A]">$13,413.92</strong></li>
-                <li>• <strong class="text-rose-700">You pay $3,413 MORE in interest than the original $5,000 balance!</strong></li>
+                <li>• <strong class="text-rose-700">You pay $3,413.92 MORE in interest than the original $5,000 balance!</strong></li>
               </ul>
             </div>
 
@@ -614,7 +620,10 @@ async function handleCopy() {
           <!-- Explanatory Callout Box on Minimum Payment Mechanics -->
           <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs text-[#475569] leading-relaxed">
             <strong class="text-[#0F172A]">Why does the statement minimum take over 18 years?</strong>
-            Credit card companies calculate required minimum payments each month as a percentage of the <em>remaining balance</em> (commonly 2.5% to 3.0%, or 1% plus monthly finance charges, with a standard $25.00 floor). In Month 1, 3% of $5,000 is $150.00 ($100 interest + $50 principal). In Month 2, the payment automatically shrinks to $148.50. Because the required payment falls in tandem with your debt, principal reduction slows to a crawl. If you instead fix your payment at $150.00 every single month, you will be debt-free in 56 months (4.7 years) and pay $3,322.09 in total interest—saving over $5,000 compared to letting the minimum decline.
+            Credit card companies calculate required minimum payments each month as a percentage of the remaining balance after interest (commonly 2.5% to 3.0%, or 1% plus monthly finance charges, with a standard $25.00 floor). In Month 1, beginning balance is $5,000.00; monthly interest is $100.00 ($5,000 × 2%), bringing balance to $5,100.00; the 3% minimum is <strong>$153.00</strong> ($100.00 interest + $53.00 principal reduction), leaving an ending balance of $4,947.00. In Month 2, interest is $98.94 and the payment automatically shrinks to <strong>$151.38</strong>. Because the required payment falls in tandem with your debt, principal reduction slows to a crawl. By Month 171, 3% falls below $25.00, triggering the $25.00 floor until Month 224.
+            <div class="mt-2 text-[11px] text-[#64748B]">
+              <em>Rounding policy note:</em> Full-precision recurrence yields 224 months and $8,413.92 in total interest. Rounding each line item to the nearest cent yields the identical 224 months and $8,414.02 in interest (a negligible $0.10 difference over 18.7 years). If you instead fix your payment at a modest <strong>$150.00 every month</strong>, you become debt-free in <strong>56 months (4.7 years)</strong> and pay $3,322.09 in interest—saving $5,091.83.
+            </div>
           </div>
         </section>
 

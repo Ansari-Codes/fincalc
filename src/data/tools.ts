@@ -262,7 +262,7 @@ export const tools: ToolItem[] = [
     category: 'retirement',
     categoryName: 'Retirement',
     icon: 'Clock',
-    formula: 'Monthly Simulation: Balance = (Balance − Withdrawal) × (1 + Monthly Effective Return)',
+    formula: 'Monthly Simulation: (Balance − Withdrawal) × (1 + r_eff) [Beginning] or (Balance × (1 + r_eff)) − Withdrawal [End]\nwhere r_eff = (1 + Annual_Return)^(1/12) − 1; Depletion: n = −ln[1 − (P × r ÷ W)] ÷ ln(1 + r)',
     assumptions: [
       'Applies a steady assumed rate of return across all projection years without market volatility.',
       'Does not capture sequence-of-returns risk, where market drops early in retirement accelerate capital depletion.',
