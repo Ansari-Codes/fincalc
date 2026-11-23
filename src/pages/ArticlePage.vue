@@ -8,6 +8,8 @@ import { tools } from '@/data/tools'
 import Breadcrumbs from '@/components/ui/Breadcrumbs.vue'
 import FAQAccordion from '@/components/ui/FAQAccordion.vue'
 import ArticleCard from '@/components/ui/ArticleCard.vue'
+import AmortizationChart from '@/components/ui/AmortizationChart.vue'
+import { calculateLoanPayment } from '@/calculations/loanPayment'
 import { ArrowRight, Calculator, Calendar, Clock } from '@lucide/vue'
 
 const route = useRoute()
@@ -54,6 +56,30 @@ const relatedTool = computed(() => {
 
 const otherArticles = computed(() => {
   return articles.filter(a => a.slug !== slug.value).slice(0, 2)
+})
+
+const isAmortizationArticle = computed(() => slug.value === 'how-loan-amortization-works')
+
+const educationalMortgageSchedule = computed(() => {
+  if (!isAmortizationArticle.value) return undefined
+  return calculateLoanPayment({
+    principal: 300000,
+    annualRate: 6.5,
+    term: 30,
+    termUnit: 'years',
+    extraMonthlyPayment: 250
+  })
+})
+
+const educationalBaselineSchedule = computed(() => {
+  if (!isAmortizationArticle.value) return undefined
+  return calculateLoanPayment({
+    principal: 300000,
+    annualRate: 6.5,
+    term: 30,
+    termUnit: 'years',
+    extraMonthlyPayment: 0
+  })
 })
 </script>
 
@@ -140,6 +166,18 @@ const otherArticles = computed(() => {
                   {{ detail }}
                 </li>
               </ul>
+            </div>
+
+            <!-- Optional Educational Visualization for Amortization Guide -->
+            <div v-if="isAmortizationArticle && section.exampleBox && educationalMortgageSchedule" class="my-8">
+              <AmortizationChart
+                :schedule="educationalMortgageSchedule.schedule"
+                :baseline-schedule="educationalBaselineSchedule?.schedule"
+                :principal="300000"
+                :annual-rate="6.5"
+                :extra-monthly-payment="250"
+                title="Illustrative $300,000 Mortgage Amortization Trajectory (6.50% APR)"
+              />
             </div>
           </section>
         </div>

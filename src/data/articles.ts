@@ -189,7 +189,7 @@ export const articles: ArticleItem[] = [
     faqs: [
       {
         question: 'What is a good ROI?',
-        answer: 'A "good" ROI is relative to risk, asset class, and duration. For public equities, the US broad market (S&P 500) has historically produced an annualized return of approximately 9% to 10% before inflation. Real estate investors often target 10% to 15% cash-on-cash ROI, while early-stage venture capital targets 25%+ to compensate for high failure rates.'
+        answer: 'A "good" ROI is relative to risk, asset class, and investment duration. For US broad equities, the 98-year historical record (1928–2025 compiled by <a href="https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/histretSP.html" target="_blank" rel="noopener noreferrer" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">NYU Stern / Damodaran</a>) shows that $100 invested at the beginning of 1928 grew to $1,157,598.95 by year-end 2025 with dividends reinvested, documenting an S&P 500 compound annual growth rate (geometric CAGR) of 10.02% nominal, or 6.78% real after adjusting for CPI-U inflation (compared to an 11.85% nominal arithmetic average). In private asset classes lacking unified public indices—such as commercial real estate or venture capital—return targets vary widely by debt leverage, property sector, and fund vintage, serving as subjective underwriting hurdles to compensate for illiquidity and execution risk rather than established market averages.'
       },
       {
         question: 'Can ROI be greater than 100%?',
@@ -236,10 +236,10 @@ export const articles: ArticleItem[] = [
         heading: 'How credit card APR is modeled and calculated',
         paragraphs: [
           'Because open-ended revolving credit cards do not typically charge upfront origination fees to establish a standard balance, a credit card’s stated APR is generally equal to its annualized interest rate. However, credit card companies do not assess interest on an annual lump-sum basis.',
-          'According to the Consumer Financial Protection Bureau (CFPB), card issuers typically divide the annual APR by 365 (though certain commercial institutions use a 360-day year) to establish a <a href="https://www.consumerfinance.gov/ask-cfpb/what-is-a-daily-periodic-rate-on-a-credit-card-en-46/" target="_blank" rel="noopener noreferrer" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">Daily Periodic Rate (DPR)</a>. As explained by the <a href="https://www.consumerfinance.gov/ask-cfpb/how-does-my-credit-card-company-calculate-the-amount-of-interest-i-owe-en-51/" target="_blank" rel="noopener noreferrer" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">CFPB on credit card interest calculations</a>, issuers then multiply the DPR by the Average Daily Balance (ADB) across the billing cycle (typically 28 to 31 days).',
-          'While actual billing cycles depend on exact day counts and mid-cycle transaction timing, dividing APR by 12 provides a close monthly approximation for financial planning. You can model your balance and repayment schedule using our interactive <a href="/credit-card-apr-calculator/" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">Credit Card APR Calculator</a>.'
+          'According to the Consumer Financial Protection Bureau (CFPB), card issuers divide the annual APR by either 365 or 360 days depending on the cardholder agreement to establish a <a href="https://www.consumerfinance.gov/ask-cfpb/what-is-a-daily-periodic-rate-on-a-credit-card-en-46/" target="_blank" rel="noopener noreferrer" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">Daily Periodic Rate (DPR)</a>. As detailed in the <a href="https://www.consumerfinance.gov/data-research/credit-card-data/know-you-owe-credit-cards/credit-card-contract-definitions/" target="_blank" rel="noopener noreferrer" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">CFPB Credit Card Contract Definitions</a>, issuers assess interest using either the Average Daily Balance (ADB) method or Daily Balance method across the billing cycle (typically 28 to 31 days). Compounding rules also differ: some issuers compound interest daily by adding each day’s finance charge to the balance, while others calculate daily interest without daily compounding, adding accumulated interest at monthly statement close.',
+          'While actual billing cycles depend on exact day counts and mid-cycle transaction timing, dividing APR by 12 provides an educational monthly approximation for financial planning. You can model your balance and repayment schedule using our interactive <a href="/credit-card-apr-calculator/" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">Credit Card APR Calculator</a>.'
         ],
-        formulaBox: 'Daily Periodic Rate (DPR) = Stated APR ÷ 365 (or 360 depending on cardholder agreement)\nMonthly Statement Finance Charge = Average Daily Balance (ADB) × DPR × Days in Billing Cycle\nMonthly Planning Approximation: Interest ≈ Balance × (APR ÷ 12)'
+        formulaBox: 'Daily Periodic Rate (DPR) = Stated APR ÷ 365 (or 360 depending on cardholder agreement)\nAverage Daily Balance Method: Finance Charge = ADB × DPR × Days in Billing Cycle\nDaily Balance Method: Finance Charge = ∑ (Daily Balance_t × DPR) [with or without daily compounding]\nMonthly Educational Approximation: Finance Charge ≈ Current Balance × (APR ÷ 12)'
       },
       {
         heading: 'The compounding effect: APR vs. Effective Annual Rate (EAR / APY)',
@@ -292,7 +292,7 @@ export const articles: ArticleItem[] = [
       },
       {
         question: 'Do all credit card issuers calculate interest using 365 days?',
-        answer: 'Most US consumer card issuers divide APR by 365 to determine a Daily Periodic Rate. However, certain commercial contracts, leap-year calculations (366 days), or specialized credit lines may use a 360-day year convention. Always check your Cardmember Agreement.'
+        answer: 'No. As detailed by the CFPB, card issuers divide APR by either 365 or 360 days depending on their Cardmember Agreement. Additionally, issuers differ in whether they compute interest using the Daily Balance method or Average Daily Balance method, and whether interest compounds daily or at monthly statement close.'
       },
       {
         question: 'Does APR include third-party fees like title insurance and home inspections?',
@@ -571,7 +571,7 @@ export const articles: ArticleItem[] = [
       },
       {
         question: 'What expected rate of return should I use for a 20-to-30-year horizon?',
-        answer: 'Historically, the broad US equity market (S&P 500) has returned approximately 9% to 10% before inflation. For long-term retirement projections, financial planners typically assume a conservative 6.5% to 7.5% nominal return for a diversified growth allocation.'
+        answer: 'Over the 98-year historical period from 1928 to 2025, large-cap US equities (S&P 500) generated a compound annual growth rate (geometric CAGR) of 10.02% nominal with dividends reinvested (where $100 grew to $1,157,598.95), or 6.78% real after CPI inflation, according to <a href="https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/histretSP.html" target="_blank" rel="noopener noreferrer" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">NYU Stern / Damodaran historical market data</a> (compared to an 11.85% nominal arithmetic average). Because future returns are uncertain and prudent retirement planning incorporates lower-volatility fixed income to mitigate sequence risk, financial planners generally model diversified retirement accumulation portfolios using more conservative nominal assumptions between 6.0% and 7.5%.'
       }
     ],
     relatedToolSlug: 'retirement-savings-calculator'
@@ -612,19 +612,24 @@ export const articles: ArticleItem[] = [
       {
         heading: 'Hypothetical worked example: $300,000 mortgage at 6.50% APR',
         paragraphs: [
-          'To visualize the progression, consider a borrower with a $300,000 30-year fixed-rate mortgage at a 6.50% APR ($r = 0.065 \\div 12 = 0.0054167$). The required monthly payment is $1,896.20.'
+          'To visualize the progression, consider a borrower with a $300,000 30-year fixed-rate mortgage at a 6.50% APR ($r = 0.065 \\div 12 = 0.0054167$). The required scheduled monthly payment is $1,896.20 per month (full-precision $M = \\$1,896.20407$).',
+          '<strong>Rounding &amp; Currency Presentation Policy:</strong> Financial amortization engines maintain full floating-point precision internally across all 360 monthly iterations to prevent cumulative rounding drift. When displayed in tables and user interfaces, currency values are rounded to two decimal places ($0.01). Because principal and interest are separately rounded to the nearest cent, their displayed sum may occasionally differ by $\\pm \\$0.01$ from the rounded monthly installment (for instance, at Month 257: $\\$815.04 \\text{ interest} + \\$1,081.17 \\text{ principal} = \\$1,896.21$ vs. the $\\$1,896.20$ scheduled payment). In standard mortgage servicing, any fractional cent difference is reconciled in the final payment installment (Month 360) so the loan amortizes to exactly zero.'
         ],
         exampleBox: {
           title: '30-Year Mortgage Amortization Progression ($300,000 at 6.50% APR)',
           details: [
-            'Fixed Monthly Installment (M): $1,896.20 per month.',
-            'Payment 1: Interest Charged = $1,625.00 (85.7%), Principal Reduction = $271.20 (14.3%). Ending Balance = $299,728.80.',
-            'Payment 120 (Year 10): Interest Charged = $1,380.41 (72.8%), Principal Reduction = $515.80 (27.2%). Ending Balance = $254,328.38.',
-            'Payment 204 (Year 17): Interest Charged = $1,084.21 (57.2%), Principal Reduction = $811.99 (42.8%). Ending Balance = $199,350.68.',
-            'Payment 232 (Year 20, Month 4): Interest Charged = $951.62, Principal Reduction = $944.58. Ending Balance = $174,739.06.',
-            'Payment 233 (Year 20, Month 5 - Crossover Point): Principal Repaid ($949.70) finally exceeds Interest Charged ($946.50). Ending Balance = $173,789.36.',
-            'Payment 240 (Year 20, Month 12): Interest Charged = $909.90 (48.0%), Principal Reduction = $986.30 (52.0%). Ending Balance = $166,995.85.',
-            'Payment 360 (Final Month): Interest Charged = $10.22 (0.5%), Principal Reduction = $1,885.99 (99.5%). Ending Balance = $0.00.',
+            'Fixed Monthly Installment (M): $1,896.20 per month (full-precision M = $1,896.20407).',
+            'First-Year Totals (Months 1–12): Principal Repaid = $3,353.18, Interest Paid = $19,401.27, Total Payments = $22,754.45, Year-End Balance = $296,646.82.',
+            'Payment 1: Starting Balance = $300,000.00, Interest Charged = $1,625.00 (85.7%), Principal Reduction = $271.20 (14.3%), Cumulative Interest = $1,625.00. Ending Balance = $299,728.80.',
+            'Payment 120 (Year 10): Starting Balance = $254,844.18, Interest Charged = $1,380.41 (72.8%), Principal Reduction = $515.80 (27.2%), Cumulative Interest = $180,422.36. Ending Balance = $254,328.38.',
+            'Payment 204 (Year 17): Starting Balance = $200,162.67, Interest Charged = $1,084.21 (57.2%), Principal Reduction = $811.99 (42.8%), Cumulative Interest = $286,176.31. Ending Balance = $199,350.68.',
+            'Payment 205 (Year 17, Month 1 - 75% Cumulative Interest Milestone): Starting Balance = $199,350.68, Interest Charged = $1,079.82, Principal Reduction = $816.39, Cumulative Interest = $287,256.12 (surpassing 75% threshold of $286,975.10). Ending Balance = $198,534.29.',
+            'Payment 232 (Year 20, Month 4): Starting Balance = $175,683.65, Interest Charged = $951.62, Principal Reduction = $944.58, Cumulative Interest = $314,658.41. Ending Balance = $174,739.06.',
+            'Payment 233 (Year 20, Month 5 - Crossover Point): Starting Balance = $174,739.06, Interest Charged = $946.50, Principal Repaid = $949.70 (surpassing interest for the first time), Cumulative Interest = $315,604.91. Ending Balance = $173,789.36.',
+            'Payment 240 (Year 20, Month 12): Starting Balance = $167,982.15, Interest Charged = $909.90 (48.0%), Principal Reduction = $986.30 (52.0%), Cumulative Interest = $322,106.63. Ending Balance = $166,995.85.',
+            'Payment 256 (Year 21, Month 4): Starting Balance = $151,543.75, Interest Charged = $820.86, Principal Reduction = $1,075.34, Cumulative Interest = $335,896.65. Ending Balance = $150,468.40 (above 50% principal threshold).',
+            'Payment 257 (Year 21, Month 5 - 50% Principal Milestone): Starting Balance = $150,468.40, Interest Charged = $815.04, Principal Reduction = $1,081.17, Cumulative Interest = $336,711.68. Ending Balance = $149,387.24, dropping below half ($150,000.00) of the initial mortgage debt for the first time.',
+            'Payment 360 (Final Month): Starting Balance = $1,885.99, Interest Charged = $10.22 (0.5%), Principal Reduction = $1,885.99 (99.5%), Cumulative Interest = $382,633.47. Ending Balance = $0.00.',
             'Total Lifetime Interest Paid: $382,633.47 (Borrower pays $82,633.47 MORE in interest than the initial $300,000 borrowed!).'
           ]
         }

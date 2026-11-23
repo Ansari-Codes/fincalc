@@ -30,7 +30,7 @@ onMounted(() => {
 
         <h2 class="text-xl font-bold text-[#172033]">1. Client-Side Financial Calculations</h2>
         <p class="text-[#667085]">
-          All values you enter into our financial tools (including balances, interest rates, stock purchases, salary figures, and projected savings) are processed exclusively on your device inside your web browser. <strong>We do not transmit, record, or store your entered numbers on our servers.</strong>
+          All values you enter into our financial tools (including balances, interest rates, stock purchases, salary figures, and projected savings) are processed exclusively on your device inside your web browser. <strong>Our application source code maintains no backend servers or database APIs; entered calculator values are never transmitted to or stored on our servers.</strong>
         </p>
 
         <h2 class="text-xl font-bold text-[#172033]">2. No Account Registration Required</h2>
@@ -38,14 +38,14 @@ onMounted(() => {
           You do not need to create an account, log in, or provide an email address to use any tool on this website. We do not maintain user databases of names, passwords, or personal financial profiles.
         </p>
 
-        <h2 class="text-xl font-bold text-[#172033]">3. Log Files &amp; Hosting Analytics</h2>
+        <h2 class="text-xl font-bold text-[#172033]">3. Third-Party Analytics &amp; Tag Manager Disclosures</h2>
         <p class="text-[#667085]">
-          Like most modern websites, our hosting servers automatically record standard HTTP request logs (such as IP addresses, browser types, referring pages, and timestamps) for security, server performance monitoring, and DDOS mitigation. These logs do not contain user-entered calculator inputs.
+          Like most modern websites, this site loads a third-party analytics container tag (Google Tag Manager GTM-NGVVFL3R) and standard hosting web-server request logs. These external scripts run client-side in your browser to collect technical telemetry, such as IP addresses, browser types, device resolution, and pageviews. While our application source code makes no network requests containing your calculation data, third-party analytics scripts execute in the browser and their runtime behavior is governed by external container configuration and third-party privacy terms; we do not claim complete anonymity nor do we guarantee third-party tag data collection behavior.
         </p>
 
-        <h2 class="text-xl font-bold text-[#172033]">4. Cookies &amp; Storage</h2>
+        <h2 class="text-xl font-bold text-[#172033]">4. Cookies &amp; Browser Storage</h2>
         <p class="text-[#667085]">
-          {{ siteConfig.name }} does not set tracking cookies to build marketing profiles. Temporary browser memory is used solely to maintain your interactive inputs during an active browsing session. When you close your browser tab or click "Reset", entered data is immediately discarded.
+          Our application code sets no cookies, uses no localStorage, and stores no financial profiles. Interactive calculations exist purely in temporary browser memory during your active page session and are discarded upon tab closure or form reset. Third-party analytics tags (such as Google Analytics loaded via GTM) may set standard cookies in your browser according to their own operational settings.
         </p>
 
         <h2 class="text-xl font-bold text-[#172033]">5. Contact Us</h2>

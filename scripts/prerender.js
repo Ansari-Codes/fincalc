@@ -144,6 +144,76 @@ for (const t of tools) {
             ${t.assumptions.map(a => `<li>${a}</li>`).join('')}
           </ul>
         </section>
+        ${t.slug === 'loan-payment-calculator' ? `
+          <section class="bg-white p-8 rounded-xl border border-gray-200 mb-8">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Interactive Amortization Visualizer</h2>
+            <p class="text-sm text-gray-600 mb-4">Explore our interactive SVG visualizer charting remaining balance curves, principal vs. interest payment breakdown and crossover milestones, and cumulative cash outlay comparison with optional accelerated prepayments.</p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+              <div class="p-4 bg-teal-50 rounded-lg border border-teal-100">
+                <span class="text-xs uppercase font-bold text-teal-700">View A</span>
+                <p class="text-sm font-semibold text-gray-900 mt-1">Remaining Balance Curve</p>
+                <p class="text-xs text-gray-500 mt-0.5">Tracks principal decline and accelerated payoff trajectories.</p>
+              </div>
+              <div class="p-4 bg-teal-50 rounded-lg border border-teal-100">
+                <span class="text-xs uppercase font-bold text-teal-700">View B</span>
+                <p class="text-sm font-semibold text-gray-900 mt-1">Principal vs. Interest</p>
+                <p class="text-xs text-gray-500 mt-0.5">Identifies exact monthly and annual crossover milestones.</p>
+              </div>
+              <div class="p-4 bg-teal-50 rounded-lg border border-teal-100">
+                <span class="text-xs uppercase font-bold text-teal-700">View C</span>
+                <p class="text-sm font-semibold text-gray-900 mt-1">Cumulative Outlay</p>
+                <p class="text-xs text-gray-500 mt-0.5">Quantifies total interest paid and prepayment savings.</p>
+              </div>
+            </div>
+          </section>
+        ` : ''}
+        ${t.slug === 'credit-card-apr-calculator' ? `
+          <section class="bg-white p-8 rounded-xl border border-gray-200 mb-8 space-y-6">
+            <div>
+              <h2 class="text-2xl font-bold text-gray-900 mb-3">How to Calculate APR on a Credit Card: Formula &amp; Step-by-Step Guide</h2>
+              <p class="text-sm text-gray-600 leading-relaxed mb-4">
+                When you carry an unpaid revolving balance on your credit card past the monthly payment due date, card issuers charge interest based on your stated Annual Percentage Rate (APR). While APR represents an annualized borrowing cost, interest is assessed on each monthly billing cycle.
+              </p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                <div class="p-4 bg-gray-50 rounded-lg border border-gray-100">
+                  <span class="text-xs font-bold text-teal-700 uppercase">Step 1 &amp; 2</span>
+                  <p class="text-sm font-semibold text-gray-900 mt-1">Convert APR to Periodic Rate</p>
+                  <p class="text-xs text-gray-500 mt-0.5">Divide your annual APR by 12 for the monthly rate (e.g. 24% ÷ 12 = 2.0%), or by 365 for the Daily Periodic Rate (DPR).</p>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-lg border border-gray-100">
+                  <span class="text-xs font-bold text-teal-700 uppercase">Step 3 &amp; 4</span>
+                  <p class="text-sm font-semibold text-gray-900 mt-1">Calculate Interest &amp; Principal Reduction</p>
+                  <p class="text-xs text-gray-500 mt-0.5">Multiply carried balance by the monthly rate to estimate interest. Subtract interest from your monthly payment to find principal repaid.</p>
+                </div>
+              </div>
+            </div>
+            <div class="p-5 bg-teal-50 border border-teal-200 rounded-xl">
+              <h3 class="text-sm font-bold text-teal-900 uppercase tracking-wide mb-2">Worked Numerical Example: $4,000 Balance at 24.0% APR ($200/mo Payment)</h3>
+              <ul class="text-xs text-teal-800 space-y-1.5">
+                <li>• <strong>Monthly Periodic Rate:</strong> 24.0% ÷ 12 = 2.0% per month (0.02 decimal).</li>
+                <li>• <strong>Month 1 Interest Charge:</strong> $4,000.00 × 0.02 = $80.00 interest fee.</li>
+                <li>• <strong>Month 1 Principal Reduction:</strong> $200.00 payment − $80.00 interest = $120.00 to principal.</li>
+                <li>• <strong>Month 1 Ending Balance:</strong> $4,000.00 − $120.00 = $3,880.00 remaining debt.</li>
+                <li>• <strong>Payoff Result:</strong> Paying a fixed $200.00/mo clears the entire $4,000 debt in 26 months with $1,159.49 total interest.</li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-gray-900 mb-2">Credit Card APR Payment Economics: Minimum Payment vs. Fixed Payoff</h3>
+              <p class="text-sm text-gray-600 leading-relaxed">
+                Paying only statement minimums (typically 2% to 3% of balance) automatically shrinks payments as debt declines, dragging payoff across 15 to 20+ years and costing more in interest than the initial debt borrowed. Fixing your payment at a constant amount accelerates principal reduction every month.
+              </p>
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-gray-900 mb-2">Why Actual Issuer Statements Differ (CFPB Disclosures)</h3>
+              <p class="text-sm text-gray-600 leading-relaxed mb-4">
+                As detailed in CFPB regulations, card issuers divide your APR by 365 or 360 days to determine a Daily Periodic Rate (DPR) and multiply by your Average Daily Balance (ADB) across billing cycles of 28 to 31 days. Most issuers offer an interest-free grace period (typically 21 to 25 days) on eligible purchases when the full statement balance is paid on time, though exact terms, trailing interest rules, and conditions depend on the cardholder agreement.
+              </p>
+              <div class="p-3.5 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-600">
+                <strong>Privacy Notice:</strong> Your calculator values are processed in your browser and are not sent to kitaaab.org servers.
+              </div>
+            </div>
+          </section>
+        ` : ''}
         <section class="bg-white p-8 rounded-xl border border-gray-200">
           <h2 class="text-xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
           ${t.faqs.map(faq => `
@@ -225,6 +295,14 @@ for (const a of articles) {
         <span class="text-xs font-semibold text-teal-800 uppercase">${a.category}</span>
         <h1 class="text-4xl font-extrabold text-gray-900 my-4">${a.title}</h1>
         <p class="text-lg text-gray-600 mb-8">${a.summary}</p>
+        ${a.slug === 'how-loan-amortization-works' ? `
+          <div class="mb-8 p-6 bg-teal-50 border border-teal-200 rounded-xl">
+            <h2 class="text-xl font-bold text-teal-900 mb-2">Interactive Amortization Visualizer</h2>
+            <p class="text-sm text-teal-800 leading-relaxed mb-4">
+              Explore dynamic interactive charts below modeling our reference $300,000 30-year fixed mortgage at 6.50% APR with an optional $250/mo extra prepayment. Key illustrated milestones include: Month 205 (cumulative interest crosses 75% of lifetime interest), Month 233 (monthly principal repaid surpasses interest fee), Month 257 (remaining balance crosses below 50% of original principal), and Month 262 accelerated debt retirement (saving $120,336.94 in interest and 98 months).
+            </p>
+          </div>
+        ` : ''}
         <article class="prose max-w-none text-gray-800 space-y-6">
           ${a.sections.map(sec => `
             <div>
@@ -316,7 +394,20 @@ routes.push({
   bodyHtml: `
     <main class="max-w-[800px] mx-auto px-4 py-12">
       <h1 class="text-3xl font-extrabold text-gray-900 mb-4">Privacy Policy</h1>
-      <p class="text-lg text-gray-600 mb-6">All calculations run locally on your device. We do not store or transmit your financial inputs.</p>
+      <p class="text-sm text-gray-500 mb-8">Last Updated: November 2026</p>
+      <div class="space-y-6 text-gray-700 leading-relaxed text-base">
+        <p>At ${siteConfig.name}, accessible from ${siteConfig.name}, we respect your privacy and are committed to protecting personal information. This Privacy Policy details what information is collected and how it is used.</p>
+        <h2 class="text-xl font-bold text-gray-900">1. Client-Side Financial Calculations</h2>
+        <p>All values you enter into our financial tools (including balances, interest rates, stock purchases, salary figures, and projected savings) are processed exclusively on your device inside your web browser. <strong>Our application source code maintains no backend servers or database APIs; entered calculator values are never transmitted to or stored on our servers.</strong></p>
+        <h2 class="text-xl font-bold text-gray-900">2. No Account Registration Required</h2>
+        <p>You do not need to create an account, log in, or provide an email address to use any tool on this website. We do not maintain user databases of names, passwords, or personal financial profiles.</p>
+        <h2 class="text-xl font-bold text-gray-900">3. Third-Party Analytics &amp; Tag Manager Disclosures</h2>
+        <p>Like most modern websites, this site loads a third-party analytics container tag (Google Tag Manager GTM-NGVVFL3R) and standard hosting web-server request logs. These external scripts run client-side in your browser to collect technical telemetry, such as IP addresses, browser types, device resolution, and pageviews. While our application source code makes no network requests containing your calculation data, third-party analytics scripts execute in the browser and their runtime behavior is governed by external container configuration and third-party privacy terms; we do not claim complete anonymity nor do we guarantee third-party tag data collection behavior.</p>
+        <h2 class="text-xl font-bold text-gray-900">4. Cookies &amp; Browser Storage</h2>
+        <p>Our application code sets no cookies, uses no localStorage, and stores no financial profiles. Interactive calculations exist purely in temporary browser memory during your active page session and are discarded upon tab closure or form reset. Third-party analytics tags (such as Google Analytics loaded via GTM) may set standard cookies in your browser according to their own operational settings.</p>
+        <h2 class="text-xl font-bold text-gray-900">5. Contact Us</h2>
+        <p>If you have questions about this privacy statement, you may reach our team at ${siteConfig.contactEmail}.</p>
+      </div>
     </main>
   `
 })

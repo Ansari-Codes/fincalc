@@ -33,7 +33,7 @@ export const tools: ToolItem[] = [
       'Uses the quantity-weighted arithmetic mean, weighting each purchase by the volume of shares acquired.',
       'Optional broker commissions and transaction fees are amortized into the net cost basis when the toggle is enabled.',
       'Does not replace official IRS tax-lot identification methods (FIFO, LIFO, or Specific Share ID) required for capital gains reporting on Form 1099-B.',
-      'All calculations run locally in your browser. No financial accounts, holdings, or tickers are stored or transmitted.'
+      'Calculations run locally in your browser without transmitting entered stock tickers, share quantities, or purchase prices to our servers.'
     ],
     faqs: [
       {
@@ -80,7 +80,8 @@ export const tools: ToolItem[] = [
       'ROI reflects total percentage gain or loss relative to the initial cost basis.',
       'Does not account for holding duration or annualized compounding rate.',
       'Taxes, inflation, and opportunity costs are excluded from the basic formula.',
-      'A negative result represents an investment loss.'
+      'A negative result represents an investment loss.',
+      'Calculations run locally in your browser without transmitting entered investment costs or proceeds to our servers.'
     ],
     faqs: [
       {
@@ -126,7 +127,8 @@ export const tools: ToolItem[] = [
     assumptions: [
       'Tiered mode calculates marginal tiers where higher rates apply exclusively to dollars above each threshold.',
       'Does not account for payroll taxes, employer withholdings, or split splits unless entered manually.',
-      'Assumes sales numbers are clean net or gross figures as specified by the user.'
+      'Assumes sales numbers are clean net or gross figures as specified by the user.',
+      'Calculations run locally in your browser without transmitting entered sales figures or earnings to our servers.'
     ],
     faqs: [
       {
@@ -162,18 +164,18 @@ export const tools: ToolItem[] = [
     slug: 'credit-card-apr-calculator',
     path: '/credit-card-apr-calculator/',
     name: 'Credit Card APR Calculator',
-    title: 'Credit Card APR Calculator – Calculate Monthly Interest & Payoff',
-    shortDescription: 'Estimate monthly credit card interest charges and see how extra payments save money.',
-    fullDescription: 'Calculate monthly credit card finance charges from your balance and APR. Explore payoff timelines, compare minimum payments against aggressive reduction, and see total interest savings.',
+    title: 'Credit Card APR Calculator: How to Calculate Interest & Payments',
+    shortDescription: 'Estimate monthly credit card interest, calculate payoff payments, and see how extra payments save money.',
+    fullDescription: 'Calculate monthly credit card interest and payoff timelines from your APR and balance. Learn how to calculate APR with clear formulas, worked examples, and payment strategies.',
     category: 'credit-debt',
     categoryName: 'Credit & Debt',
     icon: 'CreditCard',
-    formula: 'Monthly Periodic Rate = APR ÷ 12 ÷ 100\nEstimated Monthly Finance Charge ≈ Current Balance × Monthly Periodic Rate\nPrincipal Reduction = Monthly Payment − Interest Charge',
+    formula: 'Monthly Periodic Rate = APR ÷ 12 ÷ 100\nEstimated Monthly Finance Charge ≈ Current Balance × Monthly Periodic Rate\nPrincipal Reduction = Total Monthly Payment − Monthly Finance Charge\nNew Balance = Previous Balance − Principal Reduction + New Purchases',
     assumptions: [
-      'Calculates finance charges using a standard monthly periodic rate approximation (APR / 12). Card issuers compute charges daily using Average Daily Balance (ADB × APR / 365).',
+      'Calculates finance charges using a simplified monthly periodic rate approximation (APR ÷ 12) for educational purposes. In consumer banking practice, card issuers determine finance charges using a Daily Periodic Rate (DPR) calculated by dividing the APR by 365 or 360 days depending on the cardholder agreement (see CFPB guidance). Issuers apply DPR using either the Daily Balance method or the Average Daily Balance (ADB) method, and may calculate charges with or without daily compounding.',
       'Assumes fixed regular monthly payments and on-time payments with no penalty APRs or late fees triggered.',
       'Monthly payments are applied first to accrued monthly interest, with all remaining amounts reducing the principal balance.',
-      'This calculation is an educational estimate and operates entirely in your browser with zero data transmitted or retained.'
+      'Your calculator values are processed in your browser and are not sent to kitaaab.org servers.'
     ],
     faqs: [
       {
@@ -181,20 +183,28 @@ export const tools: ToolItem[] = [
         answer: 'Annual Percentage Rate (APR) is the annualized interest rate charged on unpaid credit card balances carried past your monthly grace period. If you pay your statement balance in full every month by the due date, no APR interest is charged on standard purchases.'
       },
       {
+        question: 'How do I calculate APR on a credit card?',
+        answer: 'To calculate estimated monthly interest from your APR: 1) Divide your annual APR by 12 to find the monthly periodic rate (e.g. 24% ÷ 12 = 2% per month, or 0.02). 2) Multiply your carried balance by that monthly rate ($4,000 × 0.02 = $80 monthly interest). 3) Subtract the interest charge from your total monthly payment to find principal reduction ($200 payment − $80 interest = $120 to principal). For exact statement charges, card issuers divide APR by 365 or 360 days to find a Daily Periodic Rate (DPR) and multiply by your Average Daily Balance.'
+      },
+      {
         question: 'How is monthly credit card interest calculated from APR?',
         answer: 'Under the standard monthly approximation, your annual APR is divided by 12 to find the monthly periodic rate. For example, a 24% APR equals a 2% monthly rate. On a $3,000 carried balance, the estimated monthly interest charge is $3,000 × 0.02 = $60.00.'
       },
       {
+        question: 'How does my monthly payment amount affect credit card APR costs?',
+        answer: 'Your monthly payment amount directly controls how much interest you pay and how long you remain in debt. Monthly finance charges are deducted from your payment first; only the remainder reduces principal. Paying only the card issuer\'s minimum (typically 2% to 3% of balance) causes payments to shrink as debt falls, dragging payoff across 15 to 20+ years. Maintaining a fixed payment or adding extra cash accelerates principal reduction and eliminates thousands of dollars in interest.'
+      },
+      {
         question: 'Is credit card APR divided by 12 or 365?',
-        answer: 'Most credit card issuers in the US divide your APR by 365 to determine a Daily Periodic Rate (DPR). They then multiply this rate by your Average Daily Balance (ADB) across the billing cycle. Dividing by 12 provides a close, reliable monthly approximation for planning purposes.'
+        answer: 'This calculator divides APR by 12 as an educational planning approximation. In consumer banking practice, card issuers divide your APR by either 365 or 360 days—depending on their Cardmember Agreement—to determine a <a href="https://www.consumerfinance.gov/ask-cfpb/what-is-a-daily-periodic-rate-on-a-credit-card-en-46/" target="_blank" rel="noopener noreferrer" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">Daily Periodic Rate (DPR)</a> per CFPB guidance. As documented in the <a href="https://www.consumerfinance.gov/data-research/credit-card-data/know-you-owe-credit-cards/credit-card-contract-definitions/" target="_blank" rel="noopener noreferrer" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">CFPB Credit Card Contract Definitions</a>, issuers apply this rate using either the Average Daily Balance (ADB) method or Daily Balance method, and compute charges with or without daily compounding.'
       },
       {
         question: 'How can I avoid paying APR interest on my credit card?',
-        answer: 'You can avoid paying credit card interest entirely by paying your full statement balance on or before the due date each billing cycle. This preserves your interest-free grace period (typically 21 to 25 days) on all new eligible purchases.'
+        answer: 'Under most cardholder agreements, you can avoid interest charges on new eligible purchases by paying your full statement balance on or before the due date each billing cycle to maintain an interest-free grace period (typically 21 to 25 days). If you carry a balance, trailing interest rules and grace period terms depend on your specific card agreement.'
       },
       {
-        question: 'What is a typical or good credit card APR?',
-        answer: 'Credit card APRs generally range between 15% and 29% depending on the cardholder’s credit profile, prime lending rates, and card type (rewards vs low-interest balance transfer cards). Strive to pay balances in full to avoid paying these rates.'
+        question: 'What is a typical credit card APR?',
+        answer: 'According to the <a href="https://www.federalreserve.gov/releases/g19/20261106/default.htm" target="_blank" rel="noopener noreferrer" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">Federal Reserve G.19 Consumer Credit release</a> (published November 6, 2026), the interest rate for commercial bank credit card accounts assessed interest was 22.36% for the August 2026 observation. In Federal Reserve statistical methodology, this measure represents an annualized ratio of total finance charges to total average daily balances across commercial banks, rather than a simple arithmetic average of advertised promotional APRs or individual card offers. Stated APRs on specific consumer card products vary based on the benchmark prime rate, card tier, and the cardholder\'s credit profile.'
       },
       {
         question: 'How much interest do I save by paying more than the minimum payment?',
@@ -220,7 +230,8 @@ export const tools: ToolItem[] = [
       'Assumes an unvarying rate of return throughout the entire projection period.',
       'Excludes taxes, administrative fees, trading expenses, and inflation unless explicitly noted.',
       'Contributions are assumed to arrive consistently according to the chosen schedule.',
-      'This is an idealized mathematical projection, not a guarantee of future market performance.'
+      'This is an idealized mathematical projection, not a guarantee of future market performance.',
+      'Calculations run locally in your browser without transmitting entered deposit amounts or balances to our servers.'
     ],
     faqs: [
       {
@@ -267,7 +278,8 @@ export const tools: ToolItem[] = [
       'Applies a steady assumed rate of return across all projection years without market volatility.',
       'Does not capture sequence-of-returns risk, where market drops early in retirement accelerate capital depletion.',
       'Tax brackets, Required Minimum Distributions (RMDs), and healthcare shocks are excluded.',
-      'Intended for educational scenario exploration, not individualized retirement or actuarial advice.'
+      'Intended for educational scenario exploration, not individualized retirement or actuarial advice.',
+      'Calculations run locally in your browser without transmitting entered portfolio balances or withdrawal amounts to our servers.'
     ],
     faqs: [
       {
@@ -314,7 +326,7 @@ export const tools: ToolItem[] = [
       'Applies a constant expected annual rate of return across all accumulation years.',
       'Periodic rate is calculated as Annual Return / 12 for monthly contributions, or Annual Return for yearly contributions.',
       'Excludes statutory IRS contribution caps (e.g. IRC 402(g) 401(k) limits or IRA maximums), employer match vesting rules, and tax deductions.',
-      'All calculations are performed client-side in your browser for financial privacy.'
+      'Calculations run locally in your browser without transmitting entered retirement targets or contribution figures to our servers.'
     ],
     faqs: [
       {
@@ -359,9 +371,11 @@ export const tools: ToolItem[] = [
     formula: 'Monthly Payment: M = P × [r / (1 − (1+r)^−n)]\nZero Interest: M = P / n\nwhere r = APR / 12 / 100, n = total months',
     assumptions: [
       'Assumes a fixed interest rate and standard monthly compounding (APR / 12).',
+      'Calculations maintain full floating-point precision internally across all schedule rows. Displayed table figures are rounded to two decimal places; due to independent cent rounding, displayed monthly interest and principal may occasionally sum to ±$0.01 relative to the rounded monthly installment.',
       'Excludes loan origination fees, appraisal charges, closing costs, property taxes, insurance escrow, and prepayment penalties.',
       'Extra monthly payments are applied entirely toward the outstanding principal balance.',
-      'Does not model variable interest rate adjustments or complex lender interest-day counting conventions (e.g. 365/360).'
+      'Does not model variable interest rate adjustments or complex lender interest-day counting conventions (e.g. 365/360).',
+      'Calculations run locally in your browser without transmitting entered loan amounts or interest rates to our servers.'
     ],
     faqs: [
       {
@@ -408,7 +422,8 @@ export const tools: ToolItem[] = [
       'Assumes a monthly APR / 12 periodic interest calculation for each active debt.',
       'All active accounts must meet at least their minimum monthly payments.',
       'Extra monthly cashflow and rolled-over payments from paid-off debts are applied 100% to the top-priority account.',
-      'Assumes no new charges, purchases, or balance transfer fees are added during the repayment simulation.'
+      'Assumes no new charges, purchases, or balance transfer fees are added during the repayment simulation.',
+      'Calculations run locally in your browser without transmitting entered debt balances, interest rates, or payment allocations to our servers.'
     ],
     faqs: [
       {
@@ -455,7 +470,8 @@ export const tools: ToolItem[] = [
       'Assumes constant selling price and constant variable cost per unit regardless of sales volume.',
       'All units produced are assumed to be sold (no change in finished inventory levels).',
       'Assumes fixed costs remain constant over the relevant operating range.',
-      'Physical units are rounded upward (ceiling) to the next whole unit for operational feasibility.'
+      'Physical units are rounded upward (ceiling) to the next whole unit for operational feasibility.',
+      'Calculations run locally in your browser without transmitting entered business revenue or expense figures to our servers.'
     ],
     faqs: [
       {

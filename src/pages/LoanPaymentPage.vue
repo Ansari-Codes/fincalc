@@ -8,6 +8,7 @@ import Breadcrumbs from '@/components/ui/Breadcrumbs.vue'
 import FAQAccordion from '@/components/ui/FAQAccordion.vue'
 import RelatedTools from '@/components/ui/RelatedTools.vue'
 import DisclaimerNotice from '@/components/ui/DisclaimerNotice.vue'
+import AmortizationChart from '@/components/ui/AmortizationChart.vue'
 import { tools } from '@/data/tools'
 import {
   Calculator,
@@ -80,6 +81,17 @@ const result = computed(() => {
     term: term.value ?? 0,
     termUnit: termUnit.value,
     extraMonthlyPayment: extraMonthlyPayment.value ?? 0
+  })
+})
+
+const baselineResult = computed(() => {
+  if (!extraMonthlyPayment.value || extraMonthlyPayment.value <= 0) return undefined
+  return calculateLoanPayment({
+    principal: principal.value ?? 0,
+    annualRate: annualRate.value ?? 0,
+    term: term.value ?? 0,
+    termUnit: termUnit.value,
+    extraMonthlyPayment: 0
   })
 })
 
@@ -551,6 +563,18 @@ async function handleCopy() {
       </div>
     </div>
 
+    <!-- Interactive Mortgage Amortization Visualization -->
+    <AmortizationChart
+      v-if="result.schedule.length > 0"
+      :schedule="result.schedule"
+      :baseline-schedule="baselineResult?.schedule"
+      :principal="result.principal"
+      :annual-rate="annualRate || 0"
+      :extra-monthly-payment="extraMonthlyPayment || 0"
+      :currency="currency"
+      class="mb-12"
+    />
+
     <!-- Amortization Schedule Table -->
     <div v-if="showSchedule && result.schedule.length > 0" class="mb-12 bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm">
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
@@ -606,6 +630,9 @@ async function handleCopy() {
           </tbody>
         </table>
       </div>
+      <p class="text-[11px] text-[#94A3B8] mt-3">
+        * Note: Calculations maintain full floating-point precision internally across all schedule intervals. Displayed currency figures are rounded to two decimal places; individual rounded principal and interest components may occasionally differ by ±$0.01 from the rounded payment installment due to independent cent rounding.
+      </p>
     </div>
 
     <!-- Educational Content & Formula Explanation -->
