@@ -10,6 +10,10 @@ import CreditCardAprPage from '@/pages/CreditCardAprPage.vue'
 // Same treatment for the retirement calculator: it also has a full
 // prerendered shell now, and it is the closest page to page 1 (pos 11.89).
 import RetirementGoalPage from '@/pages/RetirementGoalPage.vue'
+// Same treatment for the stock average and loan payment calculators: both
+// have full prerendered shells now (pos 32.97 and 39.93).
+import StockAveragePage from '@/pages/StockAveragePage.vue'
+import LoanPaymentPage from '@/pages/LoanPaymentPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -40,7 +44,7 @@ const router = createRouter({
     {
       path: '/stock-average-calculator/',
       name: 'stock-average-calculator',
-      component: () => import('@/pages/StockAveragePage.vue')
+      component: StockAveragePage
     },
     {
       path: '/roi-calculator/',
@@ -75,7 +79,7 @@ const router = createRouter({
     {
       path: '/loan-payment-calculator/',
       name: 'loan-payment-calculator',
-      component: () => import('@/pages/LoanPaymentPage.vue')
+      component: LoanPaymentPage
     },
     {
       path: '/debt-payoff-planner/',

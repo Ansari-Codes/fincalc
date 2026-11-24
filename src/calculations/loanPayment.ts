@@ -225,3 +225,71 @@ export function calculateLoanPayment(input: LoanPaymentInput): LoanPaymentResult
     validationErrors: errors
   }
 }
+
+/**
+ * ============================================================================
+ * Display reconciliation for the amortization table
+ * ============================================================================
+ *
+ * The engine keeps full floating-point precision, so independently rounding
+ * each column to cents can make a displayed row fail to add up (e.g. rounded
+ * interest + rounded principal = $1,896.21 while the rounded installment is
+ * $1,896.20, or rounded starting balance minus rounded principal differs by
+ * $0.01 from the rounded ending balance). This builder returns display rows
+ * (same LoanAmortizationRow shape) that satisfy, for EVERY row:
+ *
+ *   Total Paid   = Interest + Principal Repaid + Additional Payment
+ *   Ending       = Starting - Principal Repaid - Additional Payment
+ *
+ * Rules (all values rounded to cents first):
+ * - Non-final rows: principal / interest / additional are the independently
+ *   rounded engine values; Total Paid is their exact sum (so it may read
+ *   $0.01 above the scheduled installment on some months); Ending is
+ *   Starting minus Principal minus Additional.
+ * - Final row: Total Paid is the rounded engine total, Principal is the plug
+ *   (Total - Interest - Additional, adjusted by at most $0.01), and Ending
+ *   is forced to exactly $0.00 so the loan closes at zero.
+ * - Cumulative columns stay the independently rounded engine totals, so the
+ *   final row still shows the exact lifetime interest / principal.
+ * - Starting balances are independently rounded per row, so a row's
+ *   displayed starting balance may differ by $0.01 from the previous row's
+ *   displayed ending balance. The engine totals are never changed.
+ */
+const round2 = (n: number): number => Math.round(n * 100) / 100
+
+export function buildDisplaySchedule(schedule: LoanAmortizationRow[]): LoanAmortizationRow[] {
+  if (!schedule || schedule.length === 0) return []
+
+  return schedule.map((row, idx) => {
+    const isLast = idx === schedule.length - 1
+    const startingBalance = round2(row.startingBalance)
+    const interest = round2(row.interest)
+    const additionalPayment = round2(row.additionalPayment)
+
+    let principalRepaid: number
+    let totalPaymentThisMonth: number
+    let endingBalance: number
+
+    if (isLast) {
+      totalPaymentThisMonth = round2(row.totalPaymentThisMonth)
+      principalRepaid = round2(totalPaymentThisMonth - interest - additionalPayment)
+      endingBalance = 0
+    } else {
+      principalRepaid = round2(row.principalRepaid)
+      totalPaymentThisMonth = round2(interest + principalRepaid + additionalPayment)
+      endingBalance = round2(startingBalance - principalRepaid - additionalPayment)
+    }
+
+    return {
+      paymentNumber: row.paymentNumber,
+      startingBalance,
+      interest,
+      principalRepaid,
+      additionalPayment,
+      totalPaymentThisMonth,
+      endingBalance,
+      totalInterestPaidToDate: round2(row.totalInterestPaidToDate),
+      totalPrincipalPaidToDate: round2(row.totalPrincipalPaidToDate)
+    }
+  })
+}

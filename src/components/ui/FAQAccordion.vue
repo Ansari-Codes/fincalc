@@ -25,9 +25,9 @@ function toggle(index: number) {
 
 <template>
   <div class="space-y-3">
-    <h3 v-if="title" class="text-xl font-bold text-[#172033] mb-4">
+    <h2 v-if="title" class="text-xl font-bold text-[#172033] mb-4">
       {{ title }}
-    </h3>
+    </h2>
 
     <div
       v-for="(faq, index) in items"

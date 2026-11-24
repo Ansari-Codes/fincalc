@@ -9,7 +9,7 @@ import Breadcrumbs from '@/components/ui/Breadcrumbs.vue'
 import FAQAccordion from '@/components/ui/FAQAccordion.vue'
 import ArticleCard from '@/components/ui/ArticleCard.vue'
 import AmortizationChart from '@/components/ui/AmortizationChart.vue'
-import { calculateLoanPayment } from '@/calculations/loanPayment'
+import { calculateLoanPayment, buildDisplaySchedule } from '@/calculations/loanPayment'
 import { ArrowRight, Calculator, Calendar, Clock } from '@lucide/vue'
 
 const route = useRoute()
@@ -170,13 +170,14 @@ const educationalBaselineSchedule = computed(() => {
 
             <!-- Optional Educational Visualization for Amortization Guide -->
             <div v-if="isAmortizationArticle && section.exampleBox && educationalMortgageSchedule" class="my-8">
+              <p class="text-xs text-[#64748B] mb-3 leading-relaxed">The chart below models the <strong class="text-[#0F172A]">$250-per-month extra principal scenario</strong> from the prepayment section — its crossover month and payoff figures belong to that accelerated schedule, not to the standard 30-year schedule (crossover Month 233, 50% point Month 257).</p>
               <AmortizationChart
-                :schedule="educationalMortgageSchedule.schedule"
-                :baseline-schedule="educationalBaselineSchedule?.schedule"
+                :schedule="buildDisplaySchedule(educationalMortgageSchedule.schedule)"
+                :baseline-schedule="educationalBaselineSchedule ? buildDisplaySchedule(educationalBaselineSchedule.schedule) : undefined"
                 :principal="300000"
                 :annual-rate="6.5"
                 :extra-monthly-payment="250"
-                title="Illustrative $300,000 Mortgage Amortization Trajectory (6.50% APR)"
+                title="Illustrative $300,000 Mortgage Amortization Trajectory (6.50% APR, with $250/month extra principal)"
               />
             </div>
           </section>

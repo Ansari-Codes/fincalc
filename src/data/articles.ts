@@ -88,7 +88,7 @@ export const articles: ArticleItem[] = [
       },
       {
         question: 'Why does a simple arithmetic average fail for stock purchases?',
-        answer: 'A simple average adds the prices and divides by the number of orders, ignoring share count. If you buy 10 shares at $50 and 90 shares at $100, a simple average says $75, but your actual cost is $95 because 90% of your dollars were invested at $100.'
+        answer: 'A simple average adds the prices and divides by the number of orders, ignoring share count. If you buy 10 shares at $50 and 90 shares at $100, a simple average says $75, but your actual cost is $95 because 90% of your shares (90 of 100) were bought at $100 — that is $9,000 of your $9,500 total capital, or 94.7%.'
       },
       {
         question: 'How do broker commissions and exchange fees affect my true break-even price?',
@@ -613,7 +613,7 @@ export const articles: ArticleItem[] = [
         heading: 'Hypothetical worked example: $300,000 mortgage at 6.50% APR',
         paragraphs: [
           'To visualize the progression, consider a borrower with a $300,000 30-year fixed-rate mortgage at a 6.50% APR ($r = 0.065 \\div 12 = 0.0054167$). The required scheduled monthly payment is $1,896.20 per month (full-precision $M = \\$1,896.20407$).',
-          '<strong>Rounding &amp; Currency Presentation Policy:</strong> Financial amortization engines maintain full floating-point precision internally across all 360 monthly iterations to prevent cumulative rounding drift. When displayed in tables and user interfaces, currency values are rounded to two decimal places ($0.01). Because principal and interest are separately rounded to the nearest cent, their displayed sum may occasionally differ by $\\pm \\$0.01$ from the rounded monthly installment (for instance, at Month 257: $\\$815.04 \\text{ interest} + \\$1,081.17 \\text{ principal} = \\$1,896.21$ vs. the $\\$1,896.20$ scheduled payment). In standard mortgage servicing, any fractional cent difference is reconciled in the final payment installment (Month 360) so the loan amortizes to exactly zero.'
+          '<strong>Rounding &amp; Currency Presentation Policy:</strong> Financial amortization engines maintain full floating-point precision internally across all 360 monthly iterations to prevent cumulative rounding drift. When displayed in tables and user interfaces, currency values are rounded to two decimal places ($0.01) and reconciled so each displayed row adds up exactly: the Total Paid column is the sum of the displayed interest, principal and extra columns, and the displayed ending balance equals the displayed starting balance minus the displayed principal and extra. Because each component is rounded independently, the displayed Total Paid may read $0.01 above the scheduled $1,896.20 installment on some months (for instance, at Month 257: $815.04 interest + $1,081.17 principal = $1,896.21), and a row\'s displayed starting balance may differ by $0.01 from the previous row\'s displayed ending balance. The final month\'s principal is adjusted by up to $0.01 so the loan amortizes to exactly zero.',
         ],
         exampleBox: {
           title: '30-Year Mortgage Amortization Progression ($300,000 at 6.50% APR)',
@@ -621,15 +621,15 @@ export const articles: ArticleItem[] = [
             'Fixed Monthly Installment (M): $1,896.20 per month (full-precision M = $1,896.20407).',
             'First-Year Totals (Months 1–12): Principal Repaid = $3,353.18, Interest Paid = $19,401.27, Total Payments = $22,754.45, Year-End Balance = $296,646.82.',
             'Payment 1: Starting Balance = $300,000.00, Interest Charged = $1,625.00 (85.7%), Principal Reduction = $271.20 (14.3%), Cumulative Interest = $1,625.00. Ending Balance = $299,728.80.',
-            'Payment 120 (Year 10): Starting Balance = $254,844.18, Interest Charged = $1,380.41 (72.8%), Principal Reduction = $515.80 (27.2%), Cumulative Interest = $180,422.36. Ending Balance = $254,328.38.',
+            'Payment 120 (Year 10): Starting Balance = $254,844.18, Interest Charged = $1,380.41 (72.8%), Principal Reduction = $515.80 (27.2%), Cumulative Interest = $181,872.87. Ending Balance = $254,328.38.',
             'Payment 204 (Year 17): Starting Balance = $200,162.67, Interest Charged = $1,084.21 (57.2%), Principal Reduction = $811.99 (42.8%), Cumulative Interest = $286,176.31. Ending Balance = $199,350.68.',
             'Payment 205 (Year 17, Month 1 - 75% Cumulative Interest Milestone): Starting Balance = $199,350.68, Interest Charged = $1,079.82, Principal Reduction = $816.39, Cumulative Interest = $287,256.12 (surpassing 75% threshold of $286,975.10). Ending Balance = $198,534.29.',
-            'Payment 232 (Year 20, Month 4): Starting Balance = $175,683.65, Interest Charged = $951.62, Principal Reduction = $944.58, Cumulative Interest = $314,658.41. Ending Balance = $174,739.06.',
+            'Payment 232 (Year 20, Month 4): Starting Balance = $175,683.65, Interest Charged = $951.62, Principal Reduction = $944.58, Cumulative Interest = $314,658.41. Ending Balance = $174,739.07.',
             'Payment 233 (Year 20, Month 5 - Crossover Point): Starting Balance = $174,739.06, Interest Charged = $946.50, Principal Repaid = $949.70 (surpassing interest for the first time), Cumulative Interest = $315,604.91. Ending Balance = $173,789.36.',
-            'Payment 240 (Year 20, Month 12): Starting Balance = $167,982.15, Interest Charged = $909.90 (48.0%), Principal Reduction = $986.30 (52.0%), Cumulative Interest = $322,106.63. Ending Balance = $166,995.85.',
-            'Payment 256 (Year 21, Month 4): Starting Balance = $151,543.75, Interest Charged = $820.86, Principal Reduction = $1,075.34, Cumulative Interest = $335,896.65. Ending Balance = $150,468.40 (above 50% principal threshold).',
-            'Payment 257 (Year 21, Month 5 - 50% Principal Milestone): Starting Balance = $150,468.40, Interest Charged = $815.04, Principal Reduction = $1,081.17, Cumulative Interest = $336,711.68. Ending Balance = $149,387.24, dropping below half ($150,000.00) of the initial mortgage debt for the first time.',
-            'Payment 360 (Final Month): Starting Balance = $1,885.99, Interest Charged = $10.22 (0.5%), Principal Reduction = $1,885.99 (99.5%), Cumulative Interest = $382,633.47. Ending Balance = $0.00.',
+            'Payment 240 (Year 20, Month 12): Starting Balance = $167,982.15, Interest Charged = $909.90 (48.0%), Principal Reduction = $986.30 (52.0%), Cumulative Interest = $322,084.82. Ending Balance = $166,995.85.',
+            'Payment 256 (Year 21, Month 4): Starting Balance = $151,543.75, Interest Charged = $820.86, Principal Reduction = $1,075.34, Cumulative Interest = $335,896.65. Ending Balance = $150,468.41 (above 50% principal threshold).',
+            'Payment 257 (Year 21, Month 5 - 50% Principal Milestone): Starting Balance = $150,468.40, Interest Charged = $815.04, Principal Reduction = $1,081.17, Cumulative Interest = $336,711.68. Ending Balance = $149,387.23, dropping below half ($150,000.00) of the initial mortgage debt for the first time.',
+            'Payment 360 (Final Month): Starting Balance = $1,885.99, Interest Charged = $10.22 (0.5%), Principal Reduction = $1,885.98 (99.5%), Cumulative Interest = $382,633.47. Ending Balance = $0.00. (The final principal is adjusted by $0.01 for rounding so the displayed row adds up exactly and the loan closes at zero.)',
             'Total Lifetime Interest Paid: $382,633.47 (Borrower pays $82,633.47 MORE in interest than the initial $300,000 borrowed!).'
           ]
         }

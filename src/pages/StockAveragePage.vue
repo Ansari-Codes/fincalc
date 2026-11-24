@@ -33,7 +33,7 @@ onMounted(() => {
   })
 })
 
-const currency = ref('USD')
+const currency = 'USD'
 const includeFees = ref(true)
 const showHypothetical = ref(false)
 const copied = ref(false)
@@ -125,10 +125,10 @@ async function handleCopy() {
     'Stock Average Cost Calculation',
     '--------------------------------',
     `Total Shares: ${formatNumber(result.value.totalShares)}`,
-    `Weighted Average Cost / Share: ${formatCurrency(result.value.weightedAverageCost, currency.value)}`,
-    `Total Capital Invested: ${formatCurrency(result.value.totalCost, currency.value)}`,
-    `Total Broker Fees: ${formatCurrency(result.value.totalFees, currency.value)}`,
-    result.value.hypotheticalProjected ? `Projected Average After Next Buy: ${formatCurrency(result.value.hypotheticalProjected.newWeightedAverageCost, currency.value)}` : ''
+    `Weighted Average Cost / Share: ${formatCurrency(result.value.weightedAverageCost, currency)}`,
+    `Total Capital Invested: ${formatCurrency(result.value.totalCost, currency)}`,
+    `Total Broker Fees: ${formatCurrency(result.value.totalFees, currency)}`,
+    result.value.hypotheticalProjected ? `Projected Average After Next Buy: ${formatCurrency(result.value.hypotheticalProjected.newWeightedAverageCost, currency)}` : ''
   ].filter(Boolean).join('\n')
 
   const ok = await copyToClipboard(summary)
@@ -161,18 +161,8 @@ async function handleCopy() {
         </p>
       </div>
 
-      <!-- Controls: Currency & Reset -->
+      <!-- Controls: Reset (amounts are always USD — the selector only relabelled the symbol without converting values, so it was removed) -->
       <div class="flex items-center gap-2.5 self-start md:self-end">
-        <select
-          v-model="currency"
-          aria-label="Display currency"
-          class="text-xs font-semibold bg-white border border-[#CBD5E1] rounded-xl px-3 py-2 text-[#334155] shadow-2xs focus:outline-none focus:ring-2 focus:ring-[#0F766E]"
-        >
-          <option value="USD">USD ($)</option>
-          <option value="EUR">EUR (€)</option>
-          <option value="GBP">GBP (£)</option>
-          <option value="CAD">CAD ($)</option>
-        </select>
         <button
           type="button"
           @click="resetForm"
@@ -520,7 +510,7 @@ async function handleCopy() {
             <p>• <em>Actual Weighted Average:</em> [(10 × $50) + (90 × $100)] ÷ 100 shares = ($500 + $9,000) ÷ 100 = <strong>$95.00</strong></p>
           </div>
           <p class="text-sm text-[#64748B] leading-relaxed">
-            Because 90% of your capital was invested at $100, your real break-even cost is $95.00, not $75.00. Using a simple average would lead you to believe you are in profit when you may still be at a net loss.
+            Because 90% of your shares (90 of 100) were bought at $100 — that is $9,000 of your $9,500 total capital, or 94.7% — your real break-even cost is $95.00, not $75.00. Using a simple average would lead you to believe you are in profit when you may still be at a net loss.
           </p>
         </section>
 

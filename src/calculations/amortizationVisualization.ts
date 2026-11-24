@@ -51,8 +51,12 @@ export interface ChartCoordinate {
 }
 
 /**
- * Identifies the first month in an amortization schedule where the regular principal portion
- * of the payment meets or exceeds the accrued monthly interest charge (the "crossover point").
+ * Identifies the first month in an amortization schedule where the total
+ * principal portion of the payment (scheduled principal + any additional
+ * prepayment) meets or exceeds the accrued monthly interest charge (the
+ * "crossover point"). Additional payments count toward principal: with an
+ * extra payment the crossover is reached on the accelerated schedule, not
+ * on the scheduled-principal-only curve.
  */
 export function findCrossoverPoint(schedule: LoanAmortizationRow[]): {
   month: number
@@ -64,7 +68,8 @@ export function findCrossoverPoint(schedule: LoanAmortizationRow[]): {
   if (!schedule || schedule.length === 0) return null
 
   for (const row of schedule) {
-    if (row.principalRepaid >= row.interest) {
+    const totalPrincipal = row.principalRepaid + row.additionalPayment
+    if (totalPrincipal >= row.interest) {
       const month = row.paymentNumber
       const year = Math.floor((month - 1) / 12) + 1
       const monthInYear = ((month - 1) % 12) + 1
@@ -72,7 +77,7 @@ export function findCrossoverPoint(schedule: LoanAmortizationRow[]): {
         month,
         year,
         monthInYear,
-        principal: row.principalRepaid,
+        principal: totalPrincipal,
         interest: row.interest
       }
     }

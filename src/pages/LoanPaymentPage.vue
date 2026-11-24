@@ -3,7 +3,7 @@ import { ref, computed, onMounted } from 'vue'
 import { updatePageSeo } from '@/utils/seo'
 import { generateCalculatorSchema } from '@/utils/structuredData'
 import { formatCurrency, formatPercent, copyToClipboard } from '@/utils/formatters'
-import { calculateLoanPayment, type LoanTermUnit } from '@/calculations/loanPayment'
+import { calculateLoanPayment, buildDisplaySchedule, type LoanTermUnit } from '@/calculations/loanPayment'
 import Breadcrumbs from '@/components/ui/Breadcrumbs.vue'
 import FAQAccordion from '@/components/ui/FAQAccordion.vue'
 import RelatedTools from '@/components/ui/RelatedTools.vue'
@@ -36,7 +36,7 @@ onMounted(() => {
   })
 })
 
-const currency = ref('USD')
+const currency = 'USD'
 const copied = ref(false)
 
 // Input fields
@@ -67,9 +67,9 @@ function setExtra(val: number) {
 }
 
 function resetForm() {
-  principal.value = null
-  annualRate.value = null
-  term.value = null
+  principal.value = 300000
+  annualRate.value = 6.5
+  term.value = 30
   termUnit.value = 'years'
   extraMonthlyPayment.value = 0
 }
@@ -106,12 +106,19 @@ const interestSharePct = computed(() => {
   return (result.value.totalInterest / result.value.totalRepayment) * 100
 })
 
+// Display schedule: cent-reconciled rows (see buildDisplaySchedule) so every
+// displayed row adds up exactly. The chart renders the same display rows.
+const displaySchedule = computed(() => buildDisplaySchedule(result.value.schedule))
+const displayBaselineSchedule = computed(() =>
+  baselineResult.value ? buildDisplaySchedule(baselineResult.value.schedule) : undefined
+)
+
 // Filtered schedule display (annual summary vs every month)
 const displayedSchedule = computed(() => {
   if (scheduleFilter.value === 'all') {
-    return result.value.schedule
+    return displaySchedule.value
   }
-  return result.value.schedule.filter((row, idx, arr) => {
+  return displaySchedule.value.filter((row, idx, arr) => {
     return row.paymentNumber % 12 === 0 || idx === arr.length - 1
   })
 })
@@ -120,15 +127,15 @@ async function handleCopy() {
   const lines = [
     'Fixed-Rate Loan Payment Summary',
     '-------------------------------',
-    `Loan Principal: ${formatCurrency(result.value.principal, currency.value)}`,
+    `Loan Principal: ${formatCurrency(result.value.principal, currency)}`,
     `Interest Rate (APR): ${formatPercent(annualRate.value || 0)}`,
     `Term: ${term.value} ${termUnit.value}`,
-    `Regular Monthly Payment: ${formatCurrency(result.value.regularMonthlyPayment, currency.value)}`,
-    extraMonthlyPayment.value ? `Extra Monthly Payment: ${formatCurrency(extraMonthlyPayment.value, currency.value)}` : '',
+    `Regular Monthly Payment: ${formatCurrency(result.value.regularMonthlyPayment, currency)}`,
+    extraMonthlyPayment.value ? `Extra Monthly Payment: ${formatCurrency(extraMonthlyPayment.value, currency)}` : '',
     extraMonthlyPayment.value ? `Actual Payoff Months: ${result.value.actualPayoffMonths} (Saved ${result.value.monthsSaved} months)` : '',
-    extraMonthlyPayment.value ? `Interest Saved: ${formatCurrency(result.value.interestSaved, currency.value)}` : '',
-    `Total Interest: ${formatCurrency(result.value.totalInterest, currency.value)}`,
-    `Total Cost of Loan: ${formatCurrency(result.value.totalRepayment, currency.value)}`
+    extraMonthlyPayment.value ? `Interest Saved: ${formatCurrency(result.value.interestSaved, currency)}` : '',
+    `Total Interest: ${formatCurrency(result.value.totalInterest, currency)}`,
+    `Total Cost of Loan: ${formatCurrency(result.value.totalRepayment, currency)}`
   ].filter(Boolean)
 
   const ok = await copyToClipboard(lines.join('\n'))
@@ -161,18 +168,8 @@ async function handleCopy() {
         </p>
       </div>
 
-      <!-- Controls: Currency & Reset -->
+      <!-- Controls: Reset (amounts are always USD — the selector only relabelled the symbol without converting values, so it was removed) -->
       <div class="flex items-center gap-2.5 self-start md:self-end">
-        <select
-          v-model="currency"
-          aria-label="Display currency"
-          class="text-xs font-semibold bg-white border border-[#CBD5E1] rounded-xl px-3 py-2 text-[#334155] shadow-2xs focus:outline-none focus:ring-2 focus:ring-[#0F766E]"
-        >
-          <option value="USD">USD ($)</option>
-          <option value="EUR">EUR (€)</option>
-          <option value="GBP">GBP (£)</option>
-          <option value="CAD">CAD ($)</option>
-        </select>
         <button
           type="button"
           @click="resetForm"
@@ -566,12 +563,11 @@ async function handleCopy() {
     <!-- Interactive Mortgage Amortization Visualization -->
     <AmortizationChart
       v-if="result.schedule.length > 0"
-      :schedule="result.schedule"
-      :baseline-schedule="baselineResult?.schedule"
+      :schedule="displaySchedule"
+      :baseline-schedule="displayBaselineSchedule"
       :principal="result.principal"
       :annual-rate="annualRate || 0"
       :extra-monthly-payment="extraMonthlyPayment || 0"
-      :currency="currency"
       class="mb-12"
     />
 
@@ -580,7 +576,7 @@ async function handleCopy() {
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <div>
           <h3 class="text-lg font-bold text-[#0F172A]">Amortization Breakdown Table</h3>
-          <p class="text-xs text-[#64748B] mt-0.5">Observe how the balance shifts from predominantly interest to principal over time.</p>
+          <p class="text-xs text-[#64748B] mt-0.5">Observe how the balance declines and how each payment splits between interest and principal over time.</p>
         </div>
         <div class="flex items-center gap-2 bg-[#F1F5F9] p-1 rounded-xl">
           <button
@@ -631,7 +627,7 @@ async function handleCopy() {
         </table>
       </div>
       <p class="text-[11px] text-[#94A3B8] mt-3">
-        * Note: Calculations maintain full floating-point precision internally across all schedule intervals. Displayed currency figures are rounded to two decimal places; individual rounded principal and interest components may occasionally differ by ±$0.01 from the rounded payment installment due to independent cent rounding.
+        * Note: Calculations maintain full floating-point precision internally across all schedule intervals. Displayed figures are rounded to two decimal places and reconciled so each displayed row adds up exactly: the Total Paid column is the sum of the displayed interest, principal and extra columns, and the displayed ending balance equals the displayed starting balance minus the displayed principal and extra. The Total Paid column may therefore read $0.01 above the scheduled installment on some months, the final month's principal is adjusted by up to $0.01 so the loan closes at exactly $0.00, and a row's displayed starting balance may differ by $0.01 from the previous row's displayed ending balance because each is rounded independently.
       </p>
     </div>
 

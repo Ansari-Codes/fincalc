@@ -261,6 +261,16 @@ const yTicks = computed(() => {
 
 // Crossover Point X coordinate
 const crossoverPoint = computed(() => milestones.value?.crossoverPoint || null)
+// True when the principal portion already meets or exceeds the interest
+// charge in Month 1 (short terms, low rates, 0% APR): there is no later
+// "crossover" — principal dominates from the first payment. The crossover
+// month is then 1 by construction, so labels must not describe a later
+// crossing that never happens.
+const principalDominatesFromStart = computed(() => {
+  if (props.schedule.length === 0) return false
+  const first = props.schedule[0]
+  return first.principalRepaid + first.additionalPayment >= first.interest
+})
 const crossoverX = computed(() => {
   return crossoverPoint.value ? getX(crossoverPoint.value.month) : null
 })
@@ -385,14 +395,17 @@ function handleSvgMouseLeave() {
       <!-- Card 2: Crossover Point Milestone -->
       <div class="p-3.5 rounded-2xl bg-teal-50/70 border border-teal-200">
         <div class="text-[11px] font-bold uppercase tracking-wider text-[#0F766E] mb-1 flex items-center justify-between">
-          <span>Crossover Month</span>
+          <span>{{ principalDominatesFromStart ? 'Principal Leads' : 'Crossover Month' }}</span>
           <span v-if="crossoverPoint" class="px-1.5 py-0.5 rounded bg-[#0F766E] text-white text-[10px] font-bold">Month {{ crossoverPoint.month }}</span>
         </div>
-        <div v-if="crossoverPoint" class="text-base font-extrabold text-[#0F172A]">
+        <div v-if="principalDominatesFromStart" class="text-base font-extrabold text-[#0F172A]">
+          From Month 1
+        </div>
+        <div v-else-if="crossoverPoint" class="text-base font-extrabold text-[#0F172A]">
           Year {{ crossoverPoint.year }}, Month {{ crossoverPoint.monthInYear }}
         </div>
         <div v-else class="text-base font-extrabold text-[#0F172A]">N/A</div>
-        <div class="text-[11px] text-[#0F766E] mt-0.5">Principal repaid surpasses interest fee</div>
+        <div class="text-[11px] text-[#0F766E] mt-0.5">{{ principalDominatesFromStart ? 'Principal repaid exceeds interest from the first payment — no later crossover' : 'Principal repaid surpasses interest fee' }}</div>
       </div>
 
       <!-- Card 3: Milestone Horizon (50% Balance Point or 75% Cumulative Interest) -->
@@ -447,9 +460,13 @@ function handleSvgMouseLeave() {
           <span class="w-4 h-0.5 border-t-2 border-dashed border-[#94A3B8]"></span>
           <span>Standard 30-Yr Baseline</span>
         </div>
-        <div v-if="crossoverPoint" class="flex items-center gap-2">
+        <div v-if="crossoverPoint && !principalDominatesFromStart" class="flex items-center gap-2">
           <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
           <span>Crossover (Mo {{ crossoverPoint.month }})</span>
+        </div>
+        <div v-else-if="principalDominatesFromStart" class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-[#0F766E]"></span>
+          <span>Principal leads from Month 1</span>
         </div>
       </div>
 
@@ -463,7 +480,7 @@ function handleSvgMouseLeave() {
           <span class="w-3.5 h-3.5 rounded-md bg-amber-500"></span>
           <span class="font-bold text-[#0F172A]">Monthly Interest Charge</span>
         </div>
-        <div v-if="crossoverPoint" class="flex items-center gap-2">
+        <div v-if="crossoverPoint && !principalDominatesFromStart" class="flex items-center gap-2">
           <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
           <span>Crossover Milestone</span>
         </div>
@@ -645,8 +662,8 @@ function handleSvgMouseLeave() {
             stroke-linejoin="round"
           />
 
-          <!-- Crossover vertical guide if available -->
-          <g v-if="crossoverX !== null && crossoverPoint">
+          <!-- Crossover vertical guide if available (only when a real later crossover exists) -->
+          <g v-if="crossoverX !== null && crossoverPoint && !principalDominatesFromStart">
             <line
               :x1="crossoverX"
               :y1="padTop"
@@ -686,8 +703,8 @@ function handleSvgMouseLeave() {
               fill="url(#principalGradient)"
             />
 
-            <!-- Crossover marker line -->
-            <g v-if="crossoverX !== null && crossoverPoint">
+            <!-- Crossover marker line (only when a real later crossover exists) -->
+            <g v-if="crossoverX !== null && crossoverPoint && !principalDominatesFromStart">
               <line
                 :x1="crossoverX"
                 :y1="padTop"
@@ -918,7 +935,11 @@ function handleSvgMouseLeave() {
     <!-- Accompanying Static Educational Text & Accessibility Summary -->
     <div class="mt-6 pt-5 border-t border-[#F1F5F9] text-xs text-[#64748B] leading-relaxed space-y-2">
       <div class="font-bold text-[#0F172A]">Amortization Dynamics &amp; Structural Insights:</div>
-      <p>
+      <p v-if="principalDominatesFromStart && schedule.length > 0">
+        In a standard fixed-rate amortizing loan of <strong>{{ formatCurrency(principal, currency) }} at {{ formatPercent(annualRate) }} APR</strong> over <strong>{{ Math.round(totalMonths / 12) }} years</strong>,
+        the principal portion already exceeds the interest charge in the very first payment — <strong class="text-[#0F172A]">${{ (schedule[0].principalRepaid + schedule[0].additionalPayment).toFixed(2) }} of principal</strong> against <strong class="text-[#0F172A]">${{ schedule[0].interest.toFixed(2) }} of interest in Month 1</strong> — so principal dominates from the start and there is no later crossover point.
+      </p>
+      <p v-else>
         In a standard fixed-rate amortizing mortgage of <strong>{{ formatCurrency(principal, currency) }} at {{ formatPercent(annualRate) }} APR</strong> over <strong>{{ Math.round(totalMonths / 12) }} years</strong>,
         monthly installments begin with interest charges comprising the dominant share of payments. The mathematical <em>crossover point</em> occurs at
         <strong class="text-[#0F172A]" v-if="crossoverPoint">Month {{ crossoverPoint.month }} (Year {{ crossoverPoint.year }}, Month {{ crossoverPoint.monthInYear }})</strong>
@@ -932,7 +953,7 @@ function handleSvgMouseLeave() {
         of mandatory debt service and saving <strong class="text-[#0F766E]">{{ formatCurrency(milestones.comparisonWithBaseline.interestSaved, currency) }}</strong> in lifetime finance charges.
       </p>
       <p class="text-[11px] text-[#94A3B8] pt-1">
-        * Note: Calculations maintain full floating-point precision internally across all schedule intervals. Displayed currency figures are rounded to two decimal places; individual rounded principal and interest components may occasionally differ by ±$0.01 from the rounded payment installment due to independent cent rounding.
+        * Note: Calculations maintain full floating-point precision internally across all schedule intervals. Displayed currency figures are rounded to two decimal places and reconciled so each displayed row adds up exactly: the Total Paid column is the sum of the displayed interest, principal and extra columns, and the displayed ending balance equals the displayed starting balance minus the displayed principal and extra. The final month's principal is adjusted by up to $0.01 so the loan closes at exactly $0.00.
       </p>
     </div>
   </section>

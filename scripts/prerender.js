@@ -23,6 +23,8 @@ import {
   getWorkedExampleScenarios
 } from '../src/calculations/creditCardApr.ts'
 import { calculateRetirementGoal } from '../src/calculations/retirementGoal.ts'
+import { calculateLoanPayment, buildDisplaySchedule } from '../src/calculations/loanPayment.ts'
+import { calculateStockAverage } from '../src/calculations/stockAverage.ts'
 
 // Base URL helper for subpaths (default '/')
 const base = process.env.BASE_URL || '/'
@@ -1025,7 +1027,7 @@ for (const a of articles) {
           <div class="mb-8 p-6 bg-teal-50 border border-teal-200 rounded-xl">
             <h2 class="text-xl font-bold text-teal-900 mb-2">Interactive Amortization Visualizer</h2>
             <p class="text-sm text-teal-800 leading-relaxed mb-4">
-              Explore dynamic interactive charts below modeling our reference $300,000 30-year fixed mortgage at 6.50% APR with an optional $250/mo extra prepayment. Key illustrated milestones include: Month 205 (cumulative interest crosses 75% of lifetime interest), Month 233 (monthly principal repaid surpasses interest fee), Month 257 (remaining balance crosses below 50% of original principal), and Month 262 accelerated debt retirement (saving $120,336.94 in interest and 98 months).
+              The interactive chart in this guide models the <strong>$250-per-month extra principal scenario</strong> from the prepayment section — its crossover month and payoff figures belong to that accelerated schedule, not to the standard 30-year schedule. On the standard schedule (no extra payment), monthly principal repaid first surpasses the interest charge in Month 233, the remaining balance first falls below half of the original principal in Month 257, and cumulative interest crosses 75% of lifetime interest in Month 205. With $250/month extra principal, the loan retires in Month 262, saving $120,336.94 in interest and 98 months.
             </p>
           </div>
         ` : ''}
@@ -1151,6 +1153,631 @@ routes.push({
 })
 
 
+// ---------------------------------------------------------------------------
+// Stock Average Calculator — full prerendered shell (same pattern as the
+// APR/retirement shells). Every number comes from the stock engine, never
+// hand-typed. Defaults: Lot 1 = 10 shares @ $100, Lot 2 = 15 shares @ $120,
+// no fees, fees included in the basis.
+// ---------------------------------------------------------------------------
+function renderStockShell(tool) {
+  const defaults = calculateStockAverage({
+    purchases: [
+      { id: '1', price: 100, shares: 10, fee: 0 },
+      { id: '2', price: 120, shares: 15, fee: 0 }
+    ],
+    includeFees: true
+  })
+  const year = new Date().getFullYear()
+  const avg = defaults.weightedAverageCost
+  const lot1Pct = ((10 / defaults.totalShares) * 100).toFixed(0)
+  const lot2Pct = ((15 / defaults.totalShares) * 100).toFixed(0)
+
+  return `
+  <div class="min-h-screen flex flex-col bg-[#F7F9FC] text-[#172033]">
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-[#E4E9F0]">
+      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+        <a href="${withBase('/')}" class="flex items-center gap-2.5 text-[#172033] font-semibold text-lg">
+          <div class="w-8 h-8 rounded-lg bg-[#0F766E] text-white flex items-center justify-center font-bold text-base shadow-sm">$</div>
+          <span>${siteConfig.name}</span>
+        </a>
+        <nav class="hidden md:flex items-center gap-1 lg:gap-2" aria-label="Main Navigation">
+          <a href="${withBase('/tools/')}" class="px-3 py-1.5 rounded-md text-sm font-medium text-[#667085]">Tools</a>
+          <a href="${withBase('/tools/investing/')}" class="px-3 py-1.5 rounded-md text-sm font-medium text-[#0F766E] bg-[#E7F4F1] font-semibold">Investing</a>
+          <a href="${withBase('/tools/credit-debt/')}" class="px-3 py-1.5 rounded-md text-sm font-medium text-[#667085]">Credit &amp; Debt</a>
+          <a href="${withBase('/tools/retirement/')}" class="px-3 py-1.5 rounded-md text-sm font-medium text-[#667085]">Retirement</a>
+          <a href="${withBase('/tools/business-finance/')}" class="px-3 py-1.5 rounded-md text-sm font-medium text-[#667085]">Business</a>
+          <a href="${withBase('/learn/')}" class="px-3 py-1.5 rounded-md text-sm font-medium text-[#667085]">Learn</a>
+        </nav>
+        <a href="${withBase('/tools/')}" class="hidden md:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-sm font-medium bg-[#0F766E] text-white shadow-sm">Explore tools</a>
+      </div>
+    </header>
+    <main class="flex-1">
+      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 py-6 sm:py-10">
+        <nav class="text-xs text-[#64748B] mb-6" aria-label="Breadcrumb">
+          <a href="${withBase('/')}" class="hover:text-[#0F766E]">Home</a> /
+          <a href="${withBase('/tools/investing/')}" class="hover:text-[#0F766E]">Investing</a> /
+          <span class="text-[#0F172A] font-semibold">Stock Average Calculator</span>
+        </nav>
+        <div class="mb-8 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+          <div>
+            <div class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#0F766E] bg-[#E7F4F1] px-3 py-1 rounded-full mb-2.5">
+              <span>Interactive Investing Instrument</span>
+            </div>
+            <h1 class="text-2xl sm:text-4xl font-extrabold text-[#0F172A] tracking-tight mb-2">Stock Average Calculator</h1>
+            <p class="text-sm sm:text-base text-[#64748B] max-w-2xl leading-relaxed">${tool.fullDescription}</p>
+          </div>
+          <div class="flex items-center gap-2.5 self-start md:self-end">
+            <span class="text-xs font-semibold bg-white border border-[#CBD5E1] rounded-xl px-3 py-2 text-[#334155] shadow-2xs">USD ($)</span>
+            <span class="inline-flex items-center gap-1.5 text-xs font-semibold bg-white border border-[#CBD5E1] px-3 py-2 rounded-xl text-[#64748B] shadow-2xs">Reset</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
+          <div class="lg:col-span-7 bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm">
+            <div class="flex items-center justify-between pb-4 mb-6 border-b border-[#F1F5F9]">
+              <span class="text-xs font-bold uppercase tracking-wider text-[#475569]">Purchase Lots Ledger</span>
+              <span class="text-[11px] font-semibold text-[#94A3B8]">Demos: DCA · Dip Buy · Growth</span>
+            </div>
+            <div class="space-y-4">
+              <div class="p-4 sm:p-3 bg-[#F8FAFC] rounded-2xl border border-[#E2E8F0] grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+                <div class="sm:col-span-1"><span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-[#E2E8F0] text-[#334155] font-black text-xs">1</span></div>
+                <div class="sm:col-span-4"><span class="block sm:hidden text-[11px] font-bold text-[#475569] mb-1">Execution Price</span><span class="font-bold text-sm text-[#0F172A]">$100.00</span></div>
+                <div class="sm:col-span-4"><span class="block sm:hidden text-[11px] font-bold text-[#475569] mb-1">Number of Shares</span><span class="font-bold text-sm text-[#0F172A]">10 sh</span></div>
+                <div class="sm:col-span-2"><span class="block sm:hidden text-[11px] font-bold text-[#475569] mb-1">Fee (Optional)</span><span class="font-bold text-xs text-[#0F172A]">$0.00</span></div>
+                <div class="sm:col-span-1"></div>
+              </div>
+              <div class="p-4 sm:p-3 bg-[#F8FAFC] rounded-2xl border border-[#E2E8F0] grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+                <div class="sm:col-span-1"><span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-[#E2E8F0] text-[#334155] font-black text-xs">2</span></div>
+                <div class="sm:col-span-4"><span class="block sm:hidden text-[11px] font-bold text-[#475569] mb-1">Execution Price</span><span class="font-bold text-sm text-[#0F172A]">$120.00</span></div>
+                <div class="sm:col-span-4"><span class="block sm:hidden text-[11px] font-bold text-[#475569] mb-1">Number of Shares</span><span class="font-bold text-sm text-[#0F172A]">15 sh</span></div>
+                <div class="sm:col-span-2"><span class="block sm:hidden text-[11px] font-bold text-[#475569] mb-1">Fee (Optional)</span><span class="font-bold text-xs text-[#0F172A]">$0.00</span></div>
+                <div class="sm:col-span-1"></div>
+              </div>
+              <div class="flex flex-wrap items-center justify-between gap-3 pt-3">
+                <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-[#0F766E] bg-[#E7F4F1]">+ Add Purchase Lot</span>
+                <span class="text-xs font-bold text-[#475569]">☑ Include broker fees in cost basis</span>
+              </div>
+              <div class="mt-6 pt-5 border-t border-[#E2E8F0]">
+                <span class="text-xs font-bold text-[#0F172A]">Next Purchase Simulation</span>
+                <span class="text-xs font-bold px-3 py-1 rounded-lg border bg-[#F8FAFC] text-[#64748B] border-[#CBD5E1] ml-3">+ Test Target Buy</span>
+              </div>
+            </div>
+          </div>
+          <div class="lg:col-span-5 bg-gradient-to-br from-[#0B3B39] via-[#0F766E] to-[#115E59] rounded-3xl p-6 sm:p-8 text-white relative shadow-xl overflow-hidden lg:sticky lg:top-24">
+            <div class="relative z-10 space-y-6">
+              <div class="flex items-center justify-between pb-4 border-b border-white/10">
+                <span class="text-[11px] font-bold uppercase tracking-widest text-emerald-200">Position Basis Telemetry</span>
+                <span class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-white/10 text-white border border-white/15">Copy</span>
+              </div>
+              <div class="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/15 text-center">
+                <span class="text-xs font-semibold uppercase tracking-wider text-emerald-100">Weighted Average Cost / Share</span>
+                <div class="text-3xl sm:text-4xl font-black text-white mt-1 num-tabular tracking-tight">${aprMoney(avg)}</div>
+                <div class="inline-flex items-center gap-1.5 text-xs text-emerald-200 mt-2 bg-black/20 px-2.5 py-1 rounded-full">
+                  <span>${defaults.totalShares} Total Shares</span>
+                  <span>•</span>
+                  <span>2 Lots</span>
+                </div>
+              </div>
+              <div class="space-y-2 pt-2">
+                <div class="flex items-center justify-between text-xs font-bold text-white/90">
+                  <span>Lot Weight Distribution</span>
+                  <span class="text-emerald-300">100% Accounted</span>
+                </div>
+                <div class="flex items-center gap-2.5 text-[11px] font-semibold text-white/80 pt-0.5">
+                  <span>Lot 1 (${lot1Pct}%)</span>
+                  <span>Lot 2 (${lot2Pct}%)</span>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-3 pt-2">
+                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/10">
+                  <span class="text-[11px] font-semibold text-white/70 block">Total Capital Expended</span>
+                  <span class="text-sm sm:text-base font-bold text-white num-tabular mt-0.5 block">${aprMoney(defaults.totalCost)}</span>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/10">
+                  <span class="text-[11px] font-semibold text-white/70 block">Broker Fees Paid</span>
+                  <span class="text-sm sm:text-base font-bold text-white num-tabular mt-0.5 block">${aprMoney(defaults.totalFees)}</span>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/10">
+                  <span class="text-[11px] font-semibold text-white/70 block">Total Shares Count</span>
+                  <span class="text-sm sm:text-base font-bold text-white num-tabular mt-0.5 block">${defaults.totalShares}</span>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/10">
+                  <span class="text-[11px] font-semibold text-white/70 block">Pure Share Cost</span>
+                  <span class="text-sm sm:text-base font-bold text-white num-tabular mt-0.5 block">${aprMoney(defaults.totalCostBeforeFees)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-16">
+          <div class="lg:col-span-8 space-y-8">
+            <section class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm">
+              <h2 class="text-xl font-extrabold text-[#0F172A] mb-3">Why Simple Price Averaging Fails for Stock Purchases</h2>
+              <p class="text-sm text-[#64748B] leading-relaxed mb-4">When buying shares of a stock or ETF across multiple transactions, investors pay different market prices. Many investors mistakenly take a simple arithmetic average of their execution prices. However, simple averaging completely ignores the number of shares bought in each trade.</p>
+              <div class="p-4 bg-[#F8FAFC] border border-[#CBD5E1] rounded-2xl text-xs sm:text-sm text-[#0F172A] space-y-2 mb-4 leading-relaxed">
+                <p><strong>Consider this example:</strong> You buy 10 shares of a company at $50, and later purchase 90 shares of the same company at $100.</p>
+                <p>• <em>Simple Average:</em> ($50 + $100) ÷ 2 = <strong>$75.00</strong></p>
+                <p>• <em>Actual Weighted Average:</em> [(10 × $50) + (90 × $100)] ÷ 100 shares = ($500 + $9,000) ÷ 100 = <strong>$95.00</strong></p>
+              </div>
+              <p class="text-sm text-[#64748B] leading-relaxed">Because 90% of your shares (90 of 100) were bought at $100 — that is $9,000 of your $9,500 total capital, or 94.7% — your real break-even cost is $95.00, not $75.00. Using a simple average would lead you to believe you are in profit when you may still be at a net loss.</p>
+            </section>
+            <section class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm">
+              <h2 class="text-xl font-extrabold text-[#0F172A] mb-3">Weighted Average Cost Methodology</h2>
+              <p class="text-sm text-[#64748B] leading-relaxed mb-4">The weighted average cost calculation aggregates the total dollars spent across every purchase lot (including any trading commissions or regulatory fees) and divides that total capital by the aggregate number of shares currently held:</p>
+              <div class="bg-[#F8FAFC] border border-[#CBD5E1] p-4 rounded-xl num-tabular text-xs sm:text-sm text-[#0F172A] mb-4 font-mono whitespace-pre-line leading-relaxed">${tool.formula}</div>
+              <p class="text-sm text-[#64748B] leading-relaxed">Each lot's share quantity serves as its statistical weight. The more shares you purchase at a specific price, the more heavily that price influences your overall portfolio cost basis.</p>
+            </section>
+            <section class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm">
+              <h2 class="text-xl font-extrabold text-[#0F172A] mb-3">Accounting for Brokerage Fees &amp; Commissions</h2>
+              <p class="text-sm text-[#64748B] leading-relaxed mb-4">While many retail brokerages offer commission-free trading on standard US equities, options traders, international investors, OTC equity traders, and users paying wire or currency fees still face transaction expenses.</p>
+              <p class="text-sm text-[#64748B] leading-relaxed">When you enable the <strong class="text-[#0F172A]">"Include broker fees in cost basis"</strong> option, each lot's fees are added to the numerator of the formula. This raises your calculated average cost per share, showing you the exact gross selling price required to achieve a true net break-even after recouping all trading costs.</p>
+            </section>
+            <section class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm">
+              <h2 class="text-xl font-extrabold text-[#0F172A] mb-3">Dollar-Cost Averaging (DCA) vs. "Averaging Down"</h2>
+              <div class="space-y-4 text-sm text-[#64748B] leading-relaxed">
+                <p><strong class="text-[#0F172A]">Dollar-Cost Averaging (DCA):</strong> A systematic investment strategy where you invest a fixed dollar amount at regular intervals (e.g., $500 every month), regardless of market fluctuations. Over time, you automatically purchase more shares when prices are low and fewer shares when prices are high, smoothing out volatility.</p>
+                <p><strong class="text-[#0F172A]">Averaging Down:</strong> Buying more shares specifically because a stock has fallen in price. While averaging down reduces your average cost per share, it also increases your concentration risk in a deteriorating security. Ensure the underlying business fundamentals remain strong before committing additional capital.</p>
+              </div>
+            </section>
+            <section class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm">
+              <h2 class="text-xl font-extrabold text-[#0F172A] mb-3">Average Cost vs. Official IRS Tax Cost Basis</h2>
+              <p class="text-sm text-[#64748B] leading-relaxed mb-4">It is critical to distinguish an internal portfolio weighted average price from statutory tax cost basis rules when you liquidate shares. Under US federal tax law, the IRS default is First-In, First-Out (FIFO) unless you identify specific lots; average cost is permitted for mutual funds and dividend reinvestment plans. Read our in-depth <a href="${withBase('/learn/how-to-calculate-average-stock-cost/')}" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">Average Stock Cost Educational Guide</a> to explore IRS lot rules and numerical examples.</p>
+            </section>
+            <section class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm">
+              <h2 class="text-xl font-extrabold text-[#0F172A] mb-3">Assumptions &amp; Limitations</h2>
+              <ul class="space-y-2 text-sm text-[#64748B] list-disc list-inside leading-relaxed">
+                ${tool.assumptions.map((a) => `<li>${a}</li>`).join('')}
+              </ul>
+            </section>
+            <section>
+              <h2 class="text-xl font-bold text-[#172033] mb-4">Frequently Asked Questions About Stock Averaging</h2>
+              ${tool.faqs.map((faq) => `
+              <div class="mb-4 bg-white rounded-xl border border-[#E4E9F0] p-5">
+                <h3 class="font-bold text-base text-gray-900">${faq.question}</h3>
+                <p class="text-sm text-gray-600 mt-1">${faq.answer}</p>
+              </div>`).join('')}
+            </section>
+          </div>
+          <div class="lg:col-span-4 space-y-6">
+            <div class="bg-white rounded-3xl border border-[#E2E8F0] p-6 shadow-sm">
+              <div class="text-xs font-bold uppercase tracking-wider text-[#0F766E] mb-2">Comprehensive Guide</div>
+              <h3 class="text-base font-bold text-[#0F172A] mb-2">How to Calculate Average Stock Cost</h3>
+              <p class="text-xs text-[#64748B] leading-relaxed mb-4">Understand quantity-weighted averaging, broker commission adjustments, and why tax cost basis can diverge under IRS rules.</p>
+              <a href="${withBase('/learn/how-to-calculate-average-stock-cost/')}" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#0F766E] hover:underline"><span>Read Educational Guide</span><span>→</span></a>
+            </div>
+            <div class="bg-white rounded-3xl border border-[#E2E8F0] p-6 shadow-sm">
+              <div class="text-xs font-bold uppercase tracking-wider text-[#0F766E] mb-2">Measure Net Gains</div>
+              <h3 class="text-base font-bold text-[#0F172A] mb-2">Return on Investment (ROI)</h3>
+              <p class="text-xs text-[#64748B] leading-relaxed mb-4">Once you know your average share cost, calculate your total percentage profit or loss upon exit using our interactive ROI calculator.</p>
+              <a href="${withBase('/roi-calculator/')}" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#0F766E] hover:underline"><span>Open ROI Calculator</span><span>→</span></a>
+            </div>
+          </div>
+        </div>
+        <div class="mb-16">
+          <h2 class="text-xl font-bold text-[#172033] mb-2">Related Financial Calculators</h2>
+          <p class="text-sm text-[#667085] mb-6">More tools that work with the numbers on this page.</p>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="bg-white border border-[#E2E8F0] rounded-3xl p-6 shadow-sm">
+              <h3 class="font-bold text-base text-[#0F172A] mb-2"><a href="${withBase('/roi-calculator/')}" class="text-teal-700 hover:underline">ROI Calculator</a></h3>
+              <p class="text-xs text-[#64748B]">Measure the return on an investment or project.</p>
+            </div>
+            <div class="bg-white border border-[#E2E8F0] rounded-3xl p-6 shadow-sm">
+              <h3 class="font-bold text-base text-[#0F172A] mb-2"><a href="${withBase('/compound-interest-calculator/')}" class="text-teal-700 hover:underline">Compound Interest Calculator</a></h3>
+              <p class="text-xs text-[#64748B]">See how compound growth builds wealth over time.</p>
+            </div>
+          </div>
+          <h2 class="text-xl font-bold text-[#172033] mt-12 mb-2">Helpful Educational Guides</h2>
+          <p class="text-sm text-[#667085] mb-6">Understand the formulas, methodology, and financial context behind these calculations.</p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white border border-[#E2E8F0] rounded-3xl p-6 shadow-sm">
+              <h3 class="font-bold text-base text-[#0F172A] mb-2"><a href="${withBase('/learn/how-to-calculate-average-stock-cost/')}" class="text-teal-700 hover:underline">How to Calculate Average Stock Cost</a></h3>
+              <p class="text-xs text-[#64748B]">Learn how to calculate your quantity-weighted average share price across multiple purchases, factor in broker fees, and understand tax cost basis differences.</p>
+            </div>
+            <div class="bg-white border border-[#E2E8F0] rounded-3xl p-6 shadow-sm">
+              <h3 class="font-bold text-base text-[#0F172A] mb-2"><a href="${withBase('/learn/how-to-calculate-roi/')}" class="text-teal-700 hover:underline">How to Calculate Return on Investment (ROI)</a></h3>
+              <p class="text-xs text-[#64748B]">Learn how to calculate Return on Investment (ROI), interpret positive and negative returns, and compute annualized ROI.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <footer class="bg-white border-t border-[#E4E9F0] mt-20">
+      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 py-12 lg:py-16">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
+          <div class="lg:col-span-2 space-y-4">
+            <a href="${withBase('/')}" class="flex items-center gap-2.5 text-[#172033] font-semibold text-lg">
+              <div class="w-7 h-7 rounded-lg bg-[#0F766E] text-white flex items-center justify-center font-bold text-sm">$</div>
+              <span>${siteConfig.name}</span>
+            </a>
+            <p class="text-sm text-[#667085] max-w-sm leading-relaxed">${siteConfig.tagline}</p>
+            <p class="text-xs text-[#667085] leading-relaxed pt-2 border-t border-[#E4E9F0]/60">${siteConfig.disclaimerShort}</p>
+          </div>
+          <div>
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-[#172033] mb-3">Tool Categories</h3>
+            <ul class="space-y-2 text-sm text-[#667085]">
+              <li><a href="${withBase('/tools/investing/')}">Investing Tools</a></li>
+              <li><a href="${withBase('/tools/credit-debt/')}">Credit &amp; Debt</a></li>
+              <li><a href="${withBase('/tools/retirement/')}">Retirement Planning</a></li>
+              <li><a href="${withBase('/tools/business-finance/')}">Business Finance</a></li>
+              <li><a href="${withBase('/tools/')}" class="font-medium text-[#0F766E]">All Calculators &rarr;</a></li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-[#172033] mb-3">Learn</h3>
+            <ul class="space-y-2 text-sm text-[#667085]">
+              <li><a href="${withBase('/learn/how-to-calculate-average-stock-cost/')}">Average Stock Cost</a></li>
+              <li><a href="${withBase('/learn/how-to-calculate-roi/')}">How to Calculate ROI</a></li>
+              <li><a href="${withBase('/learn/apr-vs-interest-rate/')}">APR vs. Interest Rate</a></li>
+              <li><a href="${withBase('/learn/flat-vs-tiered-commission/')}">Tiered Commission</a></li>
+              <li><a href="${withBase('/learn/how-long-will-retirement-savings-last/')}">Retirement Longevity</a></li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-[#172033] mb-3">Platform</h3>
+            <ul class="space-y-2 text-sm text-[#667085]">
+              <li><a href="${withBase('/about/')}">About</a></li>
+              <li><a href="${withBase('/methodology/')}">Calculation Methodology</a></li>
+              <li><a href="${withBase('/financial-disclaimer/')}">Financial Disclaimer</a></li>
+              <li><a href="${withBase('/contact/')}">Contact</a></li>
+              <li><a href="${withBase('/privacy/')}">Privacy Policy</a></li>
+              <li><a href="${withBase('/terms/')}">Terms of Use</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="mt-12 pt-8 border-t border-[#E4E9F0] flex flex-col sm:flex-row items-center justify-between text-xs text-[#667085] gap-4">
+          <div>&copy; ${year} ${siteConfig.name}. All rights reserved.</div>
+          <div class="flex items-center gap-4">
+            <a href="${withBase('/privacy/')}" class="hover:underline">Privacy</a>
+            <span class="text-[#E4E9F0]">&bull;</span>
+            <a href="${withBase('/terms/')}" class="hover:underline">Terms</a>
+            <span class="text-[#E4E9F0]">&bull;</span>
+            <a href="${withBase('/financial-disclaimer/')}" class="hover:underline">Disclaimer</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+  `
+}
+
+// ---------------------------------------------------------------------------
+// Loan Payment Calculator — full prerendered shell (same pattern as the
+// APR/retirement shells). Every number comes from the loan engine, never
+// hand-typed. Defaults: $300,000 principal, 6.5% APR, 30-year term, $0 extra.
+// Displayed schedule rows are cent-reconciled via buildDisplaySchedule so
+// each displayed row adds up exactly.
+// ---------------------------------------------------------------------------
+function renderLoanShell(tool) {
+  const defaults = calculateLoanPayment({
+    principal: 300000,
+    annualRate: 6.5,
+    term: 30,
+    termUnit: 'years',
+    extraMonthlyPayment: 0
+  })
+  const withExtra = calculateLoanPayment({
+    principal: 300000,
+    annualRate: 6.5,
+    term: 30,
+    termUnit: 'years',
+    extraMonthlyPayment: 250
+  })
+  const displayRows = buildDisplaySchedule(defaults.schedule)
+  const year = new Date().getFullYear()
+  // Crossover: first month the total principal repaid meets or exceeds the
+  // interest charge; 50% point: first month the balance falls to half.
+  const crossoverRow = defaults.schedule.find((r) => r.principalRepaid >= r.interest)
+  const crossoverMonth = crossoverRow ? crossoverRow.paymentNumber : null
+  const halfRow = defaults.schedule.find((r) => r.endingBalance <= defaults.principal / 2)
+  const halfMonth = halfRow ? halfRow.paymentNumber : null
+  const years = (defaults.totalMonths / 12).toFixed(1)
+
+  return `
+  <div class="min-h-screen flex flex-col bg-[#F7F9FC] text-[#172033]">
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-[#E4E9F0]">
+      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+        <a href="${withBase('/')}" class="flex items-center gap-2.5 text-[#172033] font-semibold text-lg">
+          <div class="w-8 h-8 rounded-lg bg-[#0F766E] text-white flex items-center justify-center font-bold text-base shadow-sm">$</div>
+          <span>${siteConfig.name}</span>
+        </a>
+        <nav class="hidden md:flex items-center gap-1 lg:gap-2" aria-label="Main Navigation">
+          <a href="${withBase('/tools/')}" class="px-3 py-1.5 rounded-md text-sm font-medium text-[#667085]">Tools</a>
+          <a href="${withBase('/tools/investing/')}" class="px-3 py-1.5 rounded-md text-sm font-medium text-[#667085]">Investing</a>
+          <a href="${withBase('/tools/credit-debt/')}" class="px-3 py-1.5 rounded-md text-sm font-medium text-[#0F766E] bg-[#E7F4F1] font-semibold">Credit &amp; Debt</a>
+          <a href="${withBase('/tools/retirement/')}" class="px-3 py-1.5 rounded-md text-sm font-medium text-[#667085]">Retirement</a>
+          <a href="${withBase('/tools/business-finance/')}" class="px-3 py-1.5 rounded-md text-sm font-medium text-[#667085]">Business</a>
+          <a href="${withBase('/learn/')}" class="px-3 py-1.5 rounded-md text-sm font-medium text-[#667085]">Learn</a>
+        </nav>
+        <a href="${withBase('/tools/')}" class="hidden md:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-sm font-medium bg-[#0F766E] text-white shadow-sm">Explore tools</a>
+      </div>
+    </header>
+    <main class="flex-1">
+      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 py-6 sm:py-10">
+        <nav class="text-xs text-[#64748B] mb-6" aria-label="Breadcrumb">
+          <a href="${withBase('/')}" class="hover:text-[#0F766E]">Home</a> /
+          <a href="${withBase('/tools/credit-debt/')}" class="hover:text-[#0F766E]">Credit &amp; Debt</a> /
+          <span class="text-[#0F172A] font-semibold">Loan Payment Calculator</span>
+        </nav>
+        <div class="mb-8 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+          <div>
+            <div class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#0F766E] bg-[#E7F4F1] px-3 py-1 rounded-full mb-2.5">
+              <span>Interactive Financing Instrument</span>
+            </div>
+            <h1 class="text-2xl sm:text-4xl font-extrabold text-[#0F172A] tracking-tight mb-2">Loan Payment Calculator</h1>
+            <p class="text-sm sm:text-base text-[#64748B] max-w-2xl leading-relaxed">${tool.fullDescription}</p>
+          </div>
+          <div class="flex items-center gap-2.5 self-start md:self-end">
+            <span class="text-xs font-semibold bg-white border border-[#CBD5E1] rounded-xl px-3 py-2 text-[#334155] shadow-2xs">USD ($)</span>
+            <span class="inline-flex items-center gap-1.5 text-xs font-semibold bg-white border border-[#CBD5E1] px-3 py-2 rounded-xl text-[#64748B] shadow-2xs">Reset</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
+          <div class="lg:col-span-7 bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm">
+            <div class="flex items-center justify-between pb-4 mb-6 border-b border-[#F1F5F9]">
+              <span class="text-xs font-bold uppercase tracking-wider text-[#475569]">Loan Configuration</span>
+              <span class="text-[11px] font-semibold text-[#94A3B8]">Auto-calculated in USD</span>
+            </div>
+            <div class="space-y-5">
+              <div>
+                <span class="text-xs font-bold text-[#0F172A] block mb-1.5">Principal Amount (USD)</span>
+                <div class="flex items-center bg-white border border-[#CBD5E1] rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-[#0F766E] focus-within:border-[#0F766E] transition-shadow">
+                  <span class="pl-4 text-sm font-bold text-[#64748B]">$</span>
+                  <span class="w-full px-2 py-3 text-sm font-bold text-[#0F172A] outline-none">300,000</span>
+                </div>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <span class="text-xs font-bold text-[#0F172A] block mb-1.5">Annual Interest Rate (APR %)</span>
+                  <div class="flex items-center bg-white border border-[#CBD5E1] rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-[#0F766E] focus-within:border-[#0F766E] transition-shadow">
+                    <span class="w-full px-4 py-3 text-sm font-bold text-[#0F172A] outline-none">6.5</span>
+                    <span class="pr-4 text-sm font-bold text-[#64748B]">%</span>
+                  </div>
+                </div>
+                <div>
+                  <span class="text-xs font-bold text-[#0F172A] block mb-1.5">Loan Term</span>
+                  <div class="flex gap-2">
+                    <span class="flex-1 bg-white border border-[#CBD5E1] rounded-xl px-4 py-3 text-sm font-bold text-[#0F172A]">30</span>
+                    <span class="bg-[#F1F5F9] border border-[#CBD5E1] rounded-xl px-3 py-3 text-xs font-bold text-[#0F172A]">Years</span>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <span class="text-xs font-bold text-[#0F172A] block mb-1.5">Extra Monthly Payment (Optional) <span class="text-[#94A3B8] font-normal">— Pay off faster</span></span>
+                <div class="flex items-center bg-white border border-[#CBD5E1] rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-[#0F766E] focus-within:border-[#0F766E] transition-shadow">
+                  <span class="pl-4 text-sm font-bold text-[#64748B]">$</span>
+                  <span class="w-full px-2 py-3 text-sm font-bold text-[#0F172A] outline-none">0</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="lg:col-span-5 bg-gradient-to-br from-[#0B3B39] via-[#0F766E] to-[#115E59] rounded-3xl p-6 sm:p-8 text-white relative shadow-xl overflow-hidden lg:sticky lg:top-24">
+            <div class="relative z-10 space-y-6">
+              <div class="flex items-center justify-between pb-4 border-b border-white/10">
+                <span class="text-[11px] font-bold uppercase tracking-widest text-emerald-200">Loan Result Summary</span>
+                <span class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-white/10 text-white border border-white/15">Copy</span>
+              </div>
+              <div class="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/15 text-center">
+                <span class="text-xs font-semibold uppercase tracking-wider text-emerald-100">Monthly Payment</span>
+                <div class="text-3xl sm:text-4xl font-black text-white mt-1 num-tabular tracking-tight">${aprMoney(defaults.regularMonthlyPayment)}<span class="text-sm sm:text-lg font-bold text-emerald-200 ml-1">/month</span></div>
+                <div class="inline-flex items-center gap-1.5 text-xs text-emerald-200 mt-2 bg-black/20 px-2.5 py-1 rounded-full">
+                  <span>${defaults.totalMonths} Total Payments</span>
+                  <span>•</span>
+                  <span>${years} Years</span>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-3 pt-2">
+                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/10">
+                  <span class="text-[11px] font-semibold text-white/70 block">Total Principal</span>
+                  <span class="text-sm sm:text-base font-bold text-white num-tabular mt-0.5 block">${aprMoney(defaults.principal)}</span>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/10">
+                  <span class="text-[11px] font-semibold text-white/70 block">Total Interest</span>
+                  <span class="text-sm sm:text-base font-bold text-white num-tabular mt-0.5 block">${aprMoney(defaults.totalInterest)}</span>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/10">
+                  <span class="text-[11px] font-semibold text-white/70 block">Payoff Horizon</span>
+                  <span class="text-sm sm:text-base font-bold text-white num-tabular mt-0.5 block">${defaults.totalMonths} Mo (~${years} Years)</span>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/10">
+                  <span class="text-[11px] font-semibold text-white/70 block">Total Outlay</span>
+                  <span class="text-sm sm:text-base font-bold text-white num-tabular mt-0.5 block">${aprMoney(defaults.totalRepayment)} total</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm mb-12">
+          <h2 class="text-lg font-extrabold text-[#0F172A] mb-1">Amortization Insights</h2>
+          <p class="text-xs text-[#64748B] mb-5">How each payment splits between interest and principal over the life of the loan.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
+            <div class="p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-200">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-[#0F766E] mb-1">First Interest Charge</div>
+              <div class="text-base font-extrabold text-[#0F172A]">${aprMoney(displayRows[0].interest)}</div>
+              <div class="text-[11px] text-[#0F766E] mt-0.5">Month 1 interest on ${aprMoney(defaults.principal)}</div>
+            </div>
+            <div class="p-3.5 rounded-2xl bg-teal-50/70 border border-teal-200">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-[#0F766E] mb-1 flex items-center justify-between"><span>Crossover Month</span><span class="px-1.5 py-0.5 rounded bg-[#0F766E] text-white text-[10px] font-bold">Month ${crossoverMonth}</span></div>
+              <div class="text-base font-extrabold text-[#0F172A]">Year ${crossoverRow ? Math.ceil(crossoverRow.paymentNumber / 12) : ''}, Month ${crossoverRow ? ((crossoverRow.paymentNumber - 1) % 12) + 1 : ''}</div>
+              <div class="text-[11px] text-[#0F766E] mt-0.5">Principal repaid surpasses interest fee</div>
+            </div>
+            <div class="p-3.5 rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0]">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-[#475569] mb-1">50% Balance Point</div>
+              <div class="text-base font-extrabold text-[#0F172A]">Month ${halfMonth}</div>
+              <div class="text-[11px] text-[#64748B] mt-0.5">Balance falls below half of principal</div>
+            </div>
+          </div>
+          <p class="text-sm text-[#64748B] leading-relaxed mb-4">
+            In a standard fixed-rate amortizing mortgage of <strong>${aprMoney(defaults.principal)} at 6.50% APR</strong> over <strong>30 years</strong>,
+            monthly installments begin with interest charges comprising the dominant share of payments. The mathematical <em>crossover point</em> occurs at
+            <strong class="text-[#0F172A]">Month ${crossoverMonth} (Year ${crossoverRow ? Math.ceil(crossoverRow.paymentNumber / 12) : ''}, Month ${crossoverRow ? ((crossoverRow.paymentNumber - 1) % 12) + 1 : ''})</strong>,
+            where the principal reduction portion ($${crossoverRow ? crossoverRow.principalRepaid.toFixed(2) : ''}) finally overtakes accrued monthly interest ($${crossoverRow ? crossoverRow.interest.toFixed(2) : ''}).
+          </p>
+          <p class="text-sm text-[#64748B] leading-relaxed">
+            Adding <strong class="text-[#0F172A]">$250 per month in extra principal</strong> shortens this loan from 360 to ${withExtra.totalMonths} payments and saves <strong class="text-[#0F172A]">${aprMoney(withExtra.interestSaved)}</strong> in interest.
+          </p>
+        </div>
+        <div class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm mb-12 overflow-x-auto">
+          <h2 class="text-lg font-extrabold text-[#0F172A] mb-1">Amortization Schedule</h2>
+          <p class="text-xs text-[#64748B] mb-4">First year of payments (full 360-month schedule available in the interactive calculator).</p>
+          <table class="w-full text-sm text-left min-w-[640px]">
+            <thead>
+              <tr class="text-xs text-[#64748B] border-b border-[#E2E8F0]">
+                <th class="py-2.5 px-4 font-bold">Month</th>
+                <th class="py-2.5 px-4 font-bold">Starting</th>
+                <th class="py-2.5 px-4 font-bold">Interest</th>
+                <th class="py-2.5 px-4 font-bold">Principal</th>
+                <th class="py-2.5 px-4 font-bold">Total Paid</th>
+                <th class="py-2.5 px-4 font-bold">Ending</th>
+                <th class="py-2.5 px-4 font-bold text-right">Cum. Interest</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${displayRows.slice(0, 12).map((row) => `
+              <tr class="border-b border-[#F1F5F9] hover:bg-[#F8FAFC] transition-colors">
+                <td class="py-2.5 px-4 font-semibold text-[#0F172A]">${row.paymentNumber}</td>
+                <td class="py-2.5 px-4">${aprMoney(row.startingBalance)}</td>
+                <td class="py-2.5 px-4 text-amber-700 font-semibold">${aprMoney(row.interest)}</td>
+                <td class="py-2.5 px-4 text-emerald-700 font-semibold">${aprMoney(row.principalRepaid)}</td>
+                <td class="py-2.5 px-4 font-bold text-[#0F172A]">${aprMoney(row.totalPaymentThisMonth)}</td>
+                <td class="py-2.5 px-4 font-medium">${aprMoney(row.endingBalance)}</td>
+                <td class="py-2.5 px-4 text-right font-medium text-[#64748B]">${aprMoney(row.totalInterestPaidToDate)}</td>
+              </tr>`).join('')}
+            </tbody>
+          </table>
+          <p class="text-[11px] text-[#94A3B8] pt-3">* Displayed figures are rounded to two decimal places and reconciled so each displayed row adds up exactly.</p>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-16">
+          <div class="lg:col-span-8 space-y-8">
+            <section class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm">
+              <h2 class="text-xl font-extrabold text-[#0F172A] mb-3">The Loan Payment Formula</h2>
+              <p class="text-sm text-[#64748B] leading-relaxed mb-4">A fixed-rate loan payment is computed from the standard amortizing loan formula. The same monthly payment covers both interest and principal every month, but the split between them changes: early payments are mostly interest, later payments are mostly principal.</p>
+              <div class="bg-[#F8FAFC] border border-[#CBD5E1] p-4 rounded-xl num-tabular text-xs sm:text-sm text-[#0F172A] mb-4 font-mono whitespace-pre-line leading-relaxed">${tool.formula}</div>
+              <p class="text-sm text-[#64748B] leading-relaxed">For the default example — ${aprMoney(defaults.principal)} at 6.5% APR over 30 years — the formula gives a monthly payment of ${aprMoney(defaults.regularMonthlyPayment)}, total interest of ${aprMoney(defaults.totalInterest)}, and a total outlay of ${aprMoney(defaults.totalRepayment)}.</p>
+            </section>
+            <section class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm">
+              <h2 class="text-xl font-extrabold text-[#0F172A] mb-3">How Amortization Works</h2>
+              <p class="text-sm text-[#64748B] leading-relaxed mb-4">Each month, interest is charged on the remaining balance first, and the rest of your payment reduces the principal. Because the balance falls, the interest portion shrinks and the principal portion grows. On this loan the principal portion first exceeds the interest charge in <strong class="text-[#0F172A]">Month ${crossoverMonth}</strong>, and the balance first falls below half of the original principal in <strong class="text-[#0F172A]">Month ${halfMonth}</strong>. Read our in-depth <a href="${withBase('/learn/how-loan-amortization-works/')}" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">Loan Amortization Guide</a> for the full month-by-month breakdown.</p>
+            </section>
+            <section class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm">
+              <h2 class="text-xl font-extrabold text-[#0F172A] mb-3">Extra Payments Save Real Money</h2>
+              <p class="text-sm text-[#64748B] leading-relaxed">Adding $250 per month in extra principal to the default loan pays it off in ${withExtra.totalMonths} months instead of 360 — ${defaults.totalMonths - withExtra.totalMonths} months early — and saves ${aprMoney(withExtra.interestSaved)} in interest. Extra payments go entirely to principal, so every extra dollar shortens the loan.</p>
+            </section>
+            <section class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm">
+              <h2 class="text-xl font-extrabold text-[#0F172A] mb-3">Assumptions &amp; Limitations</h2>
+              <ul class="space-y-2 text-sm text-[#64748B] list-disc list-inside leading-relaxed">
+                ${tool.assumptions.map((a) => `<li>${a}</li>`).join('')}
+              </ul>
+            </section>
+            <section>
+              <h2 class="text-xl font-bold text-[#172033] mb-4">Frequently Asked Questions</h2>
+              ${tool.faqs.map((faq) => `
+              <div class="mb-4 bg-white rounded-xl border border-[#E4E9F0] p-5">
+                <h3 class="font-bold text-base text-gray-900">${faq.question}</h3>
+                <p class="text-sm text-gray-600 mt-1">${faq.answer}</p>
+              </div>`).join('')}
+            </section>
+          </div>
+          <div class="lg:col-span-4 space-y-6">
+            <div class="bg-white rounded-3xl border border-[#E2E8F0] p-6 shadow-sm">
+              <div class="text-xs font-bold uppercase tracking-wider text-[#0F766E] mb-2">Comprehensive Guide</div>
+              <h3 class="text-base font-bold text-[#0F172A] mb-2">How Loan Amortization Works</h3>
+              <p class="text-xs text-[#64748B] leading-relaxed mb-4">Understand how every payment splits between interest and principal, the crossover point, and how extra payments shorten the term.</p>
+              <a href="${withBase('/learn/how-loan-amortization-works/')}" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#0F766E] hover:underline"><span>Read Educational Guide</span><span>→</span></a>
+            </div>
+            <div class="bg-white rounded-3xl border border-[#E2E8F0] p-6 shadow-sm">
+              <div class="text-xs font-bold uppercase tracking-wider text-[#0F766E] mb-2">Compare Rates</div>
+              <h3 class="text-base font-bold text-[#0F172A] mb-2">Credit Card APR Calculator</h3>
+              <p class="text-xs text-[#64748B] leading-relaxed mb-4">See what a credit-card balance really costs at a given APR and how much faster a higher payment pays it off.</p>
+              <a href="${withBase('/credit-card-apr-calculator/')}" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#0F766E] hover:underline"><span>Open APR Calculator</span><span>→</span></a>
+            </div>
+          </div>
+        </div>
+        <div class="mb-16">
+          <h2 class="text-xl font-bold text-[#172033] mb-2">Related Financial Calculators</h2>
+          <p class="text-sm text-[#667085] mb-6">More tools that work with the numbers on this page.</p>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="bg-white border border-[#E2E8F0] rounded-3xl p-6 shadow-sm">
+              <h3 class="font-bold text-base text-[#0F172A] mb-2"><a href="${withBase('/debt-payoff-planner/')}" class="text-teal-700 hover:underline">Debt Payoff Planner</a></h3>
+              <p class="text-xs text-[#64748B]">Plan a payoff strategy across multiple debts.</p>
+            </div>
+            <div class="bg-white border border-[#E2E8F0] rounded-3xl p-6 shadow-sm">
+              <h3 class="font-bold text-base text-[#0F172A] mb-2"><a href="${withBase('/credit-card-apr-calculator/')}" class="text-teal-700 hover:underline">Credit Card APR Calculator</a></h3>
+              <p class="text-xs text-[#64748B]">Calculate credit card interest and payoff time.</p>
+            </div>
+          </div>
+          <h2 class="text-xl font-bold text-[#172033] mt-12 mb-2">Helpful Educational Guides</h2>
+          <p class="text-sm text-[#667085] mb-6">Understand the formulas, methodology, and financial context behind these calculations.</p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white border border-[#E2E8F0] rounded-3xl p-6 shadow-sm">
+              <h3 class="font-bold text-base text-[#0F172A] mb-2"><a href="${withBase('/learn/how-loan-amortization-works/')}" class="text-teal-700 hover:underline">How Loan Amortization Works</a></h3>
+              <p class="text-xs text-[#64748B]">Learn how loan amortization works, how each payment splits between interest and principal, and how extra payments shorten the term.</p>
+            </div>
+            <div class="bg-white border border-[#E2E8F0] rounded-3xl p-6 shadow-sm">
+              <h3 class="font-bold text-base text-[#0F172A] mb-2"><a href="${withBase('/learn/apr-vs-interest-rate/')}" class="text-teal-700 hover:underline">APR vs. Interest Rate: What's the Difference?</a></h3>
+              <p class="text-xs text-[#64748B]">Learn the difference between APR and interest rate, when each applies, and how to compare loan offers accurately.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <footer class="bg-white border-t border-[#E4E9F0] mt-20">
+      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 py-12 lg:py-16">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
+          <div class="lg:col-span-2 space-y-4">
+            <a href="${withBase('/')}" class="flex items-center gap-2.5 text-[#172033] font-semibold text-lg">
+              <div class="w-7 h-7 rounded-lg bg-[#0F766E] text-white flex items-center justify-center font-bold text-sm">$</div>
+              <span>${siteConfig.name}</span>
+            </a>
+            <p class="text-sm text-[#667085] max-w-sm leading-relaxed">${siteConfig.tagline}</p>
+            <p class="text-xs text-[#667085] leading-relaxed pt-2 border-t border-[#E4E9F0]/60">${siteConfig.disclaimerShort}</p>
+          </div>
+          <div>
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-[#172033] mb-3">Tool Categories</h3>
+            <ul class="space-y-2 text-sm text-[#667085]">
+              <li><a href="${withBase('/tools/investing/')}">Investing Tools</a></li>
+              <li><a href="${withBase('/tools/credit-debt/')}">Credit &amp; Debt</a></li>
+              <li><a href="${withBase('/tools/retirement/')}">Retirement Planning</a></li>
+              <li><a href="${withBase('/tools/business-finance/')}">Business Finance</a></li>
+              <li><a href="${withBase('/tools/')}" class="font-medium text-[#0F766E]">All Calculators &rarr;</a></li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-[#172033] mb-3">Learn</h3>
+            <ul class="space-y-2 text-sm text-[#667085]">
+              <li><a href="${withBase('/learn/how-to-calculate-average-stock-cost/')}">Average Stock Cost</a></li>
+              <li><a href="${withBase('/learn/how-to-calculate-roi/')}">How to Calculate ROI</a></li>
+              <li><a href="${withBase('/learn/apr-vs-interest-rate/')}">APR vs. Interest Rate</a></li>
+              <li><a href="${withBase('/learn/flat-vs-tiered-commission/')}">Tiered Commission</a></li>
+              <li><a href="${withBase('/learn/how-long-will-retirement-savings-last/')}">Retirement Longevity</a></li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-[#172033] mb-3">Platform</h3>
+            <ul class="space-y-2 text-sm text-[#667085]">
+              <li><a href="${withBase('/about/')}">About</a></li>
+              <li><a href="${withBase('/methodology/')}">Calculation Methodology</a></li>
+              <li><a href="${withBase('/financial-disclaimer/')}">Financial Disclaimer</a></li>
+              <li><a href="${withBase('/contact/')}">Contact</a></li>
+              <li><a href="${withBase('/privacy/')}">Privacy Policy</a></li>
+              <li><a href="${withBase('/terms/')}">Terms of Use</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="mt-12 pt-8 border-t border-[#E4E9F0] flex flex-col sm:flex-row items-center justify-between text-xs text-[#667085] gap-4">
+          <div>&copy; ${year} ${siteConfig.name}. All rights reserved.</div>
+          <div class="flex items-center gap-4">
+            <a href="${withBase('/privacy/')}" class="hover:underline">Privacy</a>
+            <span class="text-[#E4E9F0]">&bull;</span>
+            <a href="${withBase('/terms/')}" class="hover:underline">Terms</a>
+            <span class="text-[#E4E9F0]">&bull;</span>
+            <a href="${withBase('/financial-disclaimer/')}" class="hover:underline">Disclaimer</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+  `
+}
+
 // Task 10: replace the APR route's prose-only prerender with the full
 // calculator shell (header, H1, console, default results, tables).
 const aprRoute = routes.find((r) => r.path === '/credit-card-apr-calculator/')
@@ -1165,6 +1792,22 @@ const retirementRoute = routes.find((r) => r.path === '/retirement-savings-calcu
 if (retirementRoute) {
   const retirementTool = tools.find((t) => t.slug === 'retirement-savings-calculator')
   if (retirementTool) retirementRoute.bodyHtml = renderRetirementShell(retirementTool)
+}
+
+// Stock average shell: replace the stock route's prose-only prerender
+// with the full calculator shell (same pattern as the APR route).
+const stockRoute = routes.find((r) => r.path === '/stock-average-calculator/')
+if (stockRoute) {
+  const stockTool = tools.find((t) => t.slug === 'stock-average-calculator')
+  if (stockTool) stockRoute.bodyHtml = renderStockShell(stockTool)
+}
+
+// Loan payment shell: replace the loan route's prose-only prerender
+// with the full calculator shell (same pattern as the APR route).
+const loanRoute = routes.find((r) => r.path === '/loan-payment-calculator/')
+if (loanRoute) {
+  const loanTool = tools.find((t) => t.slug === 'loan-payment-calculator')
+  if (loanTool) loanRoute.bodyHtml = renderLoanShell(loanTool)
 }
 
 // Prerender all routes

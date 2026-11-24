@@ -24,7 +24,7 @@ export const tools: ToolItem[] = [
     name: 'Stock Average Calculator',
     title: 'Stock Average Calculator – Calculate Weighted Average Share Price',
     shortDescription: 'Calculate the quantity-weighted average purchase price of your shares.',
-    fullDescription: 'Calculate your exact weighted average stock cost per share across multiple purchases. Account for share counts, purchase prices, and optional trading fees to find your real break-even price.',
+    fullDescription: 'Calculate your weighted average stock cost per share across multiple purchases, including trading fees, to find your real break-even price.',
     category: 'investing',
     categoryName: 'Investing',
     icon: 'TrendingUp',
@@ -42,7 +42,7 @@ export const tools: ToolItem[] = [
       },
       {
         question: 'Why does simple price averaging fail for stock purchases?',
-        answer: 'A simple average only adds the price tags and divides by the number of transactions, ignoring volume. If you buy 10 shares at $50 and 90 shares at $100, a simple average says $75, but your actual weighted cost is $95 because 90% of your capital was deployed at $100.'
+        answer: 'A simple average only adds the price tags and divides by the number of transactions, ignoring volume. If you buy 10 shares at $50 and 90 shares at $100, a simple average says $75, but your actual weighted cost is $95 because 90% of your shares (90 of 100) were bought at $100 — that is $9,000 of your $9,500 total capital, or 94.7%.'
       },
       {
         question: 'What happens when I buy more shares at a lower price (averaging down)?',
@@ -380,14 +380,14 @@ export const tools: ToolItem[] = [
     name: 'Loan Payment Calculator',
     title: 'Loan Payment Calculator – Estimate Monthly Payments & Payoff Schedule',
     shortDescription: 'Calculate fixed-rate loan payments, interest costs, and amortization schedules.',
-    fullDescription: 'Calculate fixed-rate monthly loan payments and generate complete month-by-month amortization schedules. Explore how additional monthly payments accelerate debt payoff and save interest.',
+    fullDescription: 'Calculate fixed-rate monthly loan payments and view a complete month-by-month amortization schedule. See how extra payments shorten the term and save interest.',
     category: 'credit-debt',
     categoryName: 'Credit & Debt',
     icon: 'CreditCard',
     formula: 'Monthly Payment: M = P × [r / (1 − (1+r)^−n)]\nZero Interest: M = P / n\nwhere r = APR / 12 / 100, n = total months',
     assumptions: [
       'Assumes a fixed interest rate and standard monthly compounding (APR / 12).',
-      'Calculations maintain full floating-point precision internally across all schedule rows. Displayed table figures are rounded to two decimal places; due to independent cent rounding, displayed monthly interest and principal may occasionally sum to ±$0.01 relative to the rounded monthly installment.',
+      'Calculations maintain full floating-point precision internally across all schedule rows. Displayed table figures are rounded to two decimal places and reconciled so each displayed row adds up exactly: the Total Paid column is the sum of the displayed interest, principal and extra columns, and the displayed ending balance equals the displayed starting balance minus the displayed principal and extra. The final month\'s principal is adjusted by up to $0.01 so the loan closes at exactly $0.00, and a row\'s displayed starting balance may differ by $0.01 from the previous row\'s displayed ending balance because each is rounded independently.',
       'Excludes loan origination fees, appraisal charges, closing costs, property taxes, insurance escrow, and prepayment penalties.',
       'Extra monthly payments are applied entirely toward the outstanding principal balance.',
       'Does not model variable interest rate adjustments or complex lender interest-day counting conventions (e.g. 365/360).',
@@ -412,7 +412,7 @@ export const tools: ToolItem[] = [
       },
       {
         question: 'How does a bi-weekly payment schedule save money on a mortgage or loan?',
-        answer: 'Making half-payments every two weeks results in 26 half-payments per year (equivalent to 13 full monthly payments). That single extra monthly payment per year accelerates principal reduction and can shave 4 to 6 years off a 30-year mortgage.'
+        answer: 'Making half-payments every two weeks results in 26 half-payments per year — the equivalent of 13 full monthly payments. That one extra monthly payment per year accelerates payoff: on a $300,000, 6.5%, 30-year mortgage, the bi-weekly pattern retires the loan in 290 months instead of 360 — about 5.8 years early — and saves $87,256.29 in interest. The exact saving depends on the loan amount, rate and term; use the extra-payment input above to model your own loan.'
       },
       {
         question: 'What is the difference between an amortizing loan and a balloon loan?',
