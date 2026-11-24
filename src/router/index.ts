@@ -7,6 +7,9 @@ import { createRouter, createWebHistory } from 'vue-router'
 // render the whole page in one synchronous pass, so the prerendered shell is
 // replaced without any visible gap.
 import CreditCardAprPage from '@/pages/CreditCardAprPage.vue'
+// Same treatment for the retirement calculator: it also has a full
+// prerendered shell now, and it is the closest page to page 1 (pos 11.89).
+import RetirementGoalPage from '@/pages/RetirementGoalPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -67,7 +70,7 @@ const router = createRouter({
     {
       path: '/retirement-savings-calculator/',
       name: 'retirement-savings-calculator',
-      component: () => import('@/pages/RetirementGoalPage.vue')
+      component: RetirementGoalPage
     },
     {
       path: '/loan-payment-calculator/',

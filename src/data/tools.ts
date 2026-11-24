@@ -333,7 +333,7 @@ export const tools: ToolItem[] = [
     name: 'Retirement Savings Goal Calculator',
     title: 'Retirement Savings Goal Calculator – Estimate Required Contributions',
     shortDescription: 'Estimate the periodic contributions needed to reach your retirement target.',
-    fullDescription: 'Calculate the monthly or annual contributions needed to achieve your retirement nest egg goal. Factor in existing savings, expected return, timing, and annual step-up contribution increases.',
+    fullDescription: 'Calculate the monthly or annual contributions needed to reach your retirement nest egg goal, based on your existing savings, expected return, and timing.',
     category: 'retirement',
     categoryName: 'Retirement',
     icon: 'Target',

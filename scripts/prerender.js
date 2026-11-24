@@ -22,6 +22,7 @@ import {
   getScenarioAMinimumAnalysis,
   getWorkedExampleScenarios
 } from '../src/calculations/creditCardApr.ts'
+import { calculateRetirementGoal } from '../src/calculations/retirementGoal.ts'
 
 // Base URL helper for subpaths (default '/')
 const base = process.env.BASE_URL || '/'
@@ -538,6 +539,318 @@ function renderAprShell(tool) {
   `
 }
 
+// ---------------------------------------------------------------------------
+// Retirement Savings Goal shell
+// Same pattern as renderAprShell: full first-paint layout (header, H1,
+// console with default results, schedule preview, formula, FAQ) using the
+// same classes as the Vue page so hydration does not shift the layout.
+// Every number comes from the retirement engine, never hand-typed.
+// ---------------------------------------------------------------------------
+function renderRetirementShell(tool) {
+  const defaults = calculateRetirementGoal({
+    currentSavings: 50000,
+    targetAmount: 1000000,
+    currentAge: 35,
+    retirementAge: 65,
+    expectedAnnualReturn: 7,
+    contributionFrequency: 'monthly',
+    contributionTiming: 'end',
+    annualContributionIncreasePct: 0
+  })
+  const year = new Date().getFullYear()
+  const total = Math.max(1, defaults.projectedFinalBalance)
+  const initialPct = (50000 / total) * 100
+  const contribPct = (defaults.totalPersonalContributions / total) * 100
+  const growthPct = (defaults.estimatedInvestmentGrowth / total) * 100
+
+  return `
+  <div class="min-h-screen flex flex-col bg-[#F7F9FC] text-[#172033]">
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-[#E4E9F0]">
+      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+        <a href="${withBase('/')}" class="flex items-center gap-2.5 text-[#172033] font-semibold text-lg">
+          <div class="w-8 h-8 rounded-lg bg-[#0F766E] text-white flex items-center justify-center font-bold text-base shadow-sm">$</div>
+          <span>${siteConfig.name}</span>
+        </a>
+        <nav class="hidden md:flex items-center gap-1 lg:gap-2" aria-label="Main Navigation">
+          <a href="${withBase('/tools/')}" class="px-3 py-1.5 rounded-md text-sm font-medium text-[#667085]">Tools</a>
+          <a href="${withBase('/tools/investing/')}" class="px-3 py-1.5 rounded-md text-sm font-medium text-[#667085]">Investing</a>
+          <a href="${withBase('/tools/credit-debt/')}" class="px-3 py-1.5 rounded-md text-sm font-medium text-[#667085]">Credit &amp; Debt</a>
+          <a href="${withBase('/tools/retirement/')}" class="px-3 py-1.5 rounded-md text-sm font-medium text-[#0F766E] bg-[#E7F4F1] font-semibold">Retirement</a>
+          <a href="${withBase('/tools/business-finance/')}" class="px-3 py-1.5 rounded-md text-sm font-medium text-[#667085]">Business</a>
+          <a href="${withBase('/learn/')}" class="px-3 py-1.5 rounded-md text-sm font-medium text-[#667085]">Learn</a>
+        </nav>
+        <a href="${withBase('/tools/')}" class="hidden md:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-sm font-medium bg-[#0F766E] text-white shadow-sm">Explore tools</a>
+      </div>
+    </header>
+    <main class="flex-1">
+      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 py-6 sm:py-10">
+        <nav class="text-xs text-[#64748B] mb-6" aria-label="Breadcrumb">
+          <a href="${withBase('/')}" class="hover:text-[#0F766E]">Home</a> /
+          <a href="${withBase('/tools/retirement/')}" class="hover:text-[#0F766E]">Retirement</a> /
+          <span class="text-[#0F172A] font-semibold">Retirement Savings Goal Calculator</span>
+        </nav>
+        <div class="mb-8">
+          <div class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#0F766E] bg-[#E7F4F1] px-3 py-1 rounded-full mb-2.5">
+            <span>Interactive Savings Instrument</span>
+          </div>
+          <h1 class="text-2xl sm:text-4xl font-extrabold text-[#0F172A] tracking-tight mb-2">Retirement Savings Goal Calculator</h1>
+          <p class="text-sm sm:text-base text-[#64748B] max-w-2xl leading-relaxed">${tool.fullDescription}</p>
+        </div>
+        <div id="calculator" class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
+          <div class="lg:col-span-7 bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm">
+            <div class="flex items-center justify-between pb-4 mb-6 border-b border-[#F1F5F9]">
+              <span class="text-xs font-bold uppercase tracking-wider text-[#475569]">Target Parameters</span>
+              <span class="text-[11px] text-[#94A3B8] font-medium">Drag sliders or enter values</span>
+            </div>
+            <div class="space-y-6">
+              <div class="bg-[#F8FAFC] p-4 sm:p-5 rounded-2xl border border-[#E2E8F0] space-y-3">
+                <div class="flex items-center justify-between">
+                  <label class="text-xs font-bold uppercase tracking-wider text-[#334155]">Target Retirement Nest Egg</label>
+                  <span class="font-bold text-sm text-[#0F172A]">$1,000,000</span>
+                </div>
+                <input type="range" min="100000" max="3000000" step="1" value="1000000" class="w-full h-2 bg-[#E2E8F0] rounded-lg accent-[#0F766E]" aria-label="Target retirement nest egg" />
+                <p class="text-[11px] font-semibold text-[#94A3B8]">Presets: $250k · $500k · $1M · $1.5M · $2M</p>
+              </div>
+              <div class="bg-[#F8FAFC] p-4 sm:p-5 rounded-2xl border border-[#E2E8F0] space-y-3">
+                <div class="flex items-center justify-between">
+                  <label class="text-xs font-bold uppercase tracking-wider text-[#334155]">Current Retirement Savings</label>
+                  <span class="font-bold text-sm text-[#0F172A]">$50,000</span>
+                </div>
+                <input type="range" min="0" max="500000" step="1" value="50000" class="w-full h-2 bg-[#E2E8F0] rounded-lg accent-[#0F766E]" aria-label="Current retirement savings" />
+                <p class="text-[11px] font-semibold text-[#94A3B8]">Presets: $0 · $25k · $50k · $100k · $200k</p>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="bg-[#F8FAFC] p-4 rounded-2xl border border-[#E2E8F0]">
+                  <label class="block text-xs font-bold uppercase tracking-wider text-[#334155] mb-1.5">Current Age</label>
+                  <span class="font-bold text-sm text-[#0F172A]">35</span>
+                </div>
+                <div class="bg-[#F8FAFC] p-4 rounded-2xl border border-[#E2E8F0]">
+                  <label class="block text-xs font-bold uppercase tracking-wider text-[#334155] mb-1.5">Retirement Age</label>
+                  <span class="font-bold text-sm text-[#0F172A]">65</span>
+                </div>
+              </div>
+              <div class="bg-[#F8FAFC] p-4 sm:p-5 rounded-2xl border border-[#E2E8F0] space-y-3">
+                <div class="flex items-center justify-between">
+                  <label class="text-xs font-bold uppercase tracking-wider text-[#334155]">Expected Annual Return</label>
+                  <span class="font-bold text-sm text-[#0F172A]">7.0%</span>
+                </div>
+                <input type="range" min="0" max="15" step="0.01" value="7" class="w-full h-2 bg-[#E2E8F0] rounded-lg accent-[#0F766E]" aria-label="Expected annual return" />
+                <p class="text-[11px] font-semibold text-[#94A3B8]">Presets: 4.0% · 5.5% · 7.0% · 8.5% · 10.0%</p>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="bg-[#F8FAFC] p-4 rounded-2xl border border-[#E2E8F0]">
+                  <label class="block text-xs font-bold uppercase tracking-wider text-[#334155] mb-1.5">Frequency</label>
+                  <span class="font-bold text-sm text-[#0F172A]">Monthly Deposits</span>
+                </div>
+                <div class="bg-[#F8FAFC] p-4 rounded-2xl border border-[#E2E8F0]">
+                  <label class="block text-xs font-bold uppercase tracking-wider text-[#334155] mb-1.5">Timing</label>
+                  <span class="font-bold text-sm text-[#0F172A]">End of Period (Ordinary)</span>
+                </div>
+              </div>
+              <div class="bg-[#F8FAFC] p-4 sm:p-5 rounded-2xl border border-[#E2E8F0] space-y-3">
+                <div class="flex items-center justify-between">
+                  <label class="text-xs font-bold uppercase tracking-wider text-[#334155]">Annual Contribution Increase (Step-Up)</label>
+                  <span class="font-bold text-sm text-[#0F172A]">0%</span>
+                </div>
+                <input type="range" min="0" max="10" step="0.1" value="0" class="w-full h-2 bg-[#E2E8F0] rounded-lg accent-[#0F766E]" aria-label="Annual contribution increase" />
+                <p class="text-[11px] text-[#64748B] leading-relaxed">Raise your contribution by this % each year as your salary grows. A step-up lowers the starting contribution needed to reach the same target.</p>
+                <p class="text-[11px] font-semibold text-[#94A3B8]">Presets: 0% · 2% · 3% · 4% · 5%</p>
+              </div>
+              <p class="text-xs text-[#64748B]">Your calculator values are processed in your browser and are not sent to kitaaab.org servers.</p>
+            </div>
+          </div>
+          <div class="lg:col-span-5 bg-gradient-to-br from-[#0B3B39] via-[#0F766E] to-[#115E59] rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
+            <div class="relative z-10">
+              <div class="flex items-center justify-between pb-4 mb-6 border-b border-white/15">
+                <span class="text-xs font-bold uppercase tracking-wider text-[#99F6E4]">Required Periodic Deposit</span>
+                <span class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-white/10 border border-white/15">Copy Summary</span>
+              </div>
+              <div class="mb-6">
+                <span class="text-xs uppercase tracking-wider text-white/70 font-semibold block mb-1">Required Monthly Contribution</span>
+                <div class="text-4xl sm:text-5xl font-black tracking-tight text-white flex items-baseline gap-2">
+                  <span>${aprMoney(defaults.requiredMonthlyContribution)}</span>
+                  <span class="text-sm font-semibold text-[#99F6E4]">/mo</span>
+                </div>
+                <p class="text-xs text-[#99F6E4] mt-2">Equivalent to ${aprMoney(defaults.requiredAnnualContribution)} per year</p>
+              </div>
+              <div class="mb-6 bg-black/20 p-4 rounded-2xl border border-white/10">
+                <div class="flex items-center justify-between text-xs mb-2">
+                  <span class="font-bold text-white">Nest Egg Accumulation Sources</span>
+                  <span class="text-xs text-white/70 font-semibold">${aprMoney(defaults.projectedFinalBalance)}</span>
+                </div>
+                <div class="w-full h-3 rounded-full overflow-hidden flex bg-white/20">
+                  <div class="bg-[#2DD4BF]" style="width: ${initialPct.toFixed(1)}%"></div>
+                  <div class="bg-[#38BDF8]" style="width: ${contribPct.toFixed(1)}%"></div>
+                  <div class="bg-[#34D399]" style="width: ${growthPct.toFixed(1)}%"></div>
+                </div>
+                <div class="grid grid-cols-3 gap-1 text-[10px] mt-2.5">
+                  <div class="text-teal-200">Start: ${initialPct.toFixed(0)}%</div>
+                  <div class="text-sky-200">Deposits: ${contribPct.toFixed(0)}%</div>
+                  <div class="text-emerald-200">Growth: ${growthPct.toFixed(0)}%</div>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-3 mb-6">
+                <div class="bg-white/10 rounded-2xl p-4 border border-white/10">
+                  <span class="text-xs text-[#99F6E4] block mb-1">Your Deposits</span>
+                  <div class="text-lg sm:text-xl font-black">${aprMoney(defaults.totalPersonalContributions)}</div>
+                  <span class="text-[10px] text-white/60">Out-of-pocket</span>
+                </div>
+                <div class="bg-white/10 rounded-2xl p-4 border border-white/10">
+                  <span class="text-xs text-emerald-300 block mb-1">Compound Growth</span>
+                  <div class="text-lg sm:text-xl font-black text-emerald-200">${aprMoney(defaults.estimatedInvestmentGrowth)}</div>
+                  <span class="text-[10px] text-white/60">Market returns</span>
+                </div>
+                <div class="bg-white/10 rounded-2xl p-4 border border-white/10">
+                  <span class="text-xs text-[#99F6E4] block mb-1">Horizon</span>
+                  <div class="text-lg sm:text-xl font-black">${defaults.yearsToRetirement} Years</div>
+                  <span class="text-[10px] text-white/60">${defaults.numberOfPeriods} contributions</span>
+                </div>
+                <div class="bg-white/10 rounded-2xl p-4 border border-white/10">
+                  <span class="text-xs text-[#99F6E4] block mb-1">Final Projected</span>
+                  <div class="text-lg sm:text-xl font-black">${aprMoney(defaults.projectedFinalBalance)}</div>
+                  <span class="text-[10px] text-white/60">Target achieved</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mb-12 bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm">
+          <h2 class="text-xl font-extrabold text-[#0F172A]">Annual Accumulation Progression</h2>
+          <p class="text-xs text-[#64748B] mb-6">Yearly expansion showing deposits vs compound market returns (first 5 of ${defaults.yearsToRetirement} years).</p>
+          <div class="overflow-x-auto border border-[#E2E8F0] rounded-2xl">
+            <table class="w-full text-left text-xs sm:text-sm">
+              <thead class="bg-[#F8FAFC] text-[#475569] font-bold border-b border-[#E2E8F0]">
+                <tr><th class="py-3 px-4">Year</th><th class="py-3 px-4">Age</th><th class="py-3 px-4">Starting Balance</th><th class="py-3 px-4">Yearly Deposits</th><th class="py-3 px-4">Interest Earned</th><th class="py-3 px-4">Ending Balance</th><th class="py-3 px-4">Cumulative Growth</th></tr>
+              </thead>
+              <tbody class="divide-y divide-[#E2E8F0]">
+                ${defaults.yearlyBreakdown.slice(0, 5).map((row) => `
+                <tr>
+                  <td class="py-2.5 px-4 font-bold text-[#0F172A]">Year ${row.year}</td>
+                  <td class="py-2.5 px-4 text-[#64748B]">${row.age}</td>
+                  <td class="py-2.5 px-4 text-[#64748B]">${aprMoney(row.startingBalance)}</td>
+                  <td class="py-2.5 px-4 text-sky-700 font-semibold">+${aprMoney(row.contributions)}</td>
+                  <td class="py-2.5 px-4 text-emerald-700 font-semibold">+${aprMoney(row.interestEarned)}</td>
+                  <td class="py-2.5 px-4 font-bold text-[#0F172A]">${aprMoney(row.endingBalance)}</td>
+                  <td class="py-2.5 px-4 text-[#64748B]">${aprMoney(row.totalInterestSoFar)}</td>
+                </tr>`).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+          <div class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-7 shadow-xs">
+            <h3 class="text-xs font-bold text-[#0F766E] uppercase tracking-wider mb-2">Sinking Fund Annuity Formula</h3>
+            <p class="text-xs text-[#64748B] leading-relaxed mb-3">Calculates the periodic contribution PMT needed to bridge future value requirements:</p>
+            <div class="bg-[#F8FAFC] p-4 rounded-xl border border-[#CBD5E1] font-mono text-xs text-[#1E293B] overflow-x-auto mb-3">PMT = [FV − PV(1+r)^n] × [r ÷ ((1+r)^n − 1)]</div>
+            <ul class="text-xs text-[#64748B] space-y-1">
+              <li><strong>FV:</strong> Desired target nest egg</li>
+              <li><strong>PV:</strong> Current accumulated capital</li>
+              <li><strong>r:</strong> Periodic interest rate</li>
+              <li><strong>n:</strong> Total periods until retirement</li>
+            </ul>
+          </div>
+          <div class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-7 shadow-xs">
+            <h3 class="text-xs font-bold text-[#0F766E] uppercase tracking-wider mb-2">Key Assumptions &amp; Disclosures</h3>
+            <ul class="text-xs text-[#64748B] space-y-2 list-disc pl-4 leading-relaxed">
+              ${tool.assumptions.map((a) => `<li>${a}</li>`).join('')}
+            </ul>
+          </div>
+        </div>
+        <section class="mb-12 bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm">
+          <h2 class="text-xl font-extrabold text-[#0F172A] mb-4">Frequently Asked Questions</h2>
+          ${tool.faqs.map((faq) => `
+          <div class="mb-4">
+            <h3 class="font-bold text-base text-gray-900">${faq.question}</h3>
+            <p class="text-sm text-gray-600 mt-1">${faq.answer}</p>
+          </div>`).join('')}
+        </section>
+        <div class="mb-16">
+          <h2 class="text-xl font-bold text-[#172033] mb-2">Related Financial Calculators</h2>
+          <p class="text-sm text-[#667085] mb-6">More tools that work with the numbers on this page.</p>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="bg-white border border-[#E2E8F0] rounded-3xl p-6 shadow-sm">
+              <h3 class="font-bold text-base text-[#0F172A] mb-2"><a href="${withBase('/how-long-will-my-money-last/')}" class="text-teal-700 hover:underline">How Long Will My Money Last?</a></h3>
+              <p class="text-xs text-[#64748B]">Estimate how long retirement savings could last based on your starting balance, withdrawals, inflation, and assumed annual return.</p>
+            </div>
+            <div class="bg-white border border-[#E2E8F0] rounded-3xl p-6 shadow-sm">
+              <h3 class="font-bold text-base text-[#0F172A] mb-2"><a href="${withBase('/compound-interest-calculator/')}" class="text-teal-700 hover:underline">Compound Interest Calculator</a></h3>
+              <p class="text-xs text-[#64748B]">See how compound growth builds wealth over time.</p>
+            </div>
+          </div>
+          <h2 class="text-xl font-bold text-[#172033] mt-12 mb-2">Helpful Educational Guides</h2>
+          <p class="text-sm text-[#667085] mb-6">Understand the formulas, methodology, and financial context behind these calculations.</p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white border border-[#E2E8F0] rounded-3xl p-6 shadow-sm">
+              <h3 class="font-bold text-base text-[#0F172A] mb-2"><a href="${withBase('/learn/how-to-calculate-retirement-savings-goal/')}" class="text-teal-700 hover:underline">How to Calculate Your Retirement Savings Goal</a></h3>
+              <p class="text-xs text-[#64748B]">Learn how to calculate your target retirement nest egg, how the 25x rule works, and how to use sinking fund annuity formulas to determine required monthly savings.</p>
+            </div>
+            <div class="bg-white border border-[#E2E8F0] rounded-3xl p-6 shadow-sm">
+              <h3 class="font-bold text-base text-[#0F172A] mb-2"><a href="${withBase('/learn/how-long-will-retirement-savings-last/')}" class="text-teal-700 hover:underline">How Long Will Retirement Savings Last?</a></h3>
+              <p class="text-xs text-[#64748B]">Calculate how long your retirement nest egg will endure, understand mathematical depletion formulas, factor in inflation drag, and protect against sequence-of-returns risk.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <footer class="bg-white border-t border-[#E4E9F0] mt-20">
+      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 py-12 lg:py-16">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
+          <div class="lg:col-span-2 space-y-4">
+            <a href="${withBase('/')}" class="flex items-center gap-2.5 text-[#172033] font-semibold text-lg">
+              <div class="w-7 h-7 rounded-lg bg-[#0F766E] text-white flex items-center justify-center font-bold text-sm">$</div>
+              <span>${siteConfig.name}</span>
+            </a>
+            <p class="text-sm text-[#667085] max-w-sm leading-relaxed">${siteConfig.tagline}</p>
+            <p class="text-xs text-[#667085] leading-relaxed pt-2 border-t border-[#E4E9F0]/60">${siteConfig.disclaimerShort}</p>
+          </div>
+          <div>
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-[#172033] mb-3">Tool Categories</h3>
+            <ul class="space-y-2 text-sm text-[#667085]">
+              <li><a href="${withBase('/tools/investing/')}">Investing Tools</a></li>
+              <li><a href="${withBase('/tools/credit-debt/')}">Credit &amp; Debt</a></li>
+              <li><a href="${withBase('/tools/retirement/')}">Retirement Planning</a></li>
+              <li><a href="${withBase('/tools/business-finance/')}">Business Finance</a></li>
+              <li><a href="${withBase('/tools/')}" class="font-medium text-[#0F766E]">All Calculators &rarr;</a></li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-[#172033] mb-3">Learn</h3>
+            <ul class="space-y-2 text-sm text-[#667085]">
+              <li><a href="${withBase('/learn/how-to-calculate-average-stock-cost/')}">Average Stock Cost</a></li>
+              <li><a href="${withBase('/learn/how-to-calculate-roi/')}">How to Calculate ROI</a></li>
+              <li><a href="${withBase('/learn/apr-vs-interest-rate/')}">APR vs. Interest Rate</a></li>
+              <li><a href="${withBase('/learn/flat-vs-tiered-commission/')}">Tiered Commission</a></li>
+              <li><a href="${withBase('/learn/how-long-will-retirement-savings-last/')}">Retirement Longevity</a></li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-[#172033] mb-3">Platform</h3>
+            <ul class="space-y-2 text-sm text-[#667085]">
+              <li><a href="${withBase('/about/')}">About</a></li>
+              <li><a href="${withBase('/methodology/')}">Calculation Methodology</a></li>
+              <li><a href="${withBase('/financial-disclaimer/')}">Financial Disclaimer</a></li>
+              <li><a href="${withBase('/contact/')}">Contact</a></li>
+              <li><a href="${withBase('/privacy/')}">Privacy Policy</a></li>
+              <li><a href="${withBase('/terms/')}">Terms of Use</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="mt-12 pt-8 border-t border-[#E4E9F0] flex flex-col sm:flex-row items-center justify-between text-xs text-[#667085] gap-4">
+          <div>&copy; ${year} ${siteConfig.name}. All rights reserved.</div>
+          <div class="flex items-center gap-4">
+            <a href="${withBase('/privacy/')}" class="hover:underline">Privacy</a>
+            <span class="text-[#E4E9F0]">&bull;</span>
+            <a href="${withBase('/terms/')}" class="hover:underline">Terms</a>
+            <span class="text-[#E4E9F0]">&bull;</span>
+            <a href="${withBase('/financial-disclaimer/')}" class="hover:underline">Disclaimer</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+  `
+}
+
 // 4. All Financial Tools
 for (const t of tools) {
   routes.push({
@@ -844,6 +1157,14 @@ const aprRoute = routes.find((r) => r.path === '/credit-card-apr-calculator/')
 if (aprRoute) {
   const aprTool = tools.find((t) => t.slug === 'credit-card-apr-calculator')
   if (aprTool) aprRoute.bodyHtml = renderAprShell(aprTool)
+}
+
+// Retirement shell: replace the retirement route's prose-only prerender
+// with the full calculator shell (same pattern as the APR route).
+const retirementRoute = routes.find((r) => r.path === '/retirement-savings-calculator/')
+if (retirementRoute) {
+  const retirementTool = tools.find((t) => t.slug === 'retirement-savings-calculator')
+  if (retirementTool) retirementRoute.bodyHtml = renderRetirementShell(retirementTool)
 }
 
 // Prerender all routes

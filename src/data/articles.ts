@@ -501,8 +501,8 @@ export const articles: ArticleItem[] = [
       {
         heading: 'Determining your target nest egg: The 25x rule and replacement rate',
         paragraphs: [
-          'Before calculating how much you must save each month, you must define your ultimate retirement capital target. The most widely established benchmark is the 25x rule, which is the mathematical inverse of the 4% safe withdrawal rate ($1 \div 0.04 = 25$).',
-          'Under this methodology, your required portfolio size equals 25 times your anticipated net annual living expenses in retirement. If your household requires $75,000 annually and expects $25,000 from Social Security or defined-benefit pensions, your net portfolio demand is $50,000 per year, yielding a target nest egg of $50,000 \times 25 = \$1,250,000$.'
+          'Before calculating how much you must save each month, you must define your ultimate retirement capital target. The most widely established benchmark is the 25x rule, which is the mathematical inverse of the 4% safe withdrawal rate ($1 ÷ 0.04 = 25).',
+          'Under this methodology, your required portfolio size equals 25 times your anticipated net annual living expenses in retirement. If your household requires $75,000 annually and expects $25,000 from Social Security or defined-benefit pensions, your net portfolio demand is $50,000 per year, yielding a target nest egg of $50,000 × 25 = $1,250,000.'
         ]
       },
       {
@@ -517,14 +517,14 @@ export const articles: ArticleItem[] = [
       {
         heading: 'The sinking fund annuity formula',
         paragraphs: [
-          'To determine the required periodic payment ($PMT$) needed to bridge the remaining shortfall from zero over $n$ periods at periodic interest rate $r$, financial analysts use the standard sinking fund annuity formula:'
+          'To determine the required periodic payment (PMT) needed to bridge the remaining shortfall from zero over n periods at periodic interest rate r, financial analysts use the standard sinking fund annuity formula:'
         ],
         formulaBox: 'Future Value of Existing Savings:\nFV_existing = PV × (1 + r)^n\n\nShortfall = Target Goal − FV_existing\n\nRequired Periodic Contribution (Ordinary Annuity - End of Period):\nPMT = Shortfall × [r ÷ ((1 + r)^n − 1)]\n\nAnnuity Due (Beginning of Period):\nPMT_due = PMT ÷ (1 + r)'
       },
       {
         heading: 'Comprehensive worked example: 30-year accumulation plan',
         paragraphs: [
-          'Consider an investor aged 35 targeting retirement at age 65 (30 years / 360 monthly periods). The target nest egg is $1,250,000.00, current savings are $60,000.00, and the expected nominal annual portfolio return is 7.0% compounded monthly ($r = 0.07 \\div 12 = 0.0058333$).'
+          'Consider an investor aged 35 targeting retirement at age 65 (30 years / 360 monthly periods). The target nest egg is $1,250,000.00, current savings are $60,000.00, and the expected nominal annual portfolio return is 7.0% compounded monthly (r = 0.07 ÷ 12 = 0.0058333).'
         ],
         exampleBox: {
           title: '30-Year Retirement Savings Calculation Breakdown',
@@ -534,7 +534,7 @@ export const articles: ArticleItem[] = [
             'Net Shortfall to be Funded by Periodic Contributions: $1,250,000.00 − $486,989.85 = $763,010.15.',
             'Sinking Fund Factor (Ordinary Annuity - End of Month): (0.07 ÷ 12) ÷ [(1 + 0.07 ÷ 12)^360 − 1] = 0.0058333 ÷ 7.116497 = 0.0008196889.',
             'Required Monthly Contribution (PMT): $763,010.15 × 0.0008196889 = $625.43 per month (or $625.41 if factor is rounded to 0.00081966).',
-            'Total Personal Cash Contributed over 30 Years: 360 × $625.43 = $225,155.89.',
+            'Total Personal Cash Contributed over 30 Years: 360 × $625.433 ≈ $225,155.89 (using the unrounded monthly contribution of $625.433; 360 × the rounded $625.43 would be $225,154.80).',
             'Compound Investment Growth: $1,250,000.00 − ($60,000.00 + $225,155.89) = $964,844.11 (77.19% of final wealth is generated purely by investment compounding!).',
             'Timing Sensitivity: If contributions are deposited at the beginning of each month (annuity due), required monthly savings drops to $621.81 ($625.43 ÷ (1 + 0.07 ÷ 12)).'
           ]

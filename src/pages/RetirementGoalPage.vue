@@ -3,7 +3,7 @@ import { ref, computed, onMounted } from 'vue'
 import { updatePageSeo } from '@/utils/seo'
 import { generateCalculatorSchema } from '@/utils/structuredData'
 import { formatCurrency, formatPercent, copyToClipboard } from '@/utils/formatters'
-import { calculateRetirementGoal, type ContributionFrequency, type ContributionTiming } from '@/calculations/retirementGoal'
+import { createRetirementGoalForm } from '@/composables/useRetirementGoalForm'
 import Breadcrumbs from '@/components/ui/Breadcrumbs.vue'
 import FAQAccordion from '@/components/ui/FAQAccordion.vue'
 import RelatedTools from '@/components/ui/RelatedTools.vue'
@@ -38,15 +38,25 @@ onMounted(() => {
 const currency = ref('USD')
 const copied = ref(false)
 
-// Input form states
-const currentSavings = ref<number | null>(50000)
-const targetAmount = ref<number | null>(1000000)
-const currentAge = ref<number | null>(35)
-const retirementAge = ref<number | null>(65)
-const expectedAnnualReturn = ref<number | null>(7.0)
-const contributionFrequency = ref<ContributionFrequency>('monthly')
-const contributionTiming = ref<ContributionTiming>('end')
-const annualContributionIncreasePct = ref<number | null>(0)
+// Input form state (defaults + reset live in the composable so Reset
+// restores exactly the documented defaults and is unit-testable).
+const {
+  currentSavings,
+  targetAmount,
+  currentAge,
+  retirementAge,
+  expectedAnnualReturn,
+  contributionFrequency,
+  contributionTiming,
+  annualContributionIncreasePct,
+  resetForm,
+  result,
+  targetSliderValue,
+  savingsSliderValue,
+  returnSliderValue,
+  stepUpSliderValue
+} = createRetirementGoalForm()
+
 const showSchedule = ref(false)
 
 // Presets
@@ -61,30 +71,6 @@ function setTarget(val: number) {
 function setReturn(val: number) {
   expectedAnnualReturn.value = val
 }
-
-function resetForm() {
-  currentSavings.value = null
-  targetAmount.value = null
-  currentAge.value = null
-  retirementAge.value = 65
-  expectedAnnualReturn.value = null
-  contributionFrequency.value = 'monthly'
-  contributionTiming.value = 'end'
-  annualContributionIncreasePct.value = 0
-}
-
-const result = computed(() => {
-  return calculateRetirementGoal({
-    currentSavings: currentSavings.value ?? 0,
-    targetAmount: targetAmount.value ?? 0,
-    currentAge: currentAge.value !== null ? currentAge.value : undefined,
-    retirementAge: retirementAge.value ?? 65,
-    expectedAnnualReturn: expectedAnnualReturn.value ?? 0,
-    contributionFrequency: contributionFrequency.value,
-    contributionTiming: contributionTiming.value,
-    annualContributionIncreasePct: annualContributionIncreasePct.value ?? 0
-  })
-})
 
 // Visual 3-way distribution breakdown
 const totalProjected = computed(() => Math.max(1, result.value.projectedFinalBalance))
@@ -186,7 +172,7 @@ async function handleCopy() {
                   v-model.number="targetAmount"
                   type="number"
                   min="0"
-                  step="25000"
+                  step="1"
                   class="w-full pl-6 pr-2.5 py-1.5 text-right font-bold text-sm bg-white border border-[#CBD5E1] rounded-lg text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-[#0F766E]"
                 />
               </div>
@@ -196,8 +182,8 @@ async function handleCopy() {
               type="range"
               min="100000"
               max="3000000"
-              step="25000"
-              :value="targetAmount || 0"
+              step="1"
+              :value="targetSliderValue"
               @input="targetAmount = Number(($event.target as HTMLInputElement).value)"
               class="w-full h-2 bg-[#E2E8F0] rounded-lg appearance-none cursor-pointer accent-[#0F766E]"
             />
@@ -231,7 +217,7 @@ async function handleCopy() {
                   v-model.number="currentSavings"
                   type="number"
                   min="0"
-                  step="5000"
+                  step="1"
                   class="w-full pl-6 pr-2.5 py-1.5 text-right font-bold text-sm bg-white border border-[#CBD5E1] rounded-lg text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-[#0F766E]"
                 />
               </div>
@@ -241,8 +227,8 @@ async function handleCopy() {
               type="range"
               min="0"
               max="500000"
-              step="5000"
-              :value="currentSavings || 0"
+              step="1"
+              :value="savingsSliderValue"
               @input="currentSavings = Number(($event.target as HTMLInputElement).value)"
               class="w-full h-2 bg-[#E2E8F0] rounded-lg appearance-none cursor-pointer accent-[#0F766E]"
             />
@@ -307,7 +293,7 @@ async function handleCopy() {
                   type="number"
                   min="0"
                   max="25"
-                  step="0.1"
+                  step="any"
                   class="w-full pl-2.5 pr-6 py-1.5 text-right font-bold text-sm bg-white border border-[#CBD5E1] rounded-lg text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-[#0F766E]"
                 />
                 <span class="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs font-bold text-[#94A3B8]">%</span>
@@ -318,8 +304,8 @@ async function handleCopy() {
               type="range"
               min="0"
               max="15"
-              step="0.25"
-              :value="expectedAnnualReturn || 0"
+              step="0.01"
+              :value="returnSliderValue"
               @input="expectedAnnualReturn = Number(($event.target as HTMLInputElement).value)"
               class="w-full h-2 bg-[#E2E8F0] rounded-lg appearance-none cursor-pointer accent-[#0F766E]"
             />
@@ -370,6 +356,57 @@ async function handleCopy() {
               </select>
             </div>
           </div>
+
+          <!-- Annual Contribution Increase (Step-Up) -->
+          <div class="bg-[#F8FAFC] p-4 sm:p-5 rounded-2xl border border-[#E2E8F0] space-y-3">
+            <div class="flex items-center justify-between">
+              <label for="annual-increase" class="text-xs font-bold uppercase tracking-wider text-[#334155]">
+                Annual Contribution Increase (Step-Up)
+              </label>
+              <div class="relative w-28">
+                <input
+                  id="annual-increase"
+                  v-model.number="annualContributionIncreasePct"
+                  type="number"
+                  min="0"
+                  max="10"
+                  step="0.1"
+                  class="w-full pl-2.5 pr-6 py-1.5 text-right font-bold text-sm bg-white border border-[#CBD5E1] rounded-lg text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-[#0F766E]"
+                />
+                <span class="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs font-bold text-[#94A3B8]">%</span>
+              </div>
+            </div>
+
+            <input
+              type="range"
+              min="0"
+              max="10"
+              step="0.1"
+              :value="stepUpSliderValue"
+              @input="annualContributionIncreasePct = Number(($event.target as HTMLInputElement).value)"
+              class="w-full h-2 bg-[#E2E8F0] rounded-lg appearance-none cursor-pointer accent-[#0F766E]"
+            />
+
+            <p class="text-[11px] text-[#64748B] leading-relaxed">
+              Raise your contribution by this % each year as your salary grows. A step-up lowers the
+              starting contribution needed to reach the same target.
+            </p>
+
+            <!-- Presets -->
+            <div class="flex flex-wrap items-center gap-1.5 pt-1">
+              <span class="text-[11px] font-semibold text-[#94A3B8] mr-1">Presets:</span>
+              <button
+                v-for="g in [0, 2, 3, 4, 5]"
+                :key="g"
+                type="button"
+                @click="annualContributionIncreasePct = g"
+                :class="annualContributionIncreasePct === g ? 'bg-[#0F766E] text-white' : 'bg-white text-[#475569] hover:bg-[#E2E8F0]'"
+                class="text-[11px] font-bold px-2.5 py-1 rounded-md border border-[#CBD5E1] transition-colors"
+              >
+                {{ g }}%
+              </button>
+            </div>
+          </div>
         </form>
 
         <!-- Validation Errors -->
@@ -407,8 +444,9 @@ async function handleCopy() {
             </button>
           </div>
 
-          <!-- Highlight Status: Target Achieved -->
-          <div v-if="result.alreadyAchieved" class="mb-6 p-4 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-100 flex items-start gap-3">
+          <!-- Highlight Status: Target Achieved (only for valid inputs: with an
+               empty/zero target the engine reports alreadyAchieved with $0.00) -->
+          <div v-if="result.alreadyAchieved && result.isValid" class="mb-6 p-4 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-100 flex items-start gap-3">
             <CheckCircle2 class="w-5 h-5 text-emerald-300 shrink-0 mt-0.5" />
             <div>
               <p class="font-bold text-xs text-white uppercase tracking-wider">Target Met by Compounding!</p>
