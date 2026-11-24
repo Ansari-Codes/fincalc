@@ -3,7 +3,13 @@ import { ref, computed, onMounted } from 'vue'
 import { updatePageSeo } from '@/utils/seo'
 import { generateCalculatorSchema } from '@/utils/structuredData'
 import { formatCurrency, formatPercent, copyToClipboard } from '@/utils/formatters'
-import { calculateCreditCardApr } from '@/calculations/creditCardApr'
+import {
+  calculateCreditCardApr,
+  formatPayoffDate,
+  getMinimumPaymentComparisonScenarios,
+  getScenarioAMinimumAnalysis,
+  getWorkedExampleScenarios
+} from '@/calculations/creditCardApr'
 import Breadcrumbs from '@/components/ui/Breadcrumbs.vue'
 import FAQAccordion from '@/components/ui/FAQAccordion.vue'
 import RelatedTools from '@/components/ui/RelatedTools.vue'
@@ -41,6 +47,7 @@ const apr = ref<number | null>(22.9)
 const monthlyPayment = ref<number | null>(200)
 const additionalPayment = ref<number | null>(0)
 const plannedNewPurchases = ref<number | null>(0)
+const payMinimumOnly = ref(false)
 
 function resetForm() {
   balance.value = 4500
@@ -48,6 +55,7 @@ function resetForm() {
   monthlyPayment.value = 200
   additionalPayment.value = 0
   plannedNewPurchases.value = 0
+  payMinimumOnly.value = false
 }
 
 const result = computed(() => {
@@ -56,9 +64,38 @@ const result = computed(() => {
     apr: apr.value || 0,
     monthlyPayment: monthlyPayment.value || 0,
     additionalPayment: additionalPayment.value || 0,
-    plannedNewPurchases: plannedNewPurchases.value || 0
+    plannedNewPurchases: plannedNewPurchases.value || 0,
+    payMinimumOnly: payMinimumOnly.value
   })
 })
+
+// Payoff date, computed live from the payoff months — never hard-coded.
+const payoffDateFormatted = computed(() => {
+  if (!result.value.isPayingOff || !isFinite(result.value.payoffMonths)) return ''
+  return formatPayoffDate(result.value.payoffMonths)
+})
+
+// Page tables are generated from the calculator engine — never hand-typed.
+const workedExamples = computed(() => getWorkedExampleScenarios())
+const comparisonScenarios = computed(() => getMinimumPaymentComparisonScenarios())
+const scenarioA = computed(() => getScenarioAMinimumAnalysis())
+const scenarioAMonth = (month: number) => scenarioA.value.schedule[month - 1]
+// Fixed-payment references used by the Scenario A/B comparison copy.
+const scenarioAFixed250 = computed(() =>
+  calculateCreditCardApr({ balance: 5000, apr: 24, monthlyPayment: 250 })
+)
+const scenarioAFixed150 = computed(() =>
+  calculateCreditCardApr({ balance: 5000, apr: 24, monthlyPayment: 150 })
+)
+const scenarioBSaving = computed(
+  () => scenarioA.value.totalInterestPaid - scenarioAFixed250.value.totalInterestPaid
+)
+const scenarioBYearsSooner = computed(
+  () => (scenarioA.value.payoffMonths - scenarioAFixed250.value.payoffMonths) / 12
+)
+const scenarioAFixed150Saving = computed(
+  () => scenarioA.value.totalInterestPaid - scenarioAFixed150.value.totalInterestPaid
+)
 
 // Visual breakdown shares of first month payment
 const firstMonthPrincipalPct = computed(() => {
@@ -83,6 +120,9 @@ async function handleCopy() {
     `Estimated First Month Interest: ${formatCurrency(result.value.firstMonthInterest, currency.value)}`,
     `First Month Principal Reduction: ${formatCurrency(result.value.firstMonthPrincipal, currency.value)}`,
     result.value.isPayingOff ? `Payoff Timeline: ${result.value.payoffMonths} months (~${result.value.payoffYears} years)` : 'Payoff: Payment insufficient to cover interest',
+    payoffDateFormatted.value ? `Paid Off Around: ${payoffDateFormatted.value}` : '',
+    `Daily Interest Cost: ${formatCurrency(result.value.dailyInterestCost, currency.value)} per day`,
+    payMinimumOnly.value ? 'Payment Mode: Pay minimum only (3% of balance or $25 floor)' : '',
     result.value.isPayingOff ? `Total Lifetime Interest Cost: ${formatCurrency(result.value.totalInterestPaid, currency.value)}` : '',
     result.value.isPayingOff ? `Total Out-of-Pocket Repayment: ${formatCurrency(result.value.totalAmountPaid, currency.value)}` : ''
   ].filter(Boolean).join('\n')
@@ -140,6 +180,19 @@ async function handleCopy() {
       </div>
     </div>
 
+    <!-- Table of Contents -->
+    <nav aria-label="On this page" class="mb-8 bg-white rounded-2xl border border-[#E2E8F0] px-5 py-4 shadow-sm">
+      <span class="text-xs font-bold uppercase tracking-wider text-[#475569] block mb-2">On this page</span>
+      <ul class="flex flex-wrap gap-x-5 gap-y-1.5 text-xs font-semibold">
+        <li><a href="#calculator" class="text-[#0F766E] hover:underline">Calculator</a></li>
+        <li><a href="#amortization" class="text-[#0F766E] hover:underline">Monthly Amortization</a></li>
+        <li><a href="#how-to-calculate" class="text-[#0F766E] hover:underline">How to calculate credit card interest</a></li>
+        <li><a href="#minimum-payment" class="text-[#0F766E] hover:underline">Paying only the minimum</a></li>
+        <li><a href="#worked-examples" class="text-[#0F766E] hover:underline">Worked examples</a></li>
+        <li><a href="#faq" class="text-[#0F766E] hover:underline">FAQ</a></li>
+      </ul>
+    </nav>
+
     <!-- Validation Warning Banner -->
     <div v-if="!result.isValid && result.validationErrors.length > 0" class="mb-6 p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs space-y-1.5 shadow-2xs">
       <div v-for="(err, i) in result.validationErrors" :key="i" class="flex items-center gap-2">
@@ -149,7 +202,7 @@ async function handleCopy() {
     </div>
 
     <!-- Main Instrument Console Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
+    <div id="calculator" class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12 scroll-mt-24">
       <!-- Left Panel: Interactive Console Controls (7 cols) -->
       <div class="lg:col-span-7 bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm">
         <div class="flex items-center justify-between pb-4 mb-6 border-b border-[#F1F5F9]">
@@ -268,6 +321,7 @@ async function handleCopy() {
                 <input
                   id="monthly-payment"
                   v-model.number="monthlyPayment"
+                  :disabled="payMinimumOnly"
                   type="number"
                   min="0"
                   step="25"
@@ -282,6 +336,7 @@ async function handleCopy() {
               min="25"
               max="1500"
               step="25"
+              :disabled="payMinimumOnly"
               :value="monthlyPayment || 0"
               @input="monthlyPayment = Number(($event.target as HTMLInputElement).value)"
               class="w-full h-2 bg-[#E2E8F0] rounded-lg appearance-none cursor-pointer accent-[#0F766E]"
@@ -295,12 +350,31 @@ async function handleCopy() {
                 :key="amt"
                 type="button"
                 @click="monthlyPayment = amt"
+                :disabled="payMinimumOnly"
                 :class="monthlyPayment === amt ? 'bg-[#0F766E] text-white' : 'bg-white text-[#475569] hover:bg-[#E2E8F0]'"
                 class="text-[11px] font-bold px-2.5 py-1 rounded-md border border-[#CBD5E1] transition-colors"
               >
                 ${{ amt }}
               </button>
             </div>
+          </div>
+
+          <!-- Pay minimum only toggle -->
+          <div class="bg-[#F8FAFC] p-4 sm:p-5 rounded-2xl border border-[#E2E8F0]">
+            <label class="flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                v-model="payMinimumOnly"
+                class="mt-0.5 h-4 w-4 shrink-0 accent-[#0F766E]"
+              />
+              <span>
+                <span class="text-xs font-bold uppercase tracking-wider text-[#334155] block">Pay minimum only</span>
+                <span class="text-[11px] text-[#64748B] leading-relaxed block mt-0.5">
+                  Each month's payment is the card minimum: 3% of the balance or $25, whichever is greater.
+                  Fixed and extra payments are paused while this is on.
+                </span>
+              </span>
+            </label>
           </div>
 
           <!-- 4. Optional Extra Payment & New Purchases -->
@@ -318,6 +392,7 @@ async function handleCopy() {
                   <input
                     id="extra-payment"
                     v-model.number="additionalPayment"
+                    :disabled="payMinimumOnly"
                     type="number"
                     min="0"
                     step="25"
@@ -330,6 +405,7 @@ async function handleCopy() {
                 min="0"
                 max="500"
                 step="25"
+                :disabled="payMinimumOnly"
                 :value="additionalPayment || 0"
                 @input="additionalPayment = Number(($event.target as HTMLInputElement).value)"
                 class="w-full h-1.5 bg-[#E2E8F0] rounded appearance-none cursor-pointer accent-[#0F766E]"
@@ -432,6 +508,10 @@ async function handleCopy() {
               <span>•</span>
               <span>{{ formatCurrency(result.totalMonthlyPayment, currency) }}/mo</span>
             </div>
+            <div v-if="payoffDateFormatted" class="text-xs text-emerald-100 mt-2">
+              Paid off around <strong class="text-white">{{ payoffDateFormatted }}</strong>
+              <span v-if="payMinimumOnly"> (paying minimums only)</span>
+            </div>
             <div class="mt-3 pt-3 border-t border-white/10 text-xs text-emerald-100 text-left leading-relaxed">
               At <strong>{{ formatCurrency(result.totalMonthlyPayment, currency) }}/month</strong>, you will pay <strong>{{ formatCurrency(result.totalInterestPaid, currency) }}</strong> in total interest charges across <strong>{{ result.payoffMonths }} months</strong> to clear your {{ formatCurrency(balance || 0, currency) }} balance.
             </div>
@@ -497,9 +577,23 @@ async function handleCopy() {
             </div>
 
             <div class="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/10">
-              <span class="text-[11px] font-semibold text-white/70 block">Total Payment / Mo</span>
+              <span class="text-[11px] font-semibold text-white/70 block">{{ payMinimumOnly ? 'First Minimum Payment' : 'Total Payment / Mo' }}</span>
               <span class="text-sm sm:text-base font-bold text-white num-tabular mt-0.5 block">
                 {{ formatCurrency(result.totalMonthlyPayment, currency) }}
+              </span>
+            </div>
+
+            <div class="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/10">
+              <span class="text-[11px] font-semibold text-white/70 block">Daily interest cost</span>
+              <span class="text-sm sm:text-base font-bold text-white num-tabular mt-0.5 block">
+                {{ result.isPayingOff || result.firstMonthInterest > 0 ? formatCurrency(result.dailyInterestCost, currency) + ' per day' : 'N/A' }}
+              </span>
+            </div>
+
+            <div class="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/10">
+              <span class="text-[11px] font-semibold text-white/70 block">Paid off around</span>
+              <span class="text-sm sm:text-base font-bold text-white num-tabular mt-0.5 block">
+                {{ payoffDateFormatted || 'N/A' }}
               </span>
             </div>
           </div>
@@ -512,7 +606,7 @@ async function handleCopy() {
     </div>
 
     <!-- Amortization Schedule Preview Table Instrument -->
-    <div v-if="result.schedulePreview.length > 0" class="mb-16 bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm">
+    <div id="amortization" v-if="result.schedulePreview.length > 0" class="mb-16 bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm scroll-mt-24">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-3">
         <div>
           <div class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#0F766E] mb-1">
@@ -566,7 +660,7 @@ async function handleCopy() {
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-16">
       <div class="lg:col-span-8 space-y-8">
         <!-- Section 1: How to Calculate APR on a Credit Card (Comprehensive Educational Guide) -->
-        <section class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm">
+        <section id="how-to-calculate" class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm scroll-mt-24">
           <div class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#0F766E] bg-[#E7F4F1] px-3 py-1 rounded-full mb-3">
             <span>Step-by-Step Educational Guide</span>
           </div>
@@ -697,8 +791,27 @@ async function handleCopy() {
           </div>
         </section>
 
-        <!-- Section 2: Credit Card APR Payment Economics -->
+        <!-- How to find your APR before you calculate -->
         <section class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm">
+          <h2 class="text-xl sm:text-2xl font-extrabold text-[#0F172A] tracking-tight mb-3">
+            How to find your APR before you calculate
+          </h2>
+          <p class="text-sm text-[#64748B] leading-relaxed mb-4">
+            You cannot calculate monthly interest until you know the APR that applies to the balance you carry. Your purchases APR is the rate this calculator uses — check it in one of these three places before you enter a number:
+          </p>
+          <ul class="space-y-2 text-sm text-[#64748B] list-disc list-inside leading-relaxed mb-4">
+            <li><strong class="text-[#0F172A]">Your monthly statement:</strong> look in the interest-charge section, which lists the APR for purchases, balance transfers, and cash advances separately.</li>
+            <li><strong class="text-[#0F172A]">Your cardmember agreement:</strong> the APR and how it is calculated are stated in the pricing terms you received with the card.</li>
+            <li><strong class="text-[#0F172A]">Your online account or app:</strong> open card details or statements to see the current APR for each transaction type.</li>
+          </ul>
+          <p class="text-sm text-[#64748B] leading-relaxed">
+            If you have more than one APR, use the purchases APR here. To understand why the APR can differ from the plain interest rate on a loan, read
+            <RouterLink to="/learn/apr-vs-interest-rate/" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">APR vs. Interest Rate</RouterLink>.
+          </p>
+        </section>
+
+        <!-- Section 2: Credit Card APR Payment Economics -->
+        <section id="minimum-payment" class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm scroll-mt-24">
           <h2 class="text-xl sm:text-2xl font-extrabold text-[#0F172A] mb-3">
             Credit Card APR Payment Economics: How Your Payment Dictates Total Interest
           </h2>
@@ -707,22 +820,23 @@ async function handleCopy() {
           </p>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
-            <!-- Scenario A: Statement Minimum Payment Trap -->
+            <!-- Scenario A: Statement Minimum Payment Trap (figures generated from the calculator engine) -->
             <div class="p-5 rounded-2xl bg-[#F8FAFC] border border-[#CBD5E1]">
               <div class="text-xs font-bold uppercase text-rose-600 mb-1">Scenario A: The Statement Minimum Trap</div>
               <div class="text-2xl font-black text-[#0F172A] mb-1 num-tabular">3% of Balance ($25 floor)</div>
               <p class="text-[11px] text-[#64748B] mb-3">On a $5,000 balance at 24.0% APR paying statement minimums:</p>
               <ul class="text-xs text-[#64748B] space-y-1.5 leading-relaxed">
-                <li>• Month 1 Payment: <strong class="text-[#0F172A]">$153.00</strong> ($100 int + $53 prin)</li>
-                <li>• Month 25 Payment: <strong class="text-[#0F172A]">$118.47</strong> (Bal: $3,830.61)</li>
-                <li>• Month 50 Payment: <strong class="text-[#0F172A]">$90.76</strong> (Bal: $2,934.71)</li>
-                <li>• Month 100 Payment: <strong class="text-[#0F172A]">$53.27</strong> (Bal: $1,722.51)</li>
-                <li>• Month 171 ($25 Floor Triggered): <strong class="text-[#0F172A]">$25.00</strong> (Bal: $808.29)</li>
-                <li>• Month 224 (Final Payoff): <strong class="text-[#0F172A]">$13.32</strong> (Debt cleared)</li>
-                <li>• Payoff Timeline: <strong class="text-[#0F172A]">224 Months (18.7 Years)</strong></li>
-                <li>• Total Interest Paid: <strong class="text-rose-600 font-bold">$8,413.92</strong></li>
-                <li>• Total Cash Paid: <strong class="text-[#0F172A]">$13,413.92</strong></li>
-                <li>• <strong class="text-rose-700">You pay $3,413.92 MORE in interest than the original $5,000 balance!</strong></li>
+                <li>• Month 1 Payment: <strong class="text-[#0F172A]">{{ formatCurrency(scenarioAMonth(1).payment, currency) }}</strong> ({{ formatCurrency(scenarioAMonth(1).interestCharged, currency) }} int + {{ formatCurrency(scenarioAMonth(1).payment - scenarioAMonth(1).interestCharged, currency) }} prin)</li>
+                <li>• Month 2 Payment: <strong class="text-[#0F172A]">{{ formatCurrency(scenarioAMonth(2).payment, currency) }}</strong> (Bal: {{ formatCurrency(scenarioAMonth(2).endBalance, currency) }})</li>
+                <li>• Month 25 Payment: <strong class="text-[#0F172A]">{{ formatCurrency(scenarioAMonth(25).payment, currency) }}</strong> (Bal: {{ formatCurrency(scenarioAMonth(25).endBalance, currency) }})</li>
+                <li>• Month 50 Payment: <strong class="text-[#0F172A]">{{ formatCurrency(scenarioAMonth(50).payment, currency) }}</strong> (Bal: {{ formatCurrency(scenarioAMonth(50).endBalance, currency) }})</li>
+                <li>• Month 100 Payment: <strong class="text-[#0F172A]">{{ formatCurrency(scenarioAMonth(100).payment, currency) }}</strong> (Bal: {{ formatCurrency(scenarioAMonth(100).endBalance, currency) }})</li>
+                <li>• Month 180 ($25 Floor Triggered): <strong class="text-[#0F172A]">{{ formatCurrency(scenarioAMonth(180).payment, currency) }}</strong> (Bal: {{ formatCurrency(scenarioAMonth(180).startBalance, currency) }})</li>
+                <li>• Month 234 (Final Payoff): <strong class="text-[#0F172A]">{{ formatCurrency(scenarioA.finalPayment, currency) }}</strong> (Debt cleared)</li>
+                <li>• Payoff Timeline: <strong class="text-[#0F172A]">{{ scenarioA.payoffMonths }} Months ({{ scenarioA.payoffYears }} Years)</strong></li>
+                <li>• Total Interest Paid: <strong class="text-rose-600 font-bold">{{ formatCurrency(scenarioA.totalInterestPaid, currency) }}</strong></li>
+                <li>• Total Cash Paid: <strong class="text-[#0F172A]">{{ formatCurrency(scenarioA.totalAmountPaid, currency) }}</strong></li>
+                <li>• <strong class="text-rose-700">You pay {{ formatCurrency(scenarioA.totalInterestPaid - 5000, currency) }} MORE in interest than the original $5,000 balance!</strong></li>
               </ul>
             </div>
 
@@ -735,19 +849,83 @@ async function handleCopy() {
                 <li>• Payoff Timeline: <strong class="text-[#0F172A]">26 Months (2.2 Years)</strong></li>
                 <li>• Total Interest Paid: <strong class="text-[#0F172A]">$1,449.36</strong></li>
                 <li>• Total Cash Paid: <strong class="text-[#0F172A]">$6,449.36</strong></li>
-                <li>• <strong class="text-[#0F766E]">Saves $6,964.56 in interest</strong> and eliminates debt 16.5 years sooner.</li>
+                <li>• <strong class="text-[#0F766E]">Saves {{ formatCurrency(scenarioBSaving, currency) }} in interest</strong> and eliminates debt {{ scenarioBYearsSooner.toFixed(1) }} years sooner.</li>
               </ul>
             </div>
           </div>
 
           <!-- Explanatory Callout Box on Minimum Payment Mechanics -->
           <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs text-[#475569] leading-relaxed">
-            <strong class="text-[#0F172A]">Why does the statement minimum take over 18 years?</strong>
-            Credit card companies calculate required minimum payments each month as a percentage of the remaining balance after interest (commonly 2.5% to 3.0%, or 1% plus monthly finance charges, with a standard $25.00 floor). In Month 1, beginning balance is $5,000.00; monthly interest is $100.00 ($5,000 × 2%), bringing balance to $5,100.00; the 3% minimum is <strong>$153.00</strong> ($100.00 interest + $53.00 principal reduction), leaving an ending balance of $4,947.00. In Month 2, interest is $98.94 and the payment automatically shrinks to <strong>$151.38</strong>. Because the required payment falls in tandem with your debt, principal reduction slows to a crawl. By Month 171, 3% falls below $25.00, triggering the $25.00 floor until Month 224.
+            <strong class="text-[#0F172A]">Why does the statement minimum take over 19 years?</strong>
+            Credit card companies calculate the required minimum payment each month as a percentage of the remaining balance (commonly 2.5% to 3.0%, or 1% plus monthly finance charges, with a standard $25.00 floor). In Month 1, beginning balance is $5,000.00; monthly interest is $100.00 ($5,000 × 2%); the 3% minimum is <strong>$150.00</strong> ($100.00 interest + $50.00 principal reduction), leaving an ending balance of $4,950.00. In Month 2, interest is $99.00 and the payment automatically shrinks to <strong>$148.50</strong>. Because the required payment falls in tandem with your debt, principal reduction slows to a crawl. By Month 180, 3% falls below $25.00, triggering the $25.00 floor until the debt is cleared in Month 234.
             <div class="mt-2 text-[11px] text-[#64748B]">
-              <em>Rounding policy note:</em> Full-precision recurrence yields 224 months and $8,413.92 in total interest. Rounding each line item to the nearest cent yields the identical 224 months and $8,414.02 in interest (a negligible $0.10 difference over 18.7 years). If you instead fix your payment at a modest <strong>$150.00 every month</strong>, you become debt-free in <strong>56 months (4.7 years)</strong> and pay $3,322.09 in interest—saving $5,091.83.
+              All Scenario A figures are generated from the same calculator engine as the tool above, so they always agree with it. If you instead fix your payment at a modest <strong>$150.00 every month</strong>, you become debt-free in <strong>56 months (4.7 years)</strong> and pay $3,322.09 in interest—saving {{ formatCurrency(scenarioAFixed150Saving, currency) }}.
             </div>
           </div>
+        </section>
+
+        <!-- Worked examples & minimum-payment comparison (figures generated from the calculator engine) -->
+        <section id="worked-examples" class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm scroll-mt-24">
+          <h2 class="text-xl sm:text-2xl font-extrabold text-[#0F172A] tracking-tight mb-3">
+            Worked examples by balance and APR
+          </h2>
+          <p class="text-sm text-[#64748B] leading-relaxed mb-4">
+            Every row below is calculated by the same engine as the calculator above — change the inputs there and these are the numbers you should get.
+          </p>
+          <div class="overflow-x-auto border border-[#E2E8F0] rounded-2xl mb-8">
+            <table class="w-full text-left text-xs sm:text-sm">
+              <thead class="bg-[#F8FAFC] text-[#475569] font-bold border-b border-[#E2E8F0]">
+                <tr>
+                  <th class="py-3 px-4">Balance</th>
+                  <th class="py-3 px-4">APR</th>
+                  <th class="py-3 px-4">Monthly payment</th>
+                  <th class="py-3 px-4">Payoff time</th>
+                  <th class="py-3 px-4">Total interest</th>
+                  <th class="py-3 px-4">Total paid</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-[#E2E8F0]">
+                <tr v-for="row in workedExamples" :key="`${row.balance}-${row.apr}-${row.monthlyPayment}`" class="hover:bg-[#F8FAFC]/60 transition-colors">
+                  <td class="py-2.5 px-4 num-tabular font-bold text-[#0F172A]">{{ formatCurrency(row.balance, currency) }}</td>
+                  <td class="py-2.5 px-4 num-tabular text-[#64748B]">{{ row.apr }}%</td>
+                  <td class="py-2.5 px-4 num-tabular text-[#64748B]">{{ formatCurrency(row.monthlyPayment, currency) }}</td>
+                  <td class="py-2.5 px-4 num-tabular font-bold text-[#0F172A]">{{ row.payoffMonths }} months</td>
+                  <td class="py-2.5 px-4 num-tabular text-rose-600 font-bold">{{ formatCurrency(row.totalInterestPaid, currency) }}</td>
+                  <td class="py-2.5 px-4 num-tabular text-[#0F172A] font-extrabold">{{ formatCurrency(row.totalAmountPaid, currency) }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 class="text-lg font-extrabold text-[#0F172A] mb-3">
+            Minimum payment vs. fixed payment: $4,500 at 22.9% APR
+          </h3>
+          <p class="text-xs text-[#64748B] leading-relaxed mb-4">
+            Minimum payment = 3% of balance or $25, whichever is greater; 22.9% APR; monthly APR ÷ 12 model; no new charges.
+          </p>
+          <div class="overflow-x-auto border border-[#E2E8F0] rounded-2xl">
+            <table class="w-full text-left text-xs sm:text-sm">
+              <thead class="bg-[#F8FAFC] text-[#475569] font-bold border-b border-[#E2E8F0]">
+                <tr>
+                  <th class="py-3 px-4">Payment plan</th>
+                  <th class="py-3 px-4">Payoff time</th>
+                  <th class="py-3 px-4">Total interest</th>
+                  <th class="py-3 px-4">Total paid</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-[#E2E8F0]">
+                <tr v-for="row in comparisonScenarios" :key="row.label" class="hover:bg-[#F8FAFC]/60 transition-colors">
+                  <td class="py-2.5 px-4 font-bold text-[#0F172A]">{{ row.label }}</td>
+                  <td class="py-2.5 px-4 num-tabular text-[#64748B]">{{ row.payoffMonths }} months ({{ (row.payoffMonths / 12).toFixed(1) }} years)</td>
+                  <td class="py-2.5 px-4 num-tabular text-rose-600 font-bold">{{ formatCurrency(row.totalInterestPaid, currency) }}</td>
+                  <td class="py-2.5 px-4 num-tabular text-[#0F172A] font-extrabold">{{ formatCurrency(row.totalAmountPaid, currency) }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="text-xs text-[#64748B] leading-relaxed mt-4">
+            Try it yourself: turn on <strong class="text-[#0F172A]">Pay minimum only</strong> in the calculator above with a $4,500 balance at 22.9% APR to see the same 208-month, $6,913.23-interest result for your own numbers.
+          </p>
         </section>
 
         <!-- Section 3: Understanding Card APR Tiers -->
@@ -800,7 +978,7 @@ async function handleCopy() {
           </ul>
         </section>
 
-        <section>
+        <section id="faq" class="scroll-mt-24">
           <FAQAccordion :items="currentTool.faqs" title="Frequently Asked Questions About Credit Card APR" />
         </section>
       </div>

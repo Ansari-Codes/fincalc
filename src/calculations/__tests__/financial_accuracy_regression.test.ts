@@ -190,7 +190,11 @@ describe('Phase 2.1 Financial Mathematics & Accuracy Regressions', () => {
         let balAfterInt = start + interest
         if (policy === 'cents') balAfterInt = Math.round(balAfterInt * 100) / 100
 
-        let pmt = Math.max(25, 0.03 * balAfterInt)
+        // Minimum is 3% of the STARTING balance for the month (never of the
+        // balance after that month's interest is added), or $25, whichever
+        // is greater. Verified against the calculator engine: month 1 is
+        // $150.00 (3% of $5,000), not $153.00 (3% of $5,100).
+        let pmt = Math.max(25, 0.03 * start)
         if (policy === 'cents') pmt = Math.round(pmt * 100) / 100
 
         if (pmt <= 25 && floorMonth === -1 && balAfterInt > 25) {
@@ -213,35 +217,41 @@ describe('Phase 2.1 Financial Mathematics & Accuracy Regressions', () => {
 
     it('verifies exact minimum payment recurrence with full precision', () => {
       const sim = simulateCardMinimum('full')
-      expect(sim.totalMonths).toBe(224)
-      expect(sim.totalInterest).toBeCloseTo(8413.92, 2)
-      expect(sim.totalPaid).toBeCloseTo(13413.92, 2)
-      expect(sim.floorMonth).toBe(171)
+      expect(sim.totalMonths).toBe(234)
+      expect(sim.totalInterest).toBeCloseTo(8886.95, 2)
+      expect(sim.totalPaid).toBeCloseTo(13886.95, 2)
+      expect(sim.floorMonth).toBe(180)
 
       // Month 1
       expect(sim.schedule[0].interest).toBeCloseTo(100.00, 2)
-      expect(sim.schedule[0].pmt).toBeCloseTo(153.00, 2)
-      expect(sim.schedule[0].endBal).toBeCloseTo(4947.00, 2)
+      expect(sim.schedule[0].pmt).toBeCloseTo(150.00, 2)
+      expect(sim.schedule[0].endBal).toBeCloseTo(4950.00, 2)
+
+      // Month 2
+      expect(sim.schedule[1].interest).toBeCloseTo(99.00, 2)
+      expect(sim.schedule[1].pmt).toBeCloseTo(148.50, 2)
+      expect(sim.schedule[1].endBal).toBeCloseTo(4900.50, 2)
 
       // Month 25
-      expect(sim.schedule[24].pmt).toBeCloseTo(118.47, 2)
-      expect(sim.schedule[24].endBal).toBeCloseTo(3830.61, 2)
+      expect(sim.schedule[24].pmt).toBeCloseTo(117.85, 2)
+      expect(sim.schedule[24].endBal).toBeCloseTo(3889.11, 2)
 
       // Month 50
-      expect(sim.schedule[49].pmt).toBeCloseTo(90.76, 2)
-      expect(sim.schedule[49].endBal).toBeCloseTo(2934.71, 2)
+      expect(sim.schedule[49].pmt).toBeCloseTo(91.67, 2)
+      expect(sim.schedule[49].endBal).toBeCloseTo(3025.03, 2)
 
       // Month 100
-      expect(sim.schedule[99].pmt).toBeCloseTo(53.27, 2)
-      expect(sim.schedule[99].endBal).toBeCloseTo(1722.51, 2)
+      expect(sim.schedule[99].pmt).toBeCloseTo(55.46, 2)
+      expect(sim.schedule[99].endBal).toBeCloseTo(1830.16, 2)
 
-      // Month 171
-      expect(sim.schedule[170].pmt).toBeCloseTo(25.00, 2)
-      expect(sim.schedule[170].endBal).toBeCloseTo(808.29, 2)
+      // Month 180 ($25 floor first applies; starting balance $827.31)
+      expect(sim.schedule[179].pmt).toBeCloseTo(25.00, 2)
+      expect(sim.schedule[179].startBal).toBeCloseTo(827.31, 2)
+      expect(sim.schedule[179].endBal).toBeCloseTo(818.86, 2)
 
-      // Month 224 (final)
-      expect(sim.schedule[223].pmt).toBeCloseTo(13.32, 2)
-      expect(sim.schedule[223].endBal).toBeCloseTo(0.00, 2)
+      // Month 234 (final)
+      expect(sim.schedule[233].pmt).toBeCloseTo(18.89, 2)
+      expect(sim.schedule[233].endBal).toBeCloseTo(0.00, 2)
     })
 
     it('verifies fixed $250/mo accelerated repayment on $5,000 card debt', () => {

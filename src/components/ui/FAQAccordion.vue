@@ -47,12 +47,13 @@ function toggle(index: number) {
         />
       </button>
 
+      <!-- Answers are site-authored data (never user input) and intentionally
+           contain links, so render them as HTML. -->
       <div
         v-if="openIndices.includes(index)"
         class="px-5 pb-5 text-sm text-[#667085] leading-relaxed border-t border-[#E4E9F0]/60 pt-3"
-      >
-        {{ faq.answer }}
-      </div>
+        v-html="faq.answer"
+      ></div>
     </div>
   </div>
 </template>

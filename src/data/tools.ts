@@ -166,7 +166,7 @@ export const tools: ToolItem[] = [
     name: 'Credit Card APR Calculator',
     title: 'Credit Card APR Calculator: How to Calculate Interest & Payments',
     shortDescription: 'Estimate monthly credit card interest, calculate payoff payments, and see how extra payments save money.',
-    fullDescription: 'Calculate monthly credit card interest and payoff timelines from your APR and balance. Learn how to calculate APR with clear formulas, worked examples, and payment strategies.',
+    fullDescription: 'Calculate monthly credit card interest, payoff time and total interest from your APR and balance. Free calculator with amortization schedule and minimum-payment comparison.',
     category: 'credit-debt',
     categoryName: 'Credit & Debt',
     icon: 'CreditCard',
@@ -209,6 +209,22 @@ export const tools: ToolItem[] = [
       {
         question: 'How much interest do I save by paying more than the minimum payment?',
         answer: 'Because minimum payments primarily cover accrued interest with only a sliver reducing principal, paying even an extra $50 to $100 per month can save thousands of dollars in lifetime finance charges and cut years off your repayment timeline.'
+      },
+      {
+        question: 'What is my APR on my credit card?',
+        answer: 'Your APR is printed on your monthly statement and in your cardmember agreement, and it is also shown in your online account or app under card details or statements. If you have more than one APR (purchases, balance transfers, cash advances), use the purchases APR for this calculator.'
+      },
+      {
+        question: 'How do I find out my APR on a credit card?',
+        answer: 'Check the interest-charge section of your latest statement, look in your cardmember agreement, or sign in to your card account online and open your card details. The APR is the annual rate — divide it by 12 for the monthly rate used in this calculator.'
+      },
+      {
+        question: 'How do you calculate APR on a credit card balance?',
+        answer: 'Divide the APR by 12 to get the monthly rate, then multiply your carried balance by that rate. For example, a $3,000 balance at 24% APR is $3,000 × (24% ÷ 12) = $3,000 × 0.02 = $60.00 of interest for that month, before your payment is applied.'
+      },
+      {
+        question: 'Is this the same as a break-even analysis?',
+        answer: 'No. A <a href="/learn/how-to-calculate-break-even-point/" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">break-even analysis</a> finds the sales or output level at which a business covers all its costs — it is about business pricing, not card interest. This calculator works out the interest and payoff time on a credit card balance.'
       }
     ],
     relatedToolSlugs: ['debt-payoff-planner', 'loan-payment-calculator'],
