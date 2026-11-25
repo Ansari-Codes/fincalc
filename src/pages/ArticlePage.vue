@@ -10,6 +10,8 @@ import FAQAccordion from '@/components/ui/FAQAccordion.vue'
 import ArticleCard from '@/components/ui/ArticleCard.vue'
 import AmortizationChart from '@/components/ui/AmortizationChart.vue'
 import { calculateLoanPayment, buildDisplaySchedule } from '@/calculations/loanPayment'
+import { calculateBreakEven } from '@/calculations/breakEven'
+import { breakEvenChartSvg, BREAK_EVEN_CHART_INPUTS } from '@/utils/breakEvenChart'
 import { ArrowRight, Calculator, Calendar, Clock } from '@lucide/vue'
 
 const route = useRoute()
@@ -41,13 +43,26 @@ function handleArticleClick(event: MouseEvent) {
 watchEffect(() => {
   if (article.value) {
     updatePageSeo({
-      title: `${article.value.title} – Financial Guide`,
+      // seoTitle (when set) is the short <title> tag; the H1 keeps the full
+      // article title. Without it, fall back to the old suffixed title.
+      title: article.value.seoTitle ?? `${article.value.title} – Financial Guide`,
       description: article.value.metaDescription,
       path: article.value.path,
       jsonLd: generateArticleSchema(article.value)
     })
   }
 })
+
+// Engine-computed break-even chart HTML (hoodie example), rendered wherever
+// a section carries chart: 'break-even-hoodie'. The break-even point comes
+// from the engine, not from hand-typed numbers.
+const beChartHtml = breakEvenChartSvg(
+  calculateBreakEven({
+    sellingPricePerUnit: BREAK_EVEN_CHART_INPUTS.price,
+    variableCostPerUnit: BREAK_EVEN_CHART_INPUTS.variableCost,
+    totalFixedCosts: BREAK_EVEN_CHART_INPUTS.fixedCosts
+  })
+)
 
 const relatedTool = computed(() => {
   if (!article.value) return undefined
@@ -167,6 +182,12 @@ const educationalBaselineSchedule = computed(() => {
                 </li>
               </ul>
             </div>
+
+            <!-- Table Block -->
+            <div v-if="section.tableHtml" class="my-6 overflow-x-auto" v-html="section.tableHtml" />
+
+            <!-- Engine-computed Break-Even Chart -->
+            <div v-if="section.chart === 'break-even-hoodie'" class="my-6 p-5 rounded-xl bg-white border border-[#E4E9F0] shadow-sm overflow-x-auto" v-html="beChartHtml" />
 
             <!-- Optional Educational Visualization for Amortization Guide -->
             <div v-if="isAmortizationArticle && section.exampleBox && educationalMortgageSchedule" class="my-8">

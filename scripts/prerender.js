@@ -25,6 +25,9 @@ import {
 import { calculateRetirementGoal } from '../src/calculations/retirementGoal.ts'
 import { calculateLoanPayment, buildDisplaySchedule } from '../src/calculations/loanPayment.ts'
 import { calculateStockAverage } from '../src/calculations/stockAverage.ts'
+import { calculateBreakEven } from '../src/calculations/breakEven.ts'
+import { calculateRoi } from '../src/calculations/roi.ts'
+import { breakEvenChartSvg } from '../src/utils/breakEvenChart.ts'
 
 // Base URL helper for subpaths (default '/')
 const base = process.env.BASE_URL || '/'
@@ -864,6 +867,23 @@ for (const t of tools) {
       <main class="max-w-[1200px] mx-auto px-4 py-12">
         <h1 class="text-3xl font-extrabold text-gray-900 mb-4">${t.name}</h1>
         <p class="text-lg text-gray-600 mb-8">${t.fullDescription}</p>
+        ${t.slug === 'break-even-calculator' ? (() => {
+          const r = calculateBreakEven({ sellingPricePerUnit: 50, variableCostPerUnit: 20, totalFixedCosts: 30000, targetProfit: 15000, expectedSalesVolume: 1200 })
+          return `
+          <section class="bg-teal-50 p-6 rounded-xl border border-teal-200 mb-8">
+            <h2 class="text-xl font-bold text-teal-900 mb-2">Default Example — Break-Even at a Glance</h2>
+            <p class="text-sm text-teal-800 leading-relaxed">With the default inputs ($50.00 selling price, $20.00 variable cost, $30,000.00 fixed costs): contribution margin $30.00 per unit (60.0%), break-even ${r.breakEvenUnitsRounded.toLocaleString()} units (${'$'}${r.breakEvenRevenue.toLocaleString()}.00 revenue), ${r.targetProfitUnitsRounded?.toLocaleString()} units for the $15,000.00 target profit (${'$'}${(r.targetProfitRevenue || 0).toLocaleString()}.00), and a margin of safety of ${r.marginOfSafetyUnits?.toLocaleString()} units (${'$'}${(r.marginOfSafetyRevenue || 0).toLocaleString()}.00, ${(r.marginOfSafetyPercentage || 0).toFixed(2)}%) at 1,200 expected units — expected profit $${(r.expectedProfitOrLoss || 0).toLocaleString()}.00.</p>
+          </section>`
+        })() : ''}
+        ${t.slug === 'roi-calculator' ? (() => {
+          const r = calculateRoi({ initialInvestment: 10000, finalValue: 14500, additionalCosts: 500, additionalIncome: 0 })
+          const mult = r.totalCost > 0 ? (r.totalValueReturned / r.totalCost).toFixed(2) : '0.00'
+          return `
+          <section class="bg-teal-50 p-6 rounded-xl border border-teal-200 mb-8">
+            <h2 class="text-xl font-bold text-teal-900 mb-2">Default Example — ROI at a Glance</h2>
+            <p class="text-sm text-teal-800 leading-relaxed">With the default inputs ($10,000.00 invested, $14,500.00 final value, $500.00 incidental costs): total cost $${r.totalCost.toLocaleString()}.00, gross value returned $${r.totalValueReturned.toLocaleString()}.00, net profit $${r.netProfit.toLocaleString()}.00, ROI +${r.roiPercentage.toFixed(2)}%, and a ${mult}× capital multiple. Enter a holding period in the calculator to also see the annualised ROI.</p>
+          </section>`
+        })() : ''}
         <section class="bg-white p-8 rounded-xl border border-gray-200 mb-8">
           <h2 class="text-xl font-bold text-gray-900 mb-4">Calculation Formula & Methodology</h2>
           <pre class="bg-gray-50 p-4 rounded-lg font-mono text-sm text-gray-800 mb-4">${t.formula}</pre>
@@ -1013,16 +1033,30 @@ routes.push({
 
 // 6. Educational Articles
 for (const a of articles) {
+  const relatedTool = tools.find((t) => t.slug === a.relatedToolSlug)
   routes.push({
     path: a.path,
-    title: `${a.title} – Financial Guide | ${siteConfig.name}`,
+    // seoTitle (when set) is the short <title> tag; otherwise the old
+    // suffixed title. The H1 always keeps the full article title.
+    title: a.seoTitle ? `${a.seoTitle} | ${siteConfig.name}` : `${a.title} – Financial Guide | ${siteConfig.name}`,
     description: a.metaDescription,
     jsonLd: generateArticleSchema(a),
     bodyHtml: `
-      <main class="max-w-[800px] mx-auto px-4 py-12">
+      <main class="max-w-[1200px] mx-auto px-4 py-12">
+        <p class="text-xs text-gray-500 mb-4"><a href="${withBase('/learn/')}" class="text-teal-700 font-semibold">Learn</a> / ${a.category}</p>
         <span class="text-xs font-semibold text-teal-800 uppercase">${a.category}</span>
         <h1 class="text-4xl font-extrabold text-gray-900 my-4">${a.title}</h1>
+        <p class="text-sm text-gray-500 mb-4">${a.readTime} · Reviewed: ${a.lastReviewed}</p>
         <p class="text-lg text-gray-600 mb-8">${a.summary}</p>
+        ${relatedTool ? `
+          <div class="mb-8 p-5 rounded-2xl bg-teal-50 border border-teal-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div class="text-xs uppercase font-semibold text-teal-700">Interactive Tool</div>
+              <div class="text-sm font-bold text-gray-900">${relatedTool.name}</div>
+            </div>
+            <a href="${withBase(relatedTool.path)}" class="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-teal-700 text-white text-xs sm:text-sm font-semibold rounded-xl">Open calculator →</a>
+          </div>
+        ` : ''}
         ${a.slug === 'how-loan-amortization-works' ? `
           <div class="mb-8 p-6 bg-teal-50 border border-teal-200 rounded-xl">
             <h2 class="text-xl font-bold text-teal-900 mb-2">Interactive Amortization Visualizer</h2>
@@ -1037,6 +1071,8 @@ for (const a of articles) {
               <h2 class="text-2xl font-bold text-gray-900 mb-3">${sec.heading}</h2>
               ${sec.paragraphs.map(p => `<p class="text-base text-gray-600 mb-3 leading-relaxed">${p}</p>`).join('')}
               ${sec.formulaBox ? `<div class="bg-gray-50 border border-gray-200 p-4 rounded-lg font-mono text-sm my-4">${sec.formulaBox}</div>` : ''}
+              ${sec.tableHtml ? `<div class="overflow-x-auto my-4">${sec.tableHtml}</div>` : ''}
+              ${sec.chart === 'break-even-hoodie' ? `<div class="bg-white border border-gray-200 p-5 rounded-xl my-4 overflow-x-auto">${breakEvenChartSvg(calculateBreakEven({ sellingPricePerUnit: 80, variableCostPerUnit: 28, totalFixedCosts: 26000 }))}</div>` : ''}
               ${sec.exampleBox ? `
                 <div class="bg-white border border-gray-200 p-6 rounded-xl my-4">
                   <h3 class="font-bold text-base text-gray-900 mb-2">${sec.exampleBox.title}</h3>

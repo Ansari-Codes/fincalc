@@ -32,19 +32,25 @@ onMounted(() => {
   })
 })
 
-const currency = ref('USD')
+// Amounts are always USD — the currency selector only relabelled the symbol
+// without converting values, so it was removed (same as stock/loan pages).
+const currency = 'USD'
 const copied = ref(false)
 
 const initialInvestment = ref<number | null>(10000)
 const finalValue = ref<number | null>(14500)
 const additionalCosts = ref<number | null>(500)
 const additionalIncome = ref<number | null>(0)
+// Optional holding period in years (fractions allowed). Blank = not set:
+// simple ROI is unchanged and no annualised figure is shown.
+const holdingPeriodYears = ref<number | null>(null)
 
 function resetForm() {
   initialInvestment.value = 10000
   finalValue.value = 14500
   additionalCosts.value = 500
   additionalIncome.value = 0
+  holdingPeriodYears.value = null
 }
 
 const result = computed(() => {
@@ -52,7 +58,8 @@ const result = computed(() => {
     initialInvestment: initialInvestment.value || 0,
     finalValue: finalValue.value || 0,
     additionalCosts: additionalCosts.value || 0,
-    additionalIncome: additionalIncome.value || 0
+    additionalIncome: additionalIncome.value || 0,
+    holdingPeriodYears: holdingPeriodYears.value && holdingPeriodYears.value > 0 ? holdingPeriodYears.value : undefined
   })
 })
 
@@ -79,13 +86,14 @@ async function handleCopy() {
   const summary = [
     'Return on Investment (ROI) Calculation',
     '----------------------------------------',
-    `Initial Investment: ${formatCurrency(initialInvestment.value || 0, currency.value)}`,
-    `Total Cost Basis: ${formatCurrency(result.value.totalCost, currency.value)}`,
-    `Total Value Returned: ${formatCurrency(result.value.totalValueReturned, currency.value)}`,
-    `Net Profit / Loss: ${formatCurrency(result.value.netProfit, currency.value)}`,
+    `Initial Investment: ${formatCurrency(initialInvestment.value || 0, currency)}`,
+    `Total Cost Basis: ${formatCurrency(result.value.totalCost, currency)}`,
+    `Total Value Returned: ${formatCurrency(result.value.totalValueReturned, currency)}`,
+    `Net Profit / Loss: ${formatCurrency(result.value.netProfit, currency)}`,
     `ROI Percentage: ${formatPercent(result.value.roiPercentage)}`,
+    result.value.annualizedRoiPercentage !== undefined ? `Annualised ROI (${holdingPeriodYears.value} years): ${formatPercent(result.value.annualizedRoiPercentage)} per year` : '',
     `Capital Return Multiplier: ${capitalMultiple.value}x`
-  ].join('\n')
+  ].filter(Boolean).join('\n')
 
   const ok = await copyToClipboard(summary)
   if (ok) {
@@ -117,18 +125,8 @@ async function handleCopy() {
         </p>
       </div>
 
-      <!-- Controls: Currency & Reset -->
+      <!-- Controls: Reset (amounts are always USD — the selector only relabelled the symbol without converting values, so it was removed) -->
       <div class="flex items-center gap-2.5 self-start md:self-end">
-        <select
-          v-model="currency"
-          aria-label="Display currency"
-          class="text-xs font-semibold bg-white border border-[#CBD5E1] rounded-xl px-3 py-2 text-[#334155] shadow-2xs focus:outline-none focus:ring-2 focus:ring-[#0F766E]"
-        >
-          <option value="USD">USD ($)</option>
-          <option value="EUR">EUR (€)</option>
-          <option value="GBP">GBP (£)</option>
-          <option value="CAD">CAD ($)</option>
-        </select>
         <button
           type="button"
           @click="resetForm"
@@ -311,6 +309,31 @@ async function handleCopy() {
               />
             </div>
           </div>
+
+          <!-- 4. Holding Period (optional) — enables the annualised ROI output -->
+          <div class="pt-4 border-t border-[#E2E8F0]">
+            <div class="bg-[#F8FAFC] p-3.5 rounded-xl border border-[#E2E8F0] space-y-2">
+              <div class="flex items-center justify-between">
+                <div>
+                  <label for="holding-period" class="text-xs font-bold text-[#334155]">
+                    Holding Period (optional)
+                  </label>
+                  <p class="text-[11px] text-[#64748B]">Years held — fractions allowed (e.g. 2.5). Leave blank for simple ROI only.</p>
+                </div>
+                <div class="relative w-24 shrink-0">
+                  <input
+                    id="holding-period"
+                    v-model.number="holdingPeriodYears"
+                    type="number"
+                    min="0"
+                    step="0.5"
+                    placeholder="—"
+                    class="w-full px-2 py-1 text-right text-xs font-bold bg-white border border-[#CBD5E1] rounded-lg"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
         </form>
       </div>
 
@@ -361,11 +384,22 @@ async function handleCopy() {
             </div>
           </div>
 
+          <!-- Annualised ROI (only when a holding period is entered) -->
+          <div v-if="result.annualizedRoiPercentage !== undefined" class="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/15 text-center">
+            <span class="text-xs font-semibold uppercase tracking-wider text-emerald-100">Annualised ROI — {{ holdingPeriodYears }} {{ holdingPeriodYears === 1 ? 'year' : 'years' }} held</span>
+            <div class="text-2xl sm:text-3xl font-black mt-1 num-tabular tracking-tight text-white">
+              {{ result.annualizedRoiPercentage >= 0 ? '+' : '' }}{{ formatPercent(result.annualizedRoiPercentage) }} per year
+            </div>
+            <p class="text-[11px] text-white/70 mt-1 leading-relaxed">
+              The equivalent compound yearly rate behind the {{ formatPercent(result.roiPercentage) }} total return.
+            </p>
+          </div>
+
           <!-- Proportional Capital vs Profit Bar -->
           <div v-if="result.netProfit > 0" class="space-y-2 pt-2">
             <div class="flex items-center justify-between text-xs font-bold text-white/90">
               <span>Capital Return Breakdown</span>
-              <span class="text-emerald-300">+{{ profitSharePct.toFixed(0) }}% Gain Share</span>
+              <span class="text-emerald-300">Net profit: {{ profitSharePct.toFixed(1) }}% of gross proceeds</span>
             </div>
 
             <!-- Proportional 2-Segment Bar -->
@@ -393,6 +427,9 @@ async function handleCopy() {
                 <span>Net Gain ({{ formatCurrency(result.netProfit, currency) }})</span>
               </div>
             </div>
+            <p class="text-[11px] text-white/70 leading-relaxed pt-1">
+              Net profit is {{ profitSharePct.toFixed(1) }}% of the {{ formatCurrency(result.totalValueReturned, currency) }} gross value returned. This is not the ROI — ROI is net profit ÷ total cost ({{ formatPercent(result.roiPercentage) }}).
+            </p>
           </div>
 
           <!-- Secondary Metric 2x2 Grid -->
@@ -444,13 +481,13 @@ async function handleCopy() {
         <section class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm">
           <h2 class="text-xl font-extrabold text-[#0F172A] mb-3">How ROI is Calculated</h2>
           <p class="text-sm text-[#64748B] leading-relaxed mb-4">
-            Return on Investment compares net economic gains to the total capital invested. Net profit is computed by subtracting total costs from total gross proceeds.
+            Return on Investment compares net economic gains to the total capital invested. Net profit is computed by subtracting total costs from the total value returned — the final value plus any dividends or cash flow received during the holding period.
           </p>
           <div class="bg-[#F8FAFC] border border-[#CBD5E1] p-4 rounded-xl num-tabular text-xs sm:text-sm text-[#0F172A] mb-4 font-mono">
             {{ currentTool.formula }}
           </div>
           <p class="text-sm text-[#64748B] leading-relaxed">
-            Note: Standard ROI measures total cumulative return. It does not measure annualized velocity (how many years the gain required).
+            Note: Standard ROI measures total cumulative return. It does not measure annualized velocity (how many years the gain required) — enter a holding period above to also see the annualised ROI, the equivalent compound yearly rate.
           </p>
         </section>
 
@@ -467,6 +504,36 @@ async function handleCopy() {
             <div class="p-3 bg-[#E7F4F1] rounded-xl font-mono text-sm text-[#0F766E] font-bold">
               ROI = ($3,600 ÷ $6,000) × 100 = 60.0%
             </div>
+          </div>
+        </section>
+
+        <!-- Worked Example: Loss Case -->
+        <section class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm">
+          <h2 class="text-xl font-extrabold text-[#0F172A] mb-3">Worked Example: A Losing Investment</h2>
+          <div class="space-y-3 text-sm text-[#64748B] leading-relaxed">
+            <p>Suppose you invest $10,000 in shares and later sell the position for $7,000, with no dividends received:</p>
+            <ul class="list-disc list-inside space-y-1.5 pl-2 font-mono text-xs text-[#0F172A]">
+              <li>Total Cost = $10,000.00</li>
+              <li>Total Value Returned = $7,000.00</li>
+              <li>Net Profit = $7,000 − $10,000 = −$3,000.00</li>
+            </ul>
+            <div class="p-3 bg-[#FEF2F2] rounded-xl font-mono text-sm text-[#B91C1C] font-bold">
+              ROI = (−$3,000 ÷ $10,000) × 100 = −30.00%
+            </div>
+            <p>Recovering from that loss takes more than 30%: to climb back from $7,000 to the original $10,000 requires a +42.86% gain ($3,000 ÷ $7,000). Losses are asymmetric — a −50% drop needs a +100% gain just to break even.</p>
+          </div>
+        </section>
+
+        <!-- Annualised ROI Explainer -->
+        <section class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm">
+          <h2 class="text-xl font-extrabold text-[#0F172A] mb-3">Annualised ROI: Why Time Changes Everything</h2>
+          <div class="space-y-3 text-sm text-[#64748B] leading-relaxed">
+            <p>A 40% total return sounds identical however long it took — but 40% earned over 5 years is 6.96% per year, while the same 40% stretched over 15 years is only 2.27% per year. Simple ROI hides that difference; annualised ROI exposes it.</p>
+            <p>Enter a holding period in the calculator above and the annualised rate appears next to the simple ROI. It is the equivalent compound yearly growth rate:</p>
+            <div class="p-3 bg-[#F8FAFC] border border-[#CBD5E1] rounded-xl font-mono text-xs sm:text-sm text-[#0F172A] font-semibold">
+              Annualised ROI = [(1 + Simple ROI ÷ 100)^(1 ÷ Years) − 1] × 100
+            </div>
+            <p>For example, the 50% two-year property return in our guide annualises to 22.47% per year — the number to compare against any other two-year opportunity.</p>
           </div>
         </section>
 

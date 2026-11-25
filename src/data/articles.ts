@@ -3,6 +3,7 @@ export interface ArticleItem {
   slug: string
   path: string
   title: string
+  seoTitle?: string // Short title for the <title> tag only; the H1 keeps `title`.
   metaDescription: string
   readTime: string
   lastReviewed: string
@@ -16,6 +17,8 @@ export interface ArticleItem {
       title: string
       details: string[]
     }
+    tableHtml?: string // Full <table> markup, rendered as its own block.
+    chart?: string // 'break-even-hoodie' renders the engine-computed SVG chart.
   }[]
   faqs: { question: string; answer: string }[]
   relatedToolSlug: string
@@ -114,7 +117,8 @@ export const articles: ArticleItem[] = [
     slug: 'how-to-calculate-roi',
     path: '/learn/how-to-calculate-roi/',
     title: 'How to Calculate Return on Investment (ROI): Formulas, Examples & Annualized Returns',
-    metaDescription: 'Learn how to calculate Return on Investment (ROI), interpret positive and negative returns, compute annualized ROI, and understand the difference between ROI, CAGR, and IRR.',
+    seoTitle: 'How to Calculate ROI',
+    metaDescription: 'Learn how to calculate ROI and annualised ROI, interpret positive and negative returns, and compare ROI with CAGR and IRR — with worked examples.',
     readTime: '7 min read',
     lastReviewed: 'November 2026',
     category: 'Investing',
@@ -134,7 +138,7 @@ export const articles: ArticleItem[] = [
           'Calculating standard ROI requires two primary steps: determining your Net Profit (or Net Loss), and dividing that result by your Total Cost Basis before multiplying by 100 to yield a percentage.',
           'Total Cost Basis must include all cash outflows required to acquire, maintain, and sell the asset—including broker commissions, closing costs, legal fees, and renovations. Omitting auxiliary expenses artificially inflates your perceived ROI.'
         ],
-        formulaBox: 'Net Profit = Final Gross Proceeds − Total Cost Basis\nROI (%) = (Net Profit ÷ Total Cost Basis) × 100'
+        formulaBox: 'Net Profit = Final Value + Dividends / Cash Flow − Total Cost Basis\nROI (%) = (Net Profit ÷ Total Cost Basis) × 100'
       },
       {
         heading: 'Positive vs. negative ROI: The asymmetry of losses',
@@ -153,7 +157,7 @@ export const articles: ArticleItem[] = [
           title: 'Practical Scenarios: Equities vs. Multi-Year Property Improvement',
           details: [
             'Example 1 (Equities with Trading Fees & Dividends): Buy 100 shares at $50.00 each ($5,000.00) plus $20.00 brokerage commissions = $5,020.00 total cost basis. Sold 100 shares at $68.00 each ($6,800.00) plus collected $150.00 in cash dividends = $6,950.00 gross value returned. Net Profit = $6,950.00 − $5,020.00 = $1,930.00. Simple ROI = ($1,930.00 ÷ $5,020.00) × 100 = +38.45%.',
-            'Example 2 (Multi-Year Property Renovation): Invested $20,000.00 in rental unit upgrades. Over a 2-year holding period (t = 2), higher rent generated $6,000.00 in incremental cash flow ($250/mo × 24 mo) and increased resale value by $24,000.00. Gross Value Returned = $30,000.00. Net Profit = $30,000.00 − $20,000.00 = $10,000.00. Simple ROI = +50.00%. Annualized ROI = [(30,000 ÷ 20,000)^(1/2) − 1] × 100 = +22.47% per year.',
+            'Example 2 (Multi-Year Property Renovation): Invested $20,000.00 in rental unit upgrades. Over a 2-year holding period (t = 2), higher rent generated $6,000.00 in incremental cash flow ($250/mo × 24 mo) and increased resale value by $24,000.00. Gross Value Returned = $30,000.00 — that is the $6,000.00 of incremental cash flow plus the $24,000.00 increase in resale value, not the total sale price of the property (no purchase or sale price is assumed here). Net Profit = $30,000.00 − $20,000.00 = $10,000.00. Simple ROI = +50.00%. Annualized ROI = [(30,000 ÷ 20,000)^(1/2) − 1] × 100 = +22.47% per year.',
             'Key Difference: Simple ROI treats returns as instantaneous, whereas Annualized ROI measures the compound rate per year—crucial for comparing a 1-year stock trade against a 2-year real estate project.'
           ]
         }
@@ -170,21 +174,44 @@ export const articles: ArticleItem[] = [
         formulaBox: 'Annualized ROI (%) = [ (Final Value ÷ Total Cost)^(1 / t) − 1 ] × 100\nWhere t = Number of years held'
       },
       {
+        heading: 'Annualised ROI at a glance: The same 40% over different horizons',
+        paragraphs: [
+          'The table below applies the annualised formula to the same 40% total return over different holding periods, plus the property example from above. The total return never changes — only the yearly rate does:',
+          'A 40% return over one year is a 40.00% annual rate. The same 40% stretched over 15 years is only 2.27% a year — below the long-run real return of US equities. That is why any ROI quoted without a holding period is incomplete.'
+        ],
+        tableHtml: '<table class="w-full text-sm text-left border border-[#E4E9F0] rounded-xl overflow-hidden"><thead><tr class="bg-[#F7F9FC] text-[#172033]"><th class="px-4 py-2.5 font-bold border-b border-[#E4E9F0]">Total (simple) ROI</th><th class="px-4 py-2.5 font-bold border-b border-[#E4E9F0]">Holding period</th><th class="px-4 py-2.5 font-bold border-b border-[#E4E9F0] text-right">Annualised ROI</th></tr></thead><tbody class="text-[#667085]"><tr><td class="px-4 py-2 border-b border-[#E4E9F0]">40.00%</td><td class="px-4 py-2 border-b border-[#E4E9F0]">1 year</td><td class="px-4 py-2 border-b border-[#E4E9F0] text-right">40.00% per year</td></tr><tr><td class="px-4 py-2 border-b border-[#E4E9F0]">40.00%</td><td class="px-4 py-2 border-b border-[#E4E9F0]">5 years</td><td class="px-4 py-2 border-b border-[#E4E9F0] text-right">6.96% per year</td></tr><tr><td class="px-4 py-2 border-b border-[#E4E9F0]">40.00%</td><td class="px-4 py-2 border-b border-[#E4E9F0]">15 years</td><td class="px-4 py-2 border-b border-[#E4E9F0] text-right">2.27% per year</td></tr><tr><td class="px-4 py-2">50.00% (property example)</td><td class="px-4 py-2">2 years</td><td class="px-4 py-2 text-right">22.47% per year</td></tr></tbody></table>'
+      },
+      {
+        heading: 'ROI in Excel or Google Sheets',
+        paragraphs: [
+          'Put total cost in cell A1, final value in B1, cash flow received (dividends or rent) in C1, and holding years in D1. Simple ROI is =(B1+C1-A1)/A1, formatted as a percentage. Annualised ROI is =((B1+C1)/A1)^(1/D1)-1, formatted as a percentage. Leave D1 blank — and use only the first formula — when the holding period is unknown; the simple ROI is still valid on its own.'
+        ]
+      },
+      {
         heading: 'ROI vs. CAGR vs. IRR: Choosing the right metric',
         paragraphs: [
           'Different financial scenarios demand distinct analytical tools. Here is how ROI compares with alternative performance metrics:',
           '1. <strong class="text-[#0F172A]">Simple ROI:</strong> Best for single-period transactions, marketing campaign spend, or quick holding period summaries where time is fixed or irrelevant.',
           '2. <strong class="text-[#0F172A]">CAGR (Compound Annual Growth Rate):</strong> The gold standard for measuring annual geometric growth of buy-and-hold investments (such as index funds or stocks) across multi-year horizons. See how long-term compounding scales using our <a href="/compound-interest-calculator/" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">Compound Interest Calculator</a>.',
-          '3. <strong class="text-[#0F172A]">IRR (Internal Rate of Return):</strong> The discount rate that equates the Net Present Value (NPV) of all future cash flows to zero. IRR is essential for complex investments involving irregular capital injections and staggered cash distributions, such as private equity or multi-tenant commercial real estate.'
-        ]
+          '3. <strong class="text-[#0F172A]">IRR (Internal Rate of Return):</strong> The discount rate that equates the Net Present Value (NPV) of all future cash flows to zero. IRR is essential for complex investments involving irregular capital injections and staggered cash distributions, such as private equity or multi-tenant commercial real estate.',
+          'For a business project, ROI answers whether the project paid off; <a href="/learn/how-to-calculate-break-even-point/" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">break-even analysis</a> answers how much you must sell before it starts paying off. Run break-even first to test viability, then ROI to judge the return on the capital committed.'
+        ],
+        tableHtml: '<table class="w-full text-sm text-left border border-[#E4E9F0] rounded-xl overflow-hidden"><thead><tr class="bg-[#F7F9FC] text-[#172033]"><th class="px-4 py-2.5 font-bold border-b border-[#E4E9F0]">Metric</th><th class="px-4 py-2.5 font-bold border-b border-[#E4E9F0]">What it measures</th><th class="px-4 py-2.5 font-bold border-b border-[#E4E9F0]">Time-aware?</th><th class="px-4 py-2.5 font-bold border-b border-[#E4E9F0]">Best for</th></tr></thead><tbody class="text-[#667085]"><tr><td class="px-4 py-2 border-b border-[#E4E9F0] font-semibold text-[#172033]">Simple ROI</td><td class="px-4 py-2 border-b border-[#E4E9F0]">Total percentage gain or loss on the capital invested</td><td class="px-4 py-2 border-b border-[#E4E9F0]">No — one number for the whole holding period</td><td class="px-4 py-2 border-b border-[#E4E9F0]">Single transactions, campaign spend, quick comparisons</td></tr><tr><td class="px-4 py-2 border-b border-[#E4E9F0] font-semibold text-[#172033]">CAGR</td><td class="px-4 py-2 border-b border-[#E4E9F0]">Equivalent compound yearly growth rate</td><td class="px-4 py-2 border-b border-[#E4E9F0]">Yes</td><td class="px-4 py-2 border-b border-[#E4E9F0]">Buy-and-hold investments over several years</td></tr><tr><td class="px-4 py-2 font-semibold text-[#172033]">IRR</td><td class="px-4 py-2">Discount rate that makes the net present value of all cash flows zero</td><td class="px-4 py-2">Yes — and it handles irregular cash flows</td><td class="px-4 py-2">Projects with staged investments and payouts</td></tr></tbody></table>'
       },
       {
         heading: 'Hidden costs: Inflation, taxes, and opportunity cost',
         paragraphs: [
-          'When evaluating your real economic return, simple nominal ROI can be deceptive. A +15% nominal gain during an economic period with 8% cumulative inflation represents a real purchasing-power expansion of only ~7%.',
+          'When evaluating your real economic return, simple nominal ROI can be deceptive. A +15% nominal gain during an economic period with 8% cumulative inflation represents a real purchasing-power expansion of only about 6.5% — exactly 6.48% by the Fisher equation, (1.15 ÷ 1.08) − 1.',
           'Furthermore, capital gains taxes reduce net take-home dollars upon asset liquidation. In corporate finance, businesses also compare ROI against their hurdle rate or the cost of capital to verify that a project produces a return superior to passive alternative investments.'
         ]
-      }
+      },
+      {
+        heading: 'What counts as a good ROI?',
+        paragraphs: [
+          'A good ROI is always relative to risk, asset class, and holding period — and it must be annualised before it can be compared with anything else. For context, US broad equities returned a 10.02% compound annual growth rate, nominal, from 1928 to year-end 2025: $100 invested at the beginning of 1928 grew to $1,157,598.95 with dividends reinvested, according to the NYU Stern / Damodaran historical returns data cited in the FAQ below. The same record shows a 6.78% real (inflation-adjusted) CAGR.',
+          'That yardstick cuts both ways. A 40% total return sounds impressive until you learn it took 15 years (2.27% a year — well below equities). And a 10% annualised return on a diversified equity index is a very different achievement from 10% on a single speculative trade that could just as easily have lost everything. Compare like with like: same horizon, same risk, annualised.'
+        ]
+      },
     ],
     faqs: [
       {
@@ -785,7 +812,8 @@ export const articles: ArticleItem[] = [
     slug: 'how-to-calculate-break-even-point',
     path: '/learn/how-to-calculate-break-even-point/',
     title: 'How to Calculate Break-Even Point: Formulas, Margin & Business Examples',
-    metaDescription: 'Learn how to calculate your business break-even point in units and sales revenue, determine contribution margins, and compute target profit and margin of safety.',
+    seoTitle: 'How to Calculate Break-Even Point',
+    metaDescription: 'Learn how to calculate your break-even point in units and revenue, find your contribution margin, and work out target profit and margin of safety.',
     readTime: '7 min read',
     lastReviewed: 'November 2026',
     category: 'Business Finance',
@@ -808,6 +836,14 @@ export const articles: ArticleItem[] = [
         ]
       },
       {
+        heading: 'Fixed vs. variable costs: The hoodie example side by side',
+        paragraphs: [
+          'The split only works if every cost lands in the right bucket. Here is the same hoodie business from the worked example below, with each cost classified:',
+          'Fixed costs do not move when you sell one more hoodie; variable costs do. That is the whole reason the break-even formula divides fixed costs by the per-unit margin: each sale contributes its margin toward the fixed pile, and the business breaks even the moment the pile is covered.'
+        ],
+        tableHtml: '<table class="w-full text-sm text-left border border-[#E4E9F0] rounded-xl overflow-hidden"><thead><tr class="bg-[#F7F9FC] text-[#172033]"><th class="px-4 py-2.5 font-bold border-b border-[#E4E9F0]">Cost</th><th class="px-4 py-2.5 font-bold border-b border-[#E4E9F0]">Type</th><th class="px-4 py-2.5 font-bold border-b border-[#E4E9F0] text-right">Amount</th></tr></thead><tbody class="text-[#667085]"><tr><td class="px-4 py-2 border-b border-[#E4E9F0]">Warehouse rent, marketing software, team salaries</td><td class="px-4 py-2 border-b border-[#E4E9F0]">Fixed</td><td class="px-4 py-2 border-b border-[#E4E9F0] text-right">$26,000 / month</td></tr><tr><td class="px-4 py-2 border-b border-[#E4E9F0]">Manufacturing</td><td class="px-4 py-2 border-b border-[#E4E9F0]">Variable</td><td class="px-4 py-2 border-b border-[#E4E9F0] text-right">$18.00 / hoodie</td></tr><tr><td class="px-4 py-2 border-b border-[#E4E9F0]">Packaging</td><td class="px-4 py-2 border-b border-[#E4E9F0]">Variable</td><td class="px-4 py-2 border-b border-[#E4E9F0] text-right">$3.00 / hoodie</td></tr><tr><td class="px-4 py-2 border-b border-[#E4E9F0]">Shipping</td><td class="px-4 py-2 border-b border-[#E4E9F0]">Variable</td><td class="px-4 py-2 border-b border-[#E4E9F0] text-right">$5.00 / hoodie</td></tr><tr><td class="px-4 py-2">Merchant fee</td><td class="px-4 py-2">Variable</td><td class="px-4 py-2 text-right">$2.00 / hoodie</td></tr></tbody></table>'
+      },
+      {
         heading: 'Unit contribution margin and contribution margin ratio',
         paragraphs: [
           'The <strong class="text-[#0F172A]">Unit Contribution Margin (CM)</strong> is the dollar amount that remains from each sale after deducting its individual variable cost. This remaining capital "contributes" directly toward paying off your fixed overhead expenses.',
@@ -828,7 +864,8 @@ export const articles: ArticleItem[] = [
         heading: 'Beyond break-even: Target profit and margin of safety',
         paragraphs: [
           'Most businesses operate to produce an attractive return on capital, not merely to break even. You can modify the break-even formula to calculate the exact sales volume needed to generate a specific dollar profit target:',
-          'Furthermore, calculating your <strong class="text-[#0F172A]">Margin of Safety</strong> reveals your risk buffer. It measures the percentage by which your actual or expected sales can plummet before your company slips into operating losses:'
+          'Furthermore, calculating your <strong class="text-[#0F172A]">Margin of Safety</strong> reveals your risk buffer. It measures the percentage by which your actual or expected sales can plummet before your company slips into operating losses:',
+          'Once sales pass break-even, every extra unit adds its full contribution margin to profit. To judge whether the whole venture was worth the capital it tied up, work out its <a href="/learn/how-to-calculate-roi/" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">return on investment (ROI)</a>.'
         ],
         formulaBox: 'Required Units for Target Profit = (Fixed Costs + Target Profit) ÷ Unit Contribution Margin\nMargin of Safety ($) = Expected Sales Revenue − Break-Even Revenue\nMargin of Safety (%) = (Margin of Safety in Dollars ÷ Expected Sales Revenue) × 100'
       },
@@ -851,12 +888,55 @@ export const articles: ArticleItem[] = [
             'If projected sales are 800 hoodies ($64,000), Margin of Safety = 300 hoodies ($24,000 or 37.5%). Sales can drop 37.5% before losing money.'
           ]
         }
-      }
+      },
+      {
+        heading: 'Worked example: A service business',
+        paragraphs: [
+          'Break-even analysis works exactly the same way for services — the "unit" is simply a billable hour instead of a physical product. Consider a freelance consultant:'
+        ],
+        exampleBox: {
+          title: 'Consulting Break-Even Walkthrough',
+          details: [
+            'Hourly Rate (P): $120.00 per billable hour.',
+            'Variable Cost (V): $30.00 per hour (subcontracted research support and per-project software licences).',
+            'Unit Contribution Margin = $120.00 − $30.00 = $90.00 per hour.',
+            'Contribution Margin Ratio (CMR) = $90.00 ÷ $120.00 = 75.0%.',
+            'Monthly Fixed Overhead (office rent, insurance, subscriptions): $4,800.00.',
+            'Break-Even Hours = $4,800 ÷ $90.00 = 53.33 hours, rounded up to 54 billable hours per month.',
+            'Break-Even Revenue = 54 hours × $120.00 = $6,480.00 per month.',
+            'Target Profit of $2,700/mo: Required Hours = ($4,800 + $2,700) ÷ $90.00 = 83.33, rounded up to 84 hours ($10,080 revenue).',
+            'If 100 hours are billed ($12,000), expected profit = (100 × $90.00) − $4,800 = $4,200.00. Margin of Safety = 46 hours ($5,520 or 46.0%).'
+          ]
+        }
+      },
+      {
+        heading: 'Reading the break-even chart',
+        paragraphs: [
+          'The chart below plots the hoodie example: the revenue line rises $80 for every hoodie sold, while the total-cost line starts at $26,000 (fixed costs, before a single sale) and rises only $28 per hoodie. The two lines cross at 500 hoodies and $40,000 — the break-even point.',
+          'Left of the crossing, total cost sits above revenue and the business loses money. Right of it, revenue pulls ahead and each additional hoodie adds its full $52 contribution margin to profit: at 800 hoodies the monthly profit is $15,600.'
+        ],
+        chart: 'break-even-hoodie'
+      },
+      {
+        heading: 'Limitations: What break-even analysis assumes',
+        paragraphs: [
+          'Break-even analysis is a planning model, not a promise. It assumes a single product (or a stable sales mix that never changes), a constant selling price, and a constant variable cost per unit no matter how many units you sell.',
+          'It also assumes fixed costs stay flat over the relevant range. In reality, fixed costs move in steps: hiring another salaried employee or renting a second warehouse jumps the fixed pile overnight, and the old break-even point stops applying the moment it does.',
+          'Finally, it assumes everything produced is sold (no inventory build-up) and it ignores taxes, financing costs, and the fact that cutting prices to sell more usually changes demand. Treat the break-even point as the minimum viable target, then stress-test it: what happens if the price drops 10%, or variable costs rise 10%? Our <a href="/break-even-calculator/" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">Business Break-Even Calculator</a> runs those scenarios in seconds.'
+        ]
+      },
+      {
+        heading: 'Break-even in Excel or Google Sheets',
+        paragraphs: [
+          'You can build the same model in a spreadsheet in under a minute. Put fixed costs in cell A1, selling price in B1, variable cost in C1, target profit in D1, and expected units in E1, then use these formulas:',
+          'Break-even units: =A1/(B1-C1). Break-even revenue: =A1/((B1-C1)/B1). Required units for a target profit: =(A1+D1)/(B1-C1). Margin of safety: =(E1-A1/(B1-C1))/E1, formatted as a percentage. Because physical units cannot be fractional, round the break-even units up with =CEILING(A1/(B1-C1),1).'
+        ]
+      },
     ],
     faqs: [
       {
         question: 'Why must break-even units be rounded up for physical products?',
-        answer: 'You cannot manufacture or retail a fraction of a physical product. If a mathematical calculation yields 412.3 units, selling 412 units leaves an unpaid fixed cost deficit of several dollars. You must sell 413 full units to achieve true zero-loss profitability.'
+        answer: 'You cannot manufacture or retail a fraction of a physical product. If a calculation yields 412.3 units, selling only 412 leaves 0.3 units of contribution margin unpaid — at the $52 margin in the hoodie example in this guide, that is 0.3 × $52 = $15.60 of fixed costs still uncovered. In general, the shortfall equals the fractional part of the break-even quantity multiplied by your unit contribution margin. You must sell 413 full units to achieve true zero-loss profitability.'
       },
       {
         question: 'What happens if variable costs exceed the selling price?',

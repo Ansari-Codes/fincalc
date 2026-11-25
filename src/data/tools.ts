@@ -75,10 +75,10 @@ export const tools: ToolItem[] = [
     category: 'investing',
     categoryName: 'Investing',
     icon: 'Percent',
-    formula: 'Net Profit = Final Value − Total Cost\nROI (%) = (Net Profit / Total Cost) × 100',
+    formula: 'Net Profit = Final Value + Cash Flow (Dividends / Rent) − Total Cost\nTotal Cost = Initial Investment + Incidental Costs\nROI (%) = (Net Profit ÷ Total Cost) × 100',
     assumptions: [
       'ROI reflects total percentage gain or loss relative to the initial cost basis.',
-      'Does not account for holding duration or annualized compounding rate.',
+      'Simple ROI does not account for holding duration on its own; enter a holding period in the calculator to also see the annualised (compound yearly) return.',
       'Taxes, inflation, and opportunity costs are excluded from the basic formula.',
       'A negative result represents an investment loss.',
       'Calculations run locally in your browser without transmitting entered investment costs or proceeds to our servers.'
@@ -477,7 +477,7 @@ export const tools: ToolItem[] = [
     name: 'Business Break-Even Calculator',
     title: 'Break-Even Calculator – Calculate Break-Even Units & Revenue',
     shortDescription: 'Calculate the sales volume or revenue required to cover business costs.',
-    fullDescription: 'Determine the exact unit sales and dollar revenue your business needs to cover all fixed and variable costs. Explore contribution margins, target profit volumes, and margin of safety.',
+    fullDescription: 'Find the exact unit sales and revenue your business needs to cover fixed and variable costs, with contribution margin, target profit, and margin of safety.',
     category: 'business-finance',
     categoryName: 'Business Finance',
     icon: 'PieChart',

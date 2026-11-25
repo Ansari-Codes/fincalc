@@ -3,6 +3,12 @@ export interface RoiInput {
   finalValue: number
   additionalCosts?: number
   additionalIncome?: number
+  /**
+   * Optional holding period in years (fractions allowed, e.g. 2.5).
+   * When set (> 0), the result also carries the annualised (compound
+   * yearly) ROI. When omitted, only simple cumulative ROI is reported.
+   */
+  holdingPeriodYears?: number
 }
 
 export interface RoiResult {
@@ -10,6 +16,8 @@ export interface RoiResult {
   totalValueReturned: number
   netProfit: number
   roiPercentage: number
+  /** Annualised ROI (%) = ((1 + simpleROI/100)^(1/years) − 1) × 100. Only present when a valid holding period was supplied. */
+  annualizedRoiPercentage?: number
   isProfitable: boolean
   isBreakEven: boolean
   isValid: boolean
@@ -36,8 +44,10 @@ export interface RoiResult {
  * 
  * Core Financial Assumptions:
  * - Simple cumulative ROI: Measures total percentage gain or loss relative to capital invested.
- * - Time Horizon Exclusion: Basic ROI does NOT account for investment duration or annualized
- *   compounding (CAGR). An ROI of 50% over 1 year is vastly superior to 50% over 10 years.
+ * - Holding duration: Simple ROI does NOT account for investment duration on its own.
+ *   An ROI of 50% over 1 year is vastly superior to 50% over 10 years. When the caller
+ *   supplies an optional holding period (years), the result also carries the annualised
+ *   ROI — the equivalent compound yearly rate: ((1 + ROI/100)^(1/years) − 1) × 100.
  * - Cash-on-cash evaluation: Assumes nominal dollars without automatic inflation or tax adjustments.
  * - Losses: Negative net profit produces a negative ROI (down to -100% for total loss, or beyond
  *   if additional ongoing liabilities were incurred).
@@ -62,6 +72,9 @@ export function calculateRoi(input: RoiInput): RoiResult {
   const addIncome = typeof input.additionalIncome === 'number' && isFinite(input.additionalIncome)
     ? input.additionalIncome
     : 0
+  const holdingYears = typeof input.holdingPeriodYears === 'number' && isFinite(input.holdingPeriodYears)
+    ? input.holdingPeriodYears
+    : undefined
 
   if (initial < 0) {
     errors.push('Initial investment cannot be negative.')
@@ -74,6 +87,9 @@ export function calculateRoi(input: RoiInput): RoiResult {
   }
   if (addIncome < 0) {
     errors.push('Additional income cannot be negative.')
+  }
+  if (holdingYears !== undefined && holdingYears <= 0) {
+    errors.push('Holding period must be greater than zero years to annualise the return.')
   }
 
   const safeInitial = Math.max(0, initial)
@@ -94,11 +110,24 @@ export function calculateRoi(input: RoiInput): RoiResult {
     roiPercentage = (netProfit / totalCost) * 100
   }
 
+  // Annualised ROI (equivalent compound yearly rate), only when a valid
+  // holding period was supplied. Simple ROI stays the primary figure.
+  // Guarded: roiPercentage is bounded to >= -100% by construction
+  // (totalValueReturned >= 0), so the base (1 + roi/100) is >= 0.
+  let annualizedRoiPercentage: number | undefined
+  if (holdingYears !== undefined && holdingYears > 0 && totalCost > 0) {
+    const base = 1 + roiPercentage / 100
+    if (base >= 0) {
+      annualizedRoiPercentage = (Math.pow(base, 1 / holdingYears) - 1) * 100
+    }
+  }
+
   return {
     totalCost,
     totalValueReturned,
     netProfit,
     roiPercentage,
+    annualizedRoiPercentage,
     isProfitable: netProfit > 0,
     isBreakEven: netProfit === 0 && totalCost > 0,
     isValid: errors.length === 0,

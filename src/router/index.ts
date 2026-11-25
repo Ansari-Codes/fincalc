@@ -14,6 +14,13 @@ import RetirementGoalPage from '@/pages/RetirementGoalPage.vue'
 // have full prerendered shells now (pos 32.97 and 39.93).
 import StockAveragePage from '@/pages/StockAveragePage.vue'
 import LoanPaymentPage from '@/pages/LoanPaymentPage.vue'
+// Same treatment for the ROI and break-even calculators and the article
+// pages: the ROI calculator page was refused indexing (thin content) and
+// the articles showed a blank white main area on first load because the
+// route was lazy — the mount gap emptied RouterView until the chunk arrived.
+import RoiPage from '@/pages/RoiPage.vue'
+import BreakEvenPage from '@/pages/BreakEvenPage.vue'
+import ArticlePage from '@/pages/ArticlePage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -49,7 +56,7 @@ const router = createRouter({
     {
       path: '/roi-calculator/',
       name: 'roi-calculator',
-      component: () => import('@/pages/RoiPage.vue')
+      component: RoiPage
     },
     {
       path: '/commission-calculator/',
@@ -89,7 +96,7 @@ const router = createRouter({
     {
       path: '/break-even-calculator/',
       name: 'break-even-calculator',
-      component: () => import('@/pages/BreakEvenPage.vue')
+      component: BreakEvenPage
     },
     // Educational Section
     {
@@ -100,7 +107,7 @@ const router = createRouter({
     {
       path: '/learn/:slug/',
       name: 'article',
-      component: () => import('@/pages/ArticlePage.vue')
+      component: ArticlePage
     },
     // Trust & Policy Pages
     {

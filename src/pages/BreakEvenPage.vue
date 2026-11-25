@@ -8,6 +8,7 @@ import Breadcrumbs from '@/components/ui/Breadcrumbs.vue'
 import FAQAccordion from '@/components/ui/FAQAccordion.vue'
 import RelatedTools from '@/components/ui/RelatedTools.vue'
 import DisclaimerNotice from '@/components/ui/DisclaimerNotice.vue'
+import { RouterLink } from 'vue-router'
 import { tools } from '@/data/tools'
 import {
   PieChart,
@@ -21,7 +22,8 @@ import {
   ShieldCheck,
   Target,
   Sliders,
-  Layers
+  Layers,
+  ArrowRight
 } from '@lucide/vue'
 
 const currentTool = tools.find(t => t.slug === 'break-even-calculator')!
@@ -35,7 +37,9 @@ onMounted(() => {
   })
 })
 
-const currency = ref('USD')
+// Amounts are always USD — the currency selector only relabelled the symbol
+// without converting values, so it was removed (same as stock/loan pages).
+const currency = 'USD'
 const copied = ref(false)
 
 // Input fields
@@ -59,11 +63,11 @@ function setFixedCosts(val: number) {
 }
 
 function resetForm() {
-  sellingPricePerUnit.value = null
-  variableCostPerUnit.value = null
-  totalFixedCosts.value = null
-  targetProfit.value = null
-  expectedSalesVolume.value = null
+  sellingPricePerUnit.value = 50
+  variableCostPerUnit.value = 20
+  totalFixedCosts.value = 30000
+  targetProfit.value = 15000
+  expectedSalesVolume.value = 1200
 }
 
 const result = computed(() => {
@@ -76,23 +80,29 @@ const result = computed(() => {
   })
 })
 
-// Unit economics visual bar
-const cmRatio = computed(() => Math.max(0, Math.min(100, result.value.contributionMarginRatio)))
-const vcRatio = computed(() => Math.max(0, 100 - cmRatio.value))
+// Unit economics visual bar. Bar WIDTHS must stay in 0–100% (a bar cannot be
+// negative or wider than the track), but the DISPLAYED ratios are the true
+// values — never clamped. When variable cost exceeds price the true margin
+// ratio is negative (e.g. −25% for P $20 / V $25) and the variable-cost
+// share exceeds 100% (125%); both are shown exactly, matching the
+// Margin Ratio (CMR) box below.
+const cmRatioBar = computed(() => Math.max(0, Math.min(100, result.value.contributionMarginRatio)))
+const vcRatioBar = computed(() => Math.max(0, Math.min(100, 100 - result.value.contributionMarginRatio)))
+const vcRatioTrue = computed(() => 100 - result.value.contributionMarginRatio)
 
 async function handleCopy() {
   const lines = [
     'Business Break-Even Analysis Summary',
     '-------------------------------------',
-    `Selling Price per Unit: ${formatCurrency(sellingPricePerUnit.value || 0, currency.value)}`,
-    `Variable Cost per Unit: ${formatCurrency(variableCostPerUnit.value || 0, currency.value)}`,
-    `Total Fixed Costs: ${formatCurrency(totalFixedCosts.value || 0, currency.value)}`,
-    `Contribution Margin: ${formatCurrency(result.value.contributionMarginPerUnit, currency.value)} per unit (${formatPercent(result.value.contributionMarginRatio)})`,
+    `Selling Price per Unit: ${formatCurrency(sellingPricePerUnit.value || 0, currency)}`,
+    `Variable Cost per Unit: ${formatCurrency(variableCostPerUnit.value || 0, currency)}`,
+    `Total Fixed Costs: ${formatCurrency(totalFixedCosts.value || 0, currency)}`,
+    `Contribution Margin: ${formatCurrency(result.value.contributionMarginPerUnit, currency)} per unit (${formatPercent(result.value.contributionMarginRatio)})`,
     `Break-Even Quantity: ${result.value.breakEvenUnitsRounded.toLocaleString()} units`,
-    `Break-Even Revenue: ${formatCurrency(result.value.breakEvenRevenue, currency.value)}`,
-    result.value.targetProfitUnitsRounded ? `Target Profit Units: ${result.value.targetProfitUnitsRounded.toLocaleString()} units (${formatCurrency(result.value.targetProfitRevenue || 0, currency.value)})` : '',
+    `Break-Even Revenue: ${formatCurrency(result.value.breakEvenRevenue, currency)}`,
+    result.value.targetProfitUnitsRounded ? `Target Profit Units: ${result.value.targetProfitUnitsRounded.toLocaleString()} units (${formatCurrency(result.value.targetProfitRevenue || 0, currency)})` : '',
     result.value.marginOfSafetyUnits !== undefined ? `Margin of Safety: ${result.value.marginOfSafetyUnits.toLocaleString()} units (${formatPercent(result.value.marginOfSafetyPercentage || 0)})` : '',
-    result.value.expectedProfitOrLoss !== undefined ? `Estimated Net Profit: ${formatCurrency(result.value.expectedProfitOrLoss, currency.value)}` : ''
+    result.value.expectedProfitOrLoss !== undefined ? `Estimated Net Profit: ${formatCurrency(result.value.expectedProfitOrLoss, currency)}` : ''
   ].filter(Boolean)
 
   const ok = await copyToClipboard(lines.join('\n'))
@@ -125,18 +135,8 @@ async function handleCopy() {
         </p>
       </div>
 
-      <!-- Controls: Currency & Reset -->
+      <!-- Controls: Reset (amounts are always USD — the selector only relabelled the symbol without converting values, so it was removed) -->
       <div class="flex items-center gap-2.5 self-start md:self-end">
-        <select
-          v-model="currency"
-          aria-label="Display currency"
-          class="text-xs font-semibold bg-white border border-[#CBD5E1] rounded-xl px-3 py-2 text-[#334155] shadow-2xs focus:outline-none focus:ring-2 focus:ring-[#0F766E]"
-        >
-          <option value="USD">USD ($)</option>
-          <option value="EUR">EUR (€)</option>
-          <option value="GBP">GBP (£)</option>
-          <option value="CAD">CAD ($)</option>
-        </select>
         <button
           type="button"
           @click="resetForm"
@@ -372,8 +372,8 @@ async function handleCopy() {
             </button>
           </div>
 
-          <!-- Hero Break-Even Units Display -->
-          <div class="mb-6">
+          <!-- Hero Break-Even Units Display (only when a break-even point exists) -->
+          <div v-if="result.isViable" class="mb-6">
             <span class="text-xs uppercase tracking-wider text-white/70 font-semibold block mb-1">
               Break-Even Sales Requirement
             </span>
@@ -383,6 +383,25 @@ async function handleCopy() {
             </div>
             <p class="text-xs text-[#99F6E4] mt-2">
               Requires <strong>{{ formatCurrency(result.breakEvenRevenue, currency) }}</strong> in gross revenue to cover fixed overhead.
+            </p>
+          </div>
+
+          <!-- No break-even point: variable cost meets or exceeds price, so the
+               contribution margin is zero or negative and no sales volume can
+               ever cover fixed costs. Never display "0 Units / $0.00" as if
+               zero were a real break-even point. -->
+          <div v-else class="mb-6">
+            <span class="text-xs uppercase tracking-wider text-white/70 font-semibold block mb-1">
+              Break-Even Sales Requirement
+            </span>
+            <div class="text-3xl sm:text-4xl font-black tracking-tight text-white leading-tight">
+              No break-even point
+            </div>
+            <p class="text-xs text-[#FECACA] mt-2 leading-relaxed">
+              Every unit sold loses <strong>{{ formatCurrency(Math.abs(result.contributionMarginPerUnit), currency) }}</strong>
+              <template v-if="result.contributionMarginPerUnit === 0">(contribution margin is $0.00 — price exactly equals variable cost)</template>
+              <template v-else>({{ formatPercent(result.contributionMarginRatio) }} margin)</template>
+              — no sales volume can cover fixed costs. Raise the selling price or cut variable costs to create a positive contribution margin.
             </p>
           </div>
 
@@ -398,29 +417,29 @@ async function handleCopy() {
               </span>
             </div>
 
-            <!-- Proportional Unit Bar -->
+            <!-- Proportional Unit Bar (widths clamped to 0–100%; legend shows true ratios) -->
             <div class="w-full h-3 rounded-full overflow-hidden flex bg-white/20">
               <div
                 class="bg-[#F59E0B] transition-all duration-300"
-                :style="{ width: `${vcRatio}%` }"
+                :style="{ width: `${vcRatioBar}%` }"
                 title="Variable Cost"
               ></div>
               <div
                 class="bg-[#2DD4BF] transition-all duration-300"
-                :style="{ width: `${cmRatio}%` }"
+                :style="{ width: `${cmRatioBar}%` }"
                 title="Contribution Margin"
               ></div>
             </div>
 
-            <!-- Legend -->
+            <!-- Legend (true ratios, never clamped) -->
             <div class="flex items-center justify-between text-[11px] mt-2.5">
               <div class="flex items-center gap-1.5 text-amber-200">
                 <span class="w-2.5 h-2.5 rounded-full bg-[#F59E0B]"></span>
-                <span>Var Cost: <strong>{{ formatCurrency(variableCostPerUnit || 0, currency) }} ({{ vcRatio.toFixed(0) }}%)</strong></span>
+                <span>Var Cost: <strong>{{ formatCurrency(variableCostPerUnit || 0, currency) }} ({{ vcRatioTrue.toFixed(0) }}%)</strong></span>
               </div>
               <div class="flex items-center gap-1.5 text-emerald-200">
                 <span class="w-2.5 h-2.5 rounded-full bg-[#2DD4BF]"></span>
-                <span>Margin: <strong>{{ formatCurrency(result.contributionMarginPerUnit, currency) }} ({{ cmRatio.toFixed(0) }}%)</strong></span>
+                <span>Margin: <strong>{{ formatCurrency(result.contributionMarginPerUnit, currency) }} ({{ result.contributionMarginRatio.toFixed(0) }}%)</strong></span>
               </div>
             </div>
           </div>
@@ -498,9 +517,9 @@ async function handleCopy() {
     <!-- Educational Content & Formula Explanation -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
       <div class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-7 shadow-xs">
-        <h3 class="text-xs font-bold text-[#0F766E] uppercase tracking-wider mb-2">
+        <h2 class="text-xs font-bold text-[#0F766E] uppercase tracking-wider mb-2">
           Cost-Volume-Profit Formulas
-        </h3>
+        </h2>
         <p class="text-xs text-[#64748B] leading-relaxed mb-3">
           Break-even analysis calculates the point where total revenues equal total expenses:
         </p>
@@ -516,15 +535,30 @@ async function handleCopy() {
       </div>
 
       <div class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-7 shadow-xs">
-        <h3 class="text-xs font-bold text-[#0F766E] uppercase tracking-wider mb-2">
+        <h2 class="text-xs font-bold text-[#0F766E] uppercase tracking-wider mb-2">
           Key Assumptions &amp; Disclosures
-        </h3>
+        </h2>
         <ul class="text-xs text-[#64748B] space-y-2 list-disc pl-4 leading-relaxed">
           <li v-for="(assumption, idx) in currentTool.assumptions" :key="idx">
             {{ assumption }}
           </li>
         </ul>
       </div>
+    </div>
+
+    <!-- Learn More About Break-Even -->
+    <div class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-7 shadow-xs mb-12">
+      <h2 class="text-xl font-bold text-[#0F172A] mb-2">Learn More About Break-Even Analysis</h2>
+      <p class="text-sm text-[#64748B] leading-relaxed mb-4">
+        Read our in-depth guide on break-even formulas, contribution margin, margin of safety, and worked examples for product and service businesses.
+      </p>
+      <RouterLink
+        to="/learn/how-to-calculate-break-even-point/"
+        class="inline-flex items-center gap-1.5 text-xs font-bold text-[#0F766E] hover:underline"
+      >
+        <span>Read How to Calculate Break-Even Point</span>
+        <ArrowRight class="w-3.5 h-3.5" />
+      </RouterLink>
     </div>
 
     <!-- FAQ Accordion -->
