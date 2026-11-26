@@ -30,7 +30,8 @@ export const articles: ArticleItem[] = [
     slug: 'how-to-calculate-average-stock-cost',
     path: '/learn/how-to-calculate-average-stock-cost/',
     title: 'How to Calculate Average Stock Cost: Weighted Average Formula & Tax Basis',
-    metaDescription: 'Learn how to calculate your quantity-weighted average share price across multiple purchases, factor in broker fees, and understand tax cost basis differences.',
+    seoTitle: 'How to Calculate Average Stock Price',
+    metaDescription: 'Learn how to calculate your average stock price across multiple purchases, factor in broker fees, and understand tax cost basis differences.',
     readTime: '6 min read',
     lastReviewed: 'November 2026',
     category: 'Investing',
@@ -39,9 +40,16 @@ export const articles: ArticleItem[] = [
       {
         heading: 'Why quantity-weighted averaging is necessary',
         paragraphs: [
-          'If you buy 10 shares of a company at $50 and later buy 90 shares of the same company at $100, what is your average cost per share?',
-          'A simple arithmetic average of the two price tags ($50 + $100) / 2 suggests $75. However, this is mathematically incorrect because you bought nine times as many shares at the higher price. Your true weighted average is $95.00, significantly closer to $100.',
+          'If you buy 10 shares of a company at $50 and later buy 90 shares of the same company at $100, what is your average stock price?',
+          'A simple arithmetic average of the two price tags ($50 + $100) / 2 suggests $75. However, this is mathematically incorrect because you bought nine times as many shares at the higher price. When you buy the same stock at different average prices over time, the simple average breaks down — your true weighted average, also called the stock average price, is $95.00, significantly closer to $100.',
           'To determine your accurate break-even point and track position performance, you must use a quantity-weighted average that weights each purchase price by the volume of shares acquired. You can calculate this instantly with our free <a href="/stock-average-calculator/" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">Stock Average Calculator</a>.'
+        ]
+      },
+      {
+        heading: 'What is the average stock price?',
+        paragraphs: [
+          'Your average stock price is the quantity-weighted cost of a single share across every purchase you have made of that stock: add up all the cash you spent, including broker fees, and divide by the total number of shares you own. It is the same figure as the weighted average cost per share — and the price the stock must reach for you to break even.',
+          'In the worked example below, you spent $11,010.00 in total, including $10.00 of fees, for 200 shares — so the average stock price is $55.05 per share. To <a href="/stock-average-calculator/" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">calculate your average stock price</a> for your own trades, enter each lot\'s price and share count in the calculator and it does the weighting for you.'
         ]
       },
       {

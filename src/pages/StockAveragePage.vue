@@ -159,6 +159,9 @@ async function handleCopy() {
         <p class="text-sm sm:text-base text-[#64748B] max-w-2xl leading-relaxed">
           {{ currentTool.fullDescription }}
         </p>
+        <p class="text-sm sm:text-base text-[#64748B] max-w-2xl leading-relaxed mt-2">
+          Your average stock price — also called the stock average price — is the quantity-weighted cost of one share across all your purchases: total cash spent (including fees) divided by total shares owned.
+        </p>
       </div>
 
       <!-- Controls: Reset (amounts are always USD — the selector only relabelled the symbol without converting values, so it was removed) -->
@@ -524,7 +527,7 @@ async function handleCopy() {
             {{ currentTool.formula }}
           </div>
           <p class="text-sm text-[#64748B] leading-relaxed">
-            Each lot's share quantity serves as its statistical weight. The more shares you purchase at a specific price, the more heavily that price influences your overall portfolio cost basis.
+            Each lot's share quantity serves as its statistical weight. The more shares you purchase at a specific price, the more heavily that price influences your overall portfolio cost basis. The result is your average stock price — the single per-share cost that represents everything you paid.
           </p>
         </section>
 

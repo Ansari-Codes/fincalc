@@ -1241,6 +1241,7 @@ function renderStockShell(tool) {
             </div>
             <h1 class="text-2xl sm:text-4xl font-extrabold text-[#0F172A] tracking-tight mb-2">Stock Average Calculator</h1>
             <p class="text-sm sm:text-base text-[#64748B] max-w-2xl leading-relaxed">${tool.fullDescription}</p>
+            <p class="text-sm sm:text-base text-[#64748B] max-w-2xl leading-relaxed mt-2">Your average stock price — also called the stock average price — is the quantity-weighted cost of one share across all your purchases: total cash spent (including fees) divided by total shares owned.</p>
           </div>
           <div class="flex items-center gap-2.5 self-start md:self-end">
             <span class="text-xs font-semibold bg-white border border-[#CBD5E1] rounded-xl px-3 py-2 text-[#334155] shadow-2xs">USD ($)</span>
@@ -1340,7 +1341,7 @@ function renderStockShell(tool) {
               <h2 class="text-xl font-extrabold text-[#0F172A] mb-3">Weighted Average Cost Methodology</h2>
               <p class="text-sm text-[#64748B] leading-relaxed mb-4">The weighted average cost calculation aggregates the total dollars spent across every purchase lot (including any trading commissions or regulatory fees) and divides that total capital by the aggregate number of shares currently held:</p>
               <div class="bg-[#F8FAFC] border border-[#CBD5E1] p-4 rounded-xl num-tabular text-xs sm:text-sm text-[#0F172A] mb-4 font-mono whitespace-pre-line leading-relaxed">${tool.formula}</div>
-              <p class="text-sm text-[#64748B] leading-relaxed">Each lot's share quantity serves as its statistical weight. The more shares you purchase at a specific price, the more heavily that price influences your overall portfolio cost basis.</p>
+              <p class="text-sm text-[#64748B] leading-relaxed">Each lot's share quantity serves as its statistical weight. The more shares you purchase at a specific price, the more heavily that price influences your overall portfolio cost basis. The result is your average stock price — the single per-share cost that represents everything you paid.</p>
             </section>
             <section class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm">
               <h2 class="text-xl font-extrabold text-[#0F172A] mb-3">Accounting for Brokerage Fees &amp; Commissions</h2>

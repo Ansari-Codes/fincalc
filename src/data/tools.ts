@@ -22,9 +22,9 @@ export const tools: ToolItem[] = [
     slug: 'stock-average-calculator',
     path: '/stock-average-calculator/',
     name: 'Stock Average Calculator',
-    title: 'Stock Average Calculator – Calculate Weighted Average Share Price',
+    title: 'Stock Average Calculator – Find Your Average Stock Price',
     shortDescription: 'Calculate the quantity-weighted average purchase price of your shares.',
-    fullDescription: 'Calculate your weighted average stock cost per share across multiple purchases, including trading fees, to find your real break-even price.',
+    fullDescription: 'Calculate your weighted average stock price across multiple purchases, including trading fees, to find your real break-even price.',
     category: 'investing',
     categoryName: 'Investing',
     icon: 'TrendingUp',
@@ -55,6 +55,10 @@ export const tools: ToolItem[] = [
       {
         question: 'Is average cost the same as IRS tax cost basis for stock sales?',
         answer: 'Not necessarily. For US individual stocks, the IRS default accounting method is First-In, First-Out (FIFO) or Specific Identification unless you elect an alternative recognized method. Average cost is standard for mutual funds, but stock sales generally require lot tracking.'
+      },
+      {
+        question: 'Is the stock average price the same as my cost basis?',
+        answer: 'No — they measure different things. The stock average price is the quantity-weighted price you paid per share across all your purchases. Your tax cost basis follows lot rules instead: for US stocks the IRS default is FIFO (or specific identification), and wash sales or corporate actions can change it. Use the average price to judge your break-even; rely on your broker\u2019s tax lots for reporting.'
       },
       {
         question: 'Can I calculate the average price for fractional shares or cryptocurrency?',
