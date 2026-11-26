@@ -22,7 +22,8 @@ import {
   Sparkles,
   PieChart,
   Sliders,
-  Layers
+  Layers,
+  ArrowRight
 } from '@lucide/vue'
 
 const currentTool = tools.find(t => t.slug === 'loan-payment-calculator')!
@@ -660,6 +661,21 @@ async function handleCopy() {
           </li>
         </ul>
       </div>
+    </div>
+
+    <!-- Learn More About Loan Payments -->
+    <div class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-7 shadow-xs mb-12">
+      <h2 class="text-xl font-bold text-[#0F172A] mb-2">Learn More About Loan Payments</h2>
+      <p class="text-sm text-[#64748B] leading-relaxed mb-4">
+        Read our in-depth guide on how to calculate a loan payment, with the annuity formula and worked examples for fixed-rate loans.
+      </p>
+      <RouterLink
+        to="/learn/how-to-calculate-a-loan-payment/"
+        class="inline-flex items-center gap-1.5 text-xs font-bold text-[#0F766E] hover:underline"
+      >
+        <span>Read How to Calculate a Loan Payment</span>
+        <ArrowRight class="w-3.5 h-3.5" />
+      </RouterLink>
     </div>
 
     <!-- FAQ Accordion -->

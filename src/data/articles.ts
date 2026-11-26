@@ -743,6 +743,14 @@ export const articles: ArticleItem[] = [
         ]
       },
       {
+        heading: 'How to choose your Debt Snowball order',
+        paragraphs: [
+          'The Snowball order itself is simple — smallest balance first — but three decisions come up in practice. First, order strictly by balance, not by APR: a $400 store card goes before a $4,000 personal loan even if the loan’s rate is higher. Reordering by rate turns the plan into the Avalanche, which is a different method with different psychology.',
+          'Second, use APR only as a tie-breaker. If two balances are within a few hundred dollars of each other, attack the higher-APR one first: you still get a quick win within a month or two of the same date, and you stop the faster-growing interest. The momentum cost is negligible because the payoff dates are nearly identical.',
+          'Third, freeze the order and revisit it only when something material changes — a new debt, a lump sum such as a tax refund, or a balance that drops below another one after a few payments. Re-sorting the list every month invites second-guessing and stalls the plan; the order is a tool for momentum, not a ranking to perfect.'
+        ]
+      },
+      {
         heading: 'The Debt Avalanche method: Mathematical optimization',
         paragraphs: [
           'The Debt Avalanche (also known as debt stacking) prioritizes debts strictly by Annual Percentage Rate (APR) from highest to lowest, regardless of balance size:',
@@ -968,5 +976,283 @@ export const articles: ArticleItem[] = [
       }
     ],
     relatedToolSlug: 'break-even-calculator'
+  },
+  {
+    id: 'how-to-calculate-apr-on-a-credit-card',
+    slug: 'how-to-calculate-apr-on-a-credit-card',
+    path: '/learn/how-to-calculate-apr-on-a-credit-card/',
+    title: 'How to Calculate APR on a Credit Card: Daily Rate & Monthly Interest',
+    seoTitle: 'How to Calculate APR on a Credit Card',
+    metaDescription: 'Learn how to calculate APR on a credit card: convert APR to a daily rate, work out monthly interest from your average daily balance, and model your payoff.',
+    readTime: '7 min read',
+    lastReviewed: 'November 2026',
+    category: 'Credit & Debt',
+    summary: 'Credit card interest is charged a little at a time, every day — not once a year. Here is how to turn your card’s APR into a daily rate, work out exactly what one month of interest costs, and see how long a balance takes to pay off.',
+    sections: [
+      {
+        heading: 'What APR means on a credit card',
+        paragraphs: [
+          'The Annual Percentage Rate (APR) on a credit card is the yearly cost of borrowing, expressed as a percentage of the balance you carry. If your card’s purchase APR is 24%, carrying a $4,000 balance for a full year at that rate would cost roughly $960 in interest — but issuers never charge it as one annual lump sum. Instead, they slice it into a small daily charge applied to your balance every day of the billing cycle.',
+          'APR only bites on a balance you carry past the due date. If you pay your full statement balance by the due date every month, the card’s grace period (typically 21 to 25 days) means new purchases accrue no interest at all — your APR is irrelevant that month. The moment you carry even $1 past the due date, interest starts accruing daily on the unpaid balance.',
+          'You can model any balance, APR and payment with our free <a href="/credit-card-apr-calculator/" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">Credit Card APR Calculator</a>.'
+        ]
+      },
+      {
+        heading: 'Step 1: Convert APR to a daily periodic rate',
+        paragraphs: [
+          'Card issuers divide your APR by the number of days in the year to get the daily periodic rate — the percentage charged on your balance each day. Most issuers use 365 days; some cardholder agreements use 360.',
+          'At 24% APR the daily rate is only 0.0658% per day, which sounds tiny — but on a $4,000 balance it is $2.63 of interest every single day, and it keeps charging until the balance is gone.'
+        ],
+        formulaBox: 'Daily Periodic Rate (DPR) = APR ÷ 365\nAt 24% APR: DPR = 24% ÷ 365 = 0.0658% per day\nDaily interest on a $4,000 balance = $4,000 × 0.0658% = $2.63 per day'
+      },
+      {
+        heading: 'Step 2: Work out one month’s interest from your average daily balance',
+        paragraphs: [
+          'Issuers multiply your average daily balance by the daily periodic rate and by the number of days in the billing cycle. If your balance barely moves during the month, the shortcut is to divide the APR by 12: one month’s interest on a steady $4,000 balance at 24% APR is $80.00.',
+          'The two methods differ slightly because a calendar month is not exactly one-twelfth of a year: the daily-rate method on a 30-day cycle gives $2.63 × 30 = $78.90, while the APR ÷ 12 shortcut (which treats a month as 365 ÷ 12 ≈ 30.42 days) gives $80.00. The calculator on this site uses the APR ÷ 12 monthly approximation, and your statement will show the exact daily-balance figure.'
+        ],
+        formulaBox: 'Monthly Interest = Average Daily Balance × (APR ÷ 365) × Days in Billing Cycle\nSteady-balance shortcut: Monthly Interest = Balance × (APR ÷ 12)\nAt $4,000 and 24% APR: $4,000 × (24% ÷ 12) = $80.00 for one month'
+      },
+      {
+        heading: 'Worked example: Paying off $4,000 at 24% APR',
+        paragraphs: [
+          'Here is the full picture for a $4,000 balance at 24% APR with a fixed $200 payment every month:'
+        ],
+        exampleBox: {
+          title: '$4,000 Balance at 24% APR, $200 per Month',
+          details: [
+            'Daily periodic rate: 24% ÷ 365 = 0.0658% per day — $2.63 of interest per day on the starting balance.',
+            'First month’s interest: $4,000 × (24% ÷ 12) = $80.00, so $120.00 of the first $200 payment reduces the balance and $80.00 goes to interest.',
+            'Payoff time: 26 months (2 years and 2 months) of $200 payments.',
+            'Total interest paid: $1,159.49 — on top of the $4,000 borrowed, for a total of $5,159.49.',
+            'The balance falls slowly at first because $80 of every early $200 payment is interest. Raising the payment is the fastest way to cut the total: model your own numbers with our <a href="/credit-card-apr-calculator/" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">Credit Card APR Calculator</a>.'
+          ]
+        }
+      },
+      {
+        heading: 'How to find your APR',
+        paragraphs: [
+          'Your APR is printed on every monthly statement, usually in a box labelled “Interest Charge Calculation” or “Annual Percentage Rate”, and in your issuer’s website or app under account details, rates, or pricing. Check the cardholder agreement if you cannot find it there.',
+          'Look for three different APRs, not one: the purchase APR (what this guide covers), the cash advance APR (usually higher, with no grace period — interest starts the day you withdraw cash), and the penalty APR (a much higher rate the issuer can apply after a late payment). Balance-transfer and introductory 0% APR offers are separate promotional rates with an expiry date — know when yours ends, because the balance reverts to the standard purchase APR overnight.'
+        ]
+      },
+      {
+        heading: 'How to calculate APR interest in Excel or Google Sheets',
+        paragraphs: [
+          'Put the APR as a percentage in cell A1 (for example 24%) and the balance in B1 ($4,000). The daily periodic rate is =A1/365, which gives 0.0658%. One month’s interest is =B1*A1/12, which gives $80.00. For a 30-day cycle using the daily rate, use =B1*(A1/365)*30, which gives $78.90.',
+          'To model a full payoff in a spreadsheet, repeat the monthly step down the rows: each month’s interest is the remaining balance × APR ÷ 12, and the balance falls by the payment minus that interest. Our <a href="/credit-card-apr-calculator/" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">Credit Card APR Calculator</a> runs that whole schedule for you.'
+        ]
+      },
+      {
+        heading: 'APR vs. interest rate: the one-line difference',
+        paragraphs: [
+          'On a credit card with no upfront fees, the APR is the interest rate — there is nothing else to fold in. On a mortgage or auto loan, the APR is higher than the interest rate because it also spreads origination fees, points and other lender charges over the life of the loan. The full comparison, including why mortgage APR almost always exceeds the stated rate, is in our <a href="/learn/apr-vs-interest-rate/" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">APR vs. Interest Rate guide</a>.'
+        ]
+      }
+    ],
+    faqs: [
+      {
+        question: 'How do I calculate APR on a credit card balance?',
+        answer: 'Multiply your average daily balance by the daily periodic rate (your APR divided by 365) and by the number of days in the billing cycle. For a steady balance, the shortcut is balance × APR ÷ 12: a $4,000 balance at 24% APR costs $80.00 of interest for one month.'
+      },
+      {
+        question: 'How do I find my APR?',
+        answer: 'Check your monthly statement (the APR is shown in the interest-charge section), your issuer’s website or app under account details or rates, or your cardholder agreement. Remember to check the purchase APR separately from the cash advance APR and any penalty APR.'
+      },
+      {
+        question: 'How do I convert APR to a daily rate?',
+        answer: 'Divide the APR by 365 (some cardholder agreements use 360). At 24% APR the daily periodic rate is 24% ÷ 365 = 0.0658% per day. On a $4,000 balance that is $2.63 of interest per day.'
+      },
+      {
+        question: 'How do I calculate my monthly APR payment?',
+        answer: 'First work out the interest part: balance × APR ÷ 12. On $4,000 at 24% APR that is $80.00 a month. Your payment must be larger than the monthly interest or the balance will grow instead of shrinking. A fixed $200 payment on that balance pays it off in 26 months with $1,159.49 of total interest.'
+      },
+      {
+        question: 'Is the APR on my credit card the same as the interest rate?',
+        answer: 'For card purchases, yes — with no upfront fees to fold in, the APR is the interest rate. The two diverge on instalment loans such as mortgages, where the APR is higher because it includes origination fees and points. See our <a href="/learn/apr-vs-interest-rate/" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">APR vs. Interest Rate guide</a> for the full comparison.'
+      },
+      {
+        question: 'How can I avoid paying credit card APR interest?',
+        answer: 'Pay your full statement balance by the due date every month. That keeps you inside the interest-free grace period (typically 21 to 25 days) on new purchases, so no interest accrues at all. Paying only the minimum keeps the grace period off and lets daily interest compound on the remaining balance.'
+      }
+    ],
+    relatedToolSlug: 'credit-card-apr-calculator'
+  },
+  {
+    id: 'how-to-calculate-a-loan-payment',
+    slug: 'how-to-calculate-a-loan-payment',
+    path: '/learn/how-to-calculate-a-loan-payment/',
+    title: 'How to Calculate a Loan Payment: Formula, By-Hand Example & Excel PMT',
+    seoTitle: 'How to Calculate a Loan Payment',
+    metaDescription: 'Learn how to calculate a loan payment by hand with the monthly payment formula, a worked $20,000 example, a mortgage schedule, and the Excel PMT function.',
+    readTime: '6 min read',
+    lastReviewed: 'November 2026',
+    category: 'Credit & Debt',
+    summary: 'Every fixed-rate loan payment — auto loan, personal loan or mortgage — comes from one formula. Here it is in plain words, worked by hand on a $20,000 loan, checked against a $300,000 mortgage schedule, and repeated in Excel.',
+    sections: [
+      {
+        heading: 'The monthly loan payment formula, in plain words',
+        paragraphs: [
+          'A fixed-rate loan payment has to do two jobs at once: cover the interest that accrues each month and retire the principal by the final payment. The standard formula finds the single fixed amount that does both exactly. It needs just three inputs: the principal you borrow (P), the monthly interest rate (r — your APR divided by 12), and the number of monthly payments (n).',
+          'The (1 + r)^n term is the compound growth factor: it measures how much $1 would grow if it compounded monthly for the whole term. The formula uses it to spread the principal evenly across all payments while accounting for interest compounding along the way.',
+          'You can skip the arithmetic and model any loan instantly with our free <a href="/loan-payment-calculator/" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">Loan Payment Calculator</a>.'
+        ],
+        formulaBox: 'M = P × [r(1 + r)^n ÷ ((1 + r)^n − 1)]\nwhere r = APR ÷ 12 ÷ 100 and n = number of monthly payments\nM = monthly payment, P = principal borrowed'
+      },
+      {
+        heading: 'Worked example: $20,000 at 6% for 5 years, by hand',
+        paragraphs: [
+          'Follow the formula one step at a time for a $20,000 loan at 6% APR over 5 years:'
+        ],
+        exampleBox: {
+          title: '$20,000 Loan at 6% APR, 5 Years — Step by Step',
+          details: [
+            'Principal P = $20,000.00; APR 6%; term 5 years = 60 monthly payments (n = 60).',
+            'Monthly rate r = 6% ÷ 12 = 0.5% = 0.005.',
+            'Growth factor (1 + r)^n = (1.005)^60 = 1.34885.',
+            'Numerator: r × (1 + r)^n = 0.005 × 1.34885 = 0.00674425.',
+            'Denominator: (1 + r)^n − 1 = 1.34885 − 1 = 0.34885.',
+            'Monthly payment M = $20,000 × (0.00674425 ÷ 0.34885) = $386.66 per month.',
+            'Total paid over 5 years: $23,199.36, of which $3,199.36 is interest (60 payments; the exact payment is $386.6560, shown rounded as $386.66).'
+          ]
+        }
+      },
+      {
+        heading: 'Worked example: $300,000 mortgage at 6.5% for 30 years',
+        paragraphs: [
+          'The same formula prices a mortgage. A $300,000 loan at 6.50% APR over 30 years (360 payments, r = 0.065 ÷ 12 = 0.0054167) needs a fixed payment of $1,896.20 per month. Watch how little of the first payments touches the principal — and how the split shifts:',
+          'Month 3’s displayed starting balance reads $299,456.12, one cent below Month 2’s displayed ending balance of $299,456.13: each row’s figures are rounded to cents independently, and the engine keeps full precision underneath, so the schedule still reconciles to the cent.'
+        ],
+        tableHtml: '<table class="w-full text-sm text-left border border-[#E4E9F0] rounded-xl overflow-hidden"><thead><tr class="bg-[#F7F9FC] text-[#172033]"><th class="px-4 py-2.5 font-bold border-b border-[#E4E9F0]">Month</th><th class="px-4 py-2.5 font-bold border-b border-[#E4E9F0] text-right">Starting balance</th><th class="px-4 py-2.5 font-bold border-b border-[#E4E9F0] text-right">Interest</th><th class="px-4 py-2.5 font-bold border-b border-[#E4E9F0] text-right">Principal</th><th class="px-4 py-2.5 font-bold border-b border-[#E4E9F0] text-right">Ending balance</th></tr></thead><tbody class="text-[#667085]"><tr><td class="px-4 py-2 border-b border-[#E4E9F0]">1</td><td class="px-4 py-2 border-b border-[#E4E9F0] text-right">$300,000.00</td><td class="px-4 py-2 border-b border-[#E4E9F0] text-right">$1,625.00</td><td class="px-4 py-2 border-b border-[#E4E9F0] text-right">$271.20</td><td class="px-4 py-2 border-b border-[#E4E9F0] text-right">$299,728.80</td></tr><tr><td class="px-4 py-2 border-b border-[#E4E9F0]">2</td><td class="px-4 py-2 border-b border-[#E4E9F0] text-right">$299,728.80</td><td class="px-4 py-2 border-b border-[#E4E9F0] text-right">$1,623.53</td><td class="px-4 py-2 border-b border-[#E4E9F0] text-right">$272.67</td><td class="px-4 py-2 border-b border-[#E4E9F0] text-right">$299,456.13</td></tr><tr><td class="px-4 py-2">3</td><td class="px-4 py-2 text-right">$299,456.12</td><td class="px-4 py-2 text-right">$1,622.05</td><td class="px-4 py-2 text-right">$274.15</td><td class="px-4 py-2 text-right">$299,181.97</td></tr></tbody></table>'
+      },
+      {
+        heading: 'What extra payments do to your loan',
+        paragraphs: [
+          'Because each month’s interest is charged on the remaining balance, every extra dollar you pay goes straight to principal — and a smaller balance means less interest next month, so more of the following payment attacks principal too. The effect compounds.',
+          'On the $300,000 mortgage above, adding an extra $250.00 per month toward principal from day one ($2,146.20 total per month) retires the loan in 262 months — 21 years and 10 months, over 8 years early — and saves $120,336.94 in lifetime interest, cutting total interest from $382,633.47 to $262,296.53. See the full trajectory, including the month principal finally overtakes interest, in our <a href="/learn/how-loan-amortization-works/" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">loan amortization guide</a>.'
+        ]
+      },
+      {
+        heading: 'How to calculate a loan payment in Excel or Google Sheets',
+        paragraphs: [
+          'The PMT function is the same formula in one cell: =PMT(rate, nper, pv). For the mortgage above, =PMT(6.5%/12,360,-300000) returns $1,896.20. For the $20,000 example, =PMT(6%/12,60,-20000) returns $386.66. Enter the principal as a negative number so the result comes out positive.',
+          'The three arguments are the monthly rate (APR ÷ 12), the number of payments, and the principal. Change any one of them to see the payment move — a longer term lowers the payment but raises total interest, which is why the cheapest monthly payment is rarely the cheapest loan.'
+        ]
+      },
+      {
+        heading: 'What will my loan payment be? The three levers',
+        paragraphs: [
+          'Your payment moves with three levers. A bigger principal raises the payment roughly in proportion. A higher rate raises the payment and, more importantly, raises the total interest far faster than the payment itself. A longer term lowers the monthly payment — stretching the $20,000 loan above from 5 years to a longer term would cut the $386.66 payment — but you pay interest for more months, so the total cost climbs steeply.',
+          'Before signing, run all three levers through our <a href="/loan-payment-calculator/" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">Loan Payment Calculator</a> and compare the total interest, not just the monthly figure. And check <a href="/learn/how-loan-amortization-works/" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">how loan amortization works</a> to see why early payments barely dent the balance.'
+        ]
+      }
+    ],
+    faqs: [
+      {
+        question: 'What is the formula to calculate a monthly loan payment?',
+        answer: 'M = P × [r(1 + r)^n ÷ ((1 + r)^n − 1)], where P is the principal, r is the monthly interest rate (APR ÷ 12 ÷ 100) and n is the number of monthly payments. In Excel or Google Sheets the same calculation is =PMT(APR/12, n, -P).'
+      },
+      {
+        question: 'How do I calculate a loan payment by hand?',
+        answer: 'Divide the APR by 12 to get the monthly rate r, multiply the term in years by 12 to get n, work out (1 + r)^n, then apply M = P × [r(1 + r)^n ÷ ((1 + r)^n − 1)]. For $20,000 at 6% over 5 years: r = 0.005, n = 60, (1.005)^60 = 1.34885, and M = $20,000 × (0.00674425 ÷ 0.34885) = $386.66 per month.'
+      },
+      {
+        question: 'What will my loan payment be on $20,000?',
+        answer: 'At 6% APR over 5 years (60 payments) it is $386.66 per month, with $3,199.36 of total interest on top of the $20,000 borrowed. Your payment will differ if your rate or term differs — run your own figures through our <a href="/loan-payment-calculator/" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">Loan Payment Calculator</a>.'
+      },
+      {
+        question: 'How do I calculate a loan payment in Excel?',
+        answer: 'Use =PMT(rate, nper, pv) with the monthly rate first: =PMT(6.5%/12,360,-300000) returns $1,896.20 for a $300,000 mortgage at 6.5% over 30 years, and =PMT(6%/12,60,-20000) returns $386.66 for a $20,000 loan at 6% over 5 years. Enter the principal as a negative number so the payment comes out positive.'
+      },
+      {
+        question: 'Does a longer loan term lower my monthly payment?',
+        answer: 'Yes — spreading the same principal over more payments shrinks each one. But you pay interest for more months, so the total interest rises steeply. Always compare total interest, not just the monthly payment, before choosing a longer term.'
+      },
+      {
+        question: 'How much does paying extra each month save?',
+        answer: 'On a $300,000 mortgage at 6.5% over 30 years, an extra $250 per month retires the loan in 262 months instead of 360 — over 8 years early — and saves $120,336.94 in lifetime interest. Extra payments go 100% to principal (on loans with no prepayment penalty), so the saving compounds month after month.'
+      }
+    ],
+    relatedToolSlug: 'loan-payment-calculator'
+  },
+  {
+    id: 'how-to-calculate-average-stock-price-after-selling',
+    slug: 'how-to-calculate-average-stock-price-after-selling',
+    path: '/learn/how-to-calculate-average-stock-price-after-selling/',
+    title: 'How to Calculate Average Stock Price After Selling Shares',
+    seoTitle: 'Average Stock Price After Selling',
+    metaDescription: 'Learn how to calculate your average stock price after selling shares: selling does not change the average cost of the shares you still own.',
+    readTime: '5 min read',
+    lastReviewed: 'November 2026',
+    category: 'Investing',
+    summary: 'You bought shares at two different prices, then sold some. What is your average price now? The answer surprises most investors: selling changes nothing — the shares you still own keep exactly the average they had before the sale.',
+    sections: [
+      {
+        heading: 'The short answer: selling does not change your average',
+        paragraphs: [
+          'Your average stock price is computed from your purchases only: total cash spent buying shares divided by the number of shares bought. A sale does not add a purchase, so it cannot enter that calculation. Selling removes shares from your position, but the shares that remain were bought at the same prices as before — so their average is unchanged.',
+          'Think of it this way: the average describes what you paid for the shares you hold. Selling some of them does not rewrite what you paid for the rest. What the sale does change is your remaining cost basis in dollars (fewer shares × the same average) and your realised gain or loss on the shares you sold.',
+          'You can see this in your brokerage app: sell part of a position and the average cost per share shown for the remaining shares does not move. It only moves when you buy more shares — a new purchase blends into the average at its own price, which is exactly what our <a href="/stock-average-calculator/" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">Stock Average Calculator</a> models.'
+        ]
+      },
+      {
+        heading: 'Worked example: Buy 100 at $50, 50 at $40, sell 50',
+        paragraphs: [
+          'Walk through the numbers once and the rule sticks:'
+        ],
+        exampleBox: {
+          title: 'Average Price Before and After Selling 50 Shares',
+          details: [
+            'Lot 1: 100 shares at $50.00 = $5,000.00.',
+            'Lot 2: 50 shares at $40.00 = $2,000.00.',
+            'Total cost $7,000.00 for 150 shares; average stock price = $7,000.00 ÷ 150 = $46.67 per share.',
+            'Sell 50 shares: the 100 shares you still own still average $46.67 per share — the sale does not move it.',
+            'Remaining cost basis: 100 shares × $46.67 = $4,666.67.',
+            'The 50 shares you sold carried $2,333.33 of cost basis with them (50 × $46.67). $4,666.67 + $2,333.33 = $7,000.00 — the full original cost, split between the shares kept and the shares sold.'
+          ]
+        }
+      },
+      {
+        heading: 'The common mistake: averaging the sale price in',
+        paragraphs: [
+          'The error most investors make is treating the sale price as if it were another purchase. Suppose you sell those 50 shares at $55.00. Averaging the $2,750.00 of sale proceeds in as though you had bought more shares gives ($7,000.00 + $2,750.00) ÷ 200 = $48.75 — a meaningless number. The sale price is money coming in, not money spent buying shares, so it has no place in an average cost.',
+          'Done correctly, the sale is a gain calculation, not an averaging calculation: you received $2,750.00 for shares that cost you $2,333.33 (50 × $46.67), for a gain of $416.67. Your remaining 100 shares still average $46.67, and $55.00 is now simply the price to beat if you buy more. To work out your average before any sale, use our <a href="/stock-average-calculator/" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">Stock Average Calculator</a> or read <a href="/learn/how-to-calculate-average-stock-cost/" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">how to calculate average stock cost</a>.'
+        ]
+      },
+      {
+        heading: 'Sale fees and taxes: what actually changes',
+        paragraphs: [
+          'Broker fees on the sale reduce your net proceeds — and therefore your gain — but they do not change the average price of the shares you still own. A $5.00 sale fee on the example above would cut the gain from $416.67 to $411.67; the remaining average stays $46.67.',
+          'Tax is a separate question from average cost. In the US, the default tax method for individual stocks is FIFO (first-in, first-out), not average cost — the shares treated as sold are your earliest lot, which can give a different realised gain from the $416.67 average-basis figure. Average-cost pooling is generally permitted only for mutual funds and dividend reinvestment plans. Your brokerage tax statement (Form 1099-B) shows the lots actually used, and the rules are explained in our <a href="/learn/how-to-calculate-average-stock-cost/" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">average stock cost guide</a>.'
+        ]
+      }
+    ],
+    faqs: [
+      {
+        question: 'Does selling change my average stock price?',
+        answer: 'No. Your average stock price is computed from purchases only, so selling shares cannot move it. If you bought 100 shares at $50 and 50 at $40, your average is $46.67 — and it stays $46.67 on the shares you still own after selling any number of them.'
+      },
+      {
+        question: 'What is my average price on the shares I still own after selling some?',
+        answer: 'Exactly the average you had before the sale. In the worked example in this guide, 100 shares at $50 plus 50 at $40 average $46.67; after selling 50 shares, the remaining 100 shares still average $46.67, with a remaining cost basis of $4,666.67.'
+      },
+      {
+        question: 'How do I calculate my average stock price after selling?',
+        answer: 'Recompute from your purchases only: total cash spent buying shares divided by total shares bought. Then subtract the shares sold: remaining cost basis = remaining shares × that average. Do not put the sale price anywhere in the calculation.'
+      },
+      {
+        question: 'Should I include the sale price in my average cost?',
+        answer: 'No. The sale price is proceeds coming in, not money spent buying shares. Averaging it in as a purchase would wrongly lift the example average from $46.67 to $48.75. Use the sale price only to work out your gain: proceeds minus the cost basis of the shares sold.'
+      },
+      {
+        question: 'Do fees on a sale change my average price?',
+        answer: 'No. Sale fees reduce your net proceeds and your realised gain, but the average cost of the shares you still own is untouched. A $5.00 fee on the example sale cuts the gain from $416.67 to $411.67 while the remaining average stays $46.67.'
+      },
+      {
+        question: 'Does selling change my tax cost basis?',
+        answer: 'Your internal average cost does not change, but your tax basis follows your jurisdiction’s lot rules. In the US, individual stocks default to FIFO, so the shares treated as sold are your earliest lot — a different figure from the average-basis gain. Average-cost pooling is generally allowed only for mutual funds and dividend reinvestment plans. Check your Form 1099-B and the <a href="/learn/how-to-calculate-average-stock-cost/" class="text-[#0F766E] font-semibold underline hover:text-[#115E59]">average stock cost guide</a>.'
+      }
+    ],
+    relatedToolSlug: 'stock-average-calculator'
   }
 ]

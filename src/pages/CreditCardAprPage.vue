@@ -985,6 +985,20 @@ async function handleCopy() {
 
       <div class="lg:col-span-4 space-y-6">
         <div class="bg-white rounded-3xl border border-[#E2E8F0] p-6 shadow-sm">
+          <h3 class="text-base font-bold text-[#0F172A] mb-2">Learn More About Credit Card APR</h3>
+          <p class="text-xs text-[#64748B] leading-relaxed mb-4">
+            Read our in-depth guide on how to calculate APR on a credit card, with the formula and worked examples.
+          </p>
+          <RouterLink
+            to="/learn/how-to-calculate-apr-on-a-credit-card/"
+            class="inline-flex items-center gap-1.5 text-xs font-bold text-[#0F766E] hover:underline"
+          >
+            <span>Read How to Calculate APR on a Credit Card</span>
+            <ArrowRight class="w-3.5 h-3.5" />
+          </RouterLink>
+        </div>
+
+        <div class="bg-white rounded-3xl border border-[#E2E8F0] p-6 shadow-sm">
           <div class="text-xs font-bold uppercase tracking-wider text-[#0F766E] mb-2">In-Depth Guide</div>
           <h3 class="text-base font-bold text-[#0F172A] mb-2">APR vs. Interest Rate: The Key Differences</h3>
           <p class="text-xs text-[#64748B] leading-relaxed mb-4">

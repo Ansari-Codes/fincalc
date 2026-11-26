@@ -158,6 +158,24 @@
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
+  <url>
+    <loc>https://kitaaab.org/learn/how-to-calculate-apr-on-a-credit-card/</loc>
+    <lastmod>2026-11-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://kitaaab.org/learn/how-to-calculate-a-loan-payment/</loc>
+    <lastmod>2026-11-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://kitaaab.org/learn/how-to-calculate-average-stock-price-after-selling/</loc>
+    <lastmod>2026-11-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
   <!-- Platform Trust & Policies -->
   <url>
     <loc>https://kitaaab.org/about/</loc>

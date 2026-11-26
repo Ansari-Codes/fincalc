@@ -438,6 +438,11 @@ function renderAprShell(tool) {
           </div>
           <div class="lg:col-span-4 space-y-6">
             <div class="bg-white rounded-3xl border border-[#E2E8F0] p-6 shadow-sm">
+              <h3 class="text-base font-bold text-[#0F172A] mb-2">Learn More About Credit Card APR</h3>
+              <p class="text-xs text-[#64748B] leading-relaxed mb-4">Read our in-depth guide on how to calculate APR on a credit card, with the formula and worked examples.</p>
+              <a href="${withBase('/learn/how-to-calculate-apr-on-a-credit-card/')}" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#0F766E]">Read How to Calculate APR on a Credit Card</a>
+            </div>
+            <div class="bg-white rounded-3xl border border-[#E2E8F0] p-6 shadow-sm">
               <div class="text-xs font-bold uppercase tracking-wider text-[#0F766E] mb-2">In-Depth Guide</div>
               <h3 class="text-base font-bold text-[#0F172A] mb-2">APR vs. Interest Rate: The Key Differences</h3>
               <p class="text-xs text-[#64748B] leading-relaxed mb-4">Understand how daily periodic rates work, what loss of grace period means, and how to verify statement finance charges.</p>
@@ -1704,6 +1709,11 @@ function renderLoanShell(tool) {
                 ${tool.assumptions.map((a) => `<li>${a}</li>`).join('')}
               </ul>
             </section>
+            <div class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-7 shadow-xs mb-12">
+              <h2 class="text-xl font-bold text-[#0F172A] mb-2">Learn More About Loan Payments</h2>
+              <p class="text-sm text-[#64748B] leading-relaxed mb-4">Read our in-depth guide on how to calculate a loan payment, with the annuity formula and worked examples for fixed-rate loans.</p>
+              <a href="${withBase('/learn/how-to-calculate-a-loan-payment/')}" class="inline-flex items-center gap-1.5 text-xs font-bold text-[#0F766E] hover:underline">Read How to Calculate a Loan Payment</a>
+            </div>
             <section>
               <h2 class="text-xl font-bold text-[#172033] mb-4">Frequently Asked Questions</h2>
               ${tool.faqs.map((faq) => `
