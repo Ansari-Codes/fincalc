@@ -37,7 +37,7 @@ onMounted(() => {
   })
 })
 
-const currency = ref('USD')
+const currency = 'USD'
 const copied = ref(false)
 const showFullTable = ref(false)
 
@@ -97,14 +97,14 @@ async function handleCopy() {
   const summary = [
     'Compound Interest Projection',
     '------------------------------',
-    `Initial Principal: ${formatCurrency(initialPrincipal.value || 0, currency.value)}`,
-    `Regular Contribution: ${formatCurrency(contributionAmount.value || 0, currency.value)} (${contributionFrequency.value})`,
+    `Initial Principal: ${formatCurrency(initialPrincipal.value || 0, currency)}`,
+    `Regular Contribution: ${formatCurrency(contributionAmount.value || 0, currency)} (${contributionFrequency.value})`,
     `Annual Growth Rate: ${formatPercent(annualInterestRate.value || 0)}`,
     `Compounding Frequency: ${compoundingFrequency.value}`,
     `Investment Horizon: ${years.value} Years`,
-    `Estimated Future Value: ${formatCurrency(result.value.futureValue, currency.value)}`,
-    `Total Principal & Additions: ${formatCurrency(result.value.totalPrincipal + result.value.totalContributions, currency.value)}`,
-    `Total Compound Interest Earned: ${formatCurrency(result.value.totalInterestEarned, currency.value)}`,
+    `Estimated Future Value: ${formatCurrency(result.value.futureValue, currency)}`,
+    `Total Principal & Additions: ${formatCurrency(result.value.totalPrincipal + result.value.totalContributions, currency)}`,
+    `Total Compound Interest Earned: ${formatCurrency(result.value.totalInterestEarned, currency)}`,
     `Wealth Growth Multiplier: ${growthMultiplier.value}x`
   ].join('\n')
 
@@ -138,18 +138,8 @@ async function handleCopy() {
         </p>
       </div>
 
-      <!-- Controls: Currency & Reset -->
+      <!-- Controls: Reset -->
       <div class="flex items-center gap-2.5 self-start md:self-end">
-        <select
-          v-model="currency"
-          aria-label="Display currency"
-          class="text-xs font-semibold bg-white border border-[#CBD5E1] rounded-xl px-3 py-2 text-[#334155] shadow-2xs focus:outline-none focus:ring-2 focus:ring-[#0F766E]"
-        >
-          <option value="USD">USD ($)</option>
-          <option value="EUR">EUR (€)</option>
-          <option value="GBP">GBP (£)</option>
-          <option value="CAD">CAD ($)</option>
-        </select>
         <button
           type="button"
           @click="resetForm"
@@ -624,9 +614,159 @@ async function handleCopy() {
           <p class="text-sm text-[#64748B] leading-relaxed mb-4">
             Unlike simple interest (which only calculates returns on the initial principal), compound interest calculates gains on both the initial principal and previously accumulated interest. Over long investment horizons, compound gains dramatically outstrip out-of-pocket contributions.
           </p>
+          <p class="text-sm text-[#64748B] leading-relaxed mb-4">
+            The formula has four moving parts: P is what you start with, r is the annual return as a decimal (7.5% is 0.075), n is how many times a year interest is added, and t is the number of years. Each compounding period, your balance is multiplied by (1 + r/n). With monthly compounding at 7.5%, that is a 0.625% rise every month — small on its own, but it applies to a balance that keeps growing, which is why the curve bends upwards instead of running straight.
+          </p>
+          <p class="text-sm text-[#64748B] leading-relaxed mb-4">
+            When you also add regular contributions, there is no single closed-form line: the calculator simulates each period in turn, adding your contribution first or last depending on the timing setting, then applying that period's interest. That is the same recurrence the Excel FV function uses, so the two agree to the cent — see the Excel section below.
+          </p>
           <div class="bg-[#F8FAFC] border border-[#CBD5E1] p-4 rounded-xl num-tabular text-xs sm:text-sm text-[#0F172A] mb-4 font-mono">
             {{ currentTool.formula }}
           </div>
+        </section>
+
+        <section class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm">
+          <h2 class="text-xl font-extrabold text-[#0F172A] mb-3">Worked Example: $10,000 Plus $500 a Month for 20 Years</h2>
+          <p class="text-sm text-[#64748B] leading-relaxed mb-4">
+            Take the calculator's defaults: $10,000 at the start, $500 every month, a 7.5% annual return compounded monthly, for 20 years. The result is $321,473.53. You put in $130,000 in total — $10,000 up front and $120,000 of monthly contributions — and compound interest contributes the other $191,473.53. In other words, the interest earned is almost one and a half times everything you paid in.
+          </p>
+          <div class="overflow-x-auto border border-[#E2E8F0] rounded-2xl mb-4">
+            <table class="w-full text-left text-xs sm:text-sm">
+              <thead class="bg-[#F8FAFC] text-[#475569] font-bold border-b border-[#E2E8F0]">
+                <tr>
+                  <th class="py-3 px-4">Year</th>
+                  <th class="py-3 px-4">Ending Balance</th>
+                  <th class="py-3 px-4">Interest Earned That Year</th>
+                  <th class="py-3 px-4">Total Interest So Far</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-[#E2E8F0]">
+                <tr class="hover:bg-[#F8FAFC]/60 transition-colors">
+                  <td class="py-2.5 px-4 font-bold text-[#0F172A]">Year 1</td>
+                  <td class="py-2.5 px-4 num-tabular text-[#64748B]">$16,986.93</td>
+                  <td class="py-2.5 px-4 num-tabular text-[#64748B]">$986.93</td>
+                  <td class="py-2.5 px-4 num-tabular text-[#64748B]">$986.93</td>
+                </tr>
+                <tr class="hover:bg-[#F8FAFC]/60 transition-colors">
+                  <td class="py-2.5 px-4 font-bold text-[#0F172A]">Year 5</td>
+                  <td class="py-2.5 px-4 num-tabular text-[#64748B]">$50,796.50</td>
+                  <td class="py-2.5 px-4 num-tabular text-[#64748B]">$3,422.57</td>
+                  <td class="py-2.5 px-4 num-tabular text-[#64748B]">$10,796.50</td>
+                </tr>
+                <tr class="hover:bg-[#F8FAFC]/60 transition-colors">
+                  <td class="py-2.5 px-4 font-bold text-[#0F172A]">Year 10</td>
+                  <td class="py-2.5 px-4 num-tabular text-[#64748B]">$110,085.82</td>
+                  <td class="py-2.5 px-4 num-tabular text-[#64748B]">$7,693.77</td>
+                  <td class="py-2.5 px-4 num-tabular text-[#64748B]">$40,085.82</td>
+                </tr>
+                <tr class="hover:bg-[#F8FAFC]/60 transition-colors">
+                  <td class="py-2.5 px-4 font-bold text-[#0F172A]">Year 15</td>
+                  <td class="py-2.5 px-4 num-tabular text-[#64748B]">$196,250.66</td>
+                  <td class="py-2.5 px-4 num-tabular text-[#64748B]">$13,901.08</td>
+                  <td class="py-2.5 px-4 num-tabular text-[#64748B]">$96,250.66</td>
+                </tr>
+                <tr class="hover:bg-[#F8FAFC]/60 transition-colors">
+                  <td class="py-2.5 px-4 font-bold text-[#0F172A]">Year 20</td>
+                  <td class="py-2.5 px-4 num-tabular text-[#64748B]">$321,473.53</td>
+                  <td class="py-2.5 px-4 num-tabular text-[#64748B]">$22,922.13</td>
+                  <td class="py-2.5 px-4 num-tabular text-[#64748B]">$191,473.53</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="text-sm text-[#64748B] leading-relaxed mb-4">
+            The acceleration is the story. Year 1 earns $986.93 of interest; year 10 earns $7,693.77; year 20 earns $22,922.13 — more than the entire first year's balance. The second 10 years add $211,387.71, more than double the first 10 years' gain of $100,085.82. That is why the advice is always to start early: time does more work than money.
+          </p>
+          <p class="text-sm text-[#64748B] leading-relaxed">
+            All of this is in nominal dollars. At 3% inflation, $321,473.53 in 20 years buys what about $177,992 buys today — still a real gain, but the headline number overstates what you can actually spend. Taxes and fees would cut it further; the assumptions below list everything the projection leaves out.
+          </p>
+        </section>
+
+        <section class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm">
+          <h2 class="text-xl font-extrabold text-[#0F172A] mb-3">Simple Interest vs Compound Interest</h2>
+          <p class="text-sm text-[#64748B] leading-relaxed mb-4">
+            The same $10,000 at 7.5% for 20 years earns $15,000 of simple interest and ends at $25,000 — because simple interest only ever pays on the original $10,000. Compounded monthly, the same deposit ends at $44,608.17: $19,608.17 more, with no extra money paid in. The gap is zero in year 1 and grows every year after, because each year's interest starts earning interest of its own.
+          </p>
+          <p class="text-sm text-[#64748B] leading-relaxed">
+            Any product that quotes interest on your balance without saying how often it compounds is hiding the most important number. A savings account that pays 7.5% compounded annually and one that pays 7.5% compounded monthly are not the same account — on $10,000 over 20 years, the monthly one ends $2,129.66 ahead.
+          </p>
+        </section>
+
+        <section class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm">
+          <h2 class="text-xl font-extrabold text-[#0F172A] mb-3">Does Compounding Frequency Matter?</h2>
+          <p class="text-sm text-[#64748B] leading-relaxed mb-4">
+            On that same $10,000 at 7.5% for 20 years, the frequency alone changes the outcome:
+          </p>
+          <div class="overflow-x-auto border border-[#E2E8F0] rounded-2xl mb-4">
+            <table class="w-full text-left text-xs sm:text-sm">
+              <thead class="bg-[#F8FAFC] text-[#475569] font-bold border-b border-[#E2E8F0]">
+                <tr>
+                  <th class="py-3 px-4">Compounding Frequency</th>
+                  <th class="py-3 px-4">Periods per Year</th>
+                  <th class="py-3 px-4">Value After 20 Years</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-[#E2E8F0]">
+                <tr class="hover:bg-[#F8FAFC]/60 transition-colors">
+                  <td class="py-2.5 px-4 font-bold text-[#0F172A]">Annually</td>
+                  <td class="py-2.5 px-4 num-tabular text-[#64748B]">1</td>
+                  <td class="py-2.5 px-4 num-tabular text-[#64748B]">$42,478.51</td>
+                </tr>
+                <tr class="hover:bg-[#F8FAFC]/60 transition-colors">
+                  <td class="py-2.5 px-4 font-bold text-[#0F172A]">Quarterly</td>
+                  <td class="py-2.5 px-4 num-tabular text-[#64748B]">4</td>
+                  <td class="py-2.5 px-4 num-tabular text-[#64748B]">$44,198.72</td>
+                </tr>
+                <tr class="hover:bg-[#F8FAFC]/60 transition-colors">
+                  <td class="py-2.5 px-4 font-bold text-[#0F172A]">Monthly</td>
+                  <td class="py-2.5 px-4 num-tabular text-[#64748B]">12</td>
+                  <td class="py-2.5 px-4 num-tabular text-[#64748B]">$44,608.17</td>
+                </tr>
+                <tr class="hover:bg-[#F8FAFC]/60 transition-colors">
+                  <td class="py-2.5 px-4 font-bold text-[#0F172A]">Daily</td>
+                  <td class="py-2.5 px-4 num-tabular text-[#64748B]">365</td>
+                  <td class="py-2.5 px-4 num-tabular text-[#64748B]">$44,809.99</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="text-sm text-[#64748B] leading-relaxed">
+            Daily beats annual by $2,331.47. That is real money, but keep it in proportion: the frequency gap is about 5% of the final balance, while raising the return from 7.5% to 8.5% or adding five more years would each move the result far more. Frequency is worth checking when you compare two accounts; it is not worth chasing at the expense of a better rate or an earlier start.
+          </p>
+        </section>
+
+        <section class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm">
+          <h2 class="text-xl font-extrabold text-[#0F172A] mb-3">Starting Early Beats Saving More</h2>
+          <p class="text-sm text-[#64748B] leading-relaxed mb-4">
+            Two savers both put aside $200 a month at a 7% return until age 65. The one who starts at 25 ends with $524,962.68, having paid in $96,000; compound interest adds $428,962.68. The one who starts at 35 ends with $243,994.20, having paid in $72,000; interest adds $171,994.20.
+          </p>
+          <p class="text-sm text-[#64748B] leading-relaxed">
+            The early starter paid only $24,000 more but ends with $280,968.48 more — over eleven times the extra contributions. Waiting ten years costs more than half the final balance. If you can only do one thing, start now with a smaller amount rather than waiting until you can afford a bigger one. The same logic is why the retirement calculator rewards an early start even more than a higher monthly figure.
+          </p>
+        </section>
+
+        <section class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm">
+          <h2 class="text-xl font-extrabold text-[#0F172A] mb-3">How to Calculate Compound Interest in Excel or Google Sheets</h2>
+          <p class="text-sm text-[#64748B] leading-relaxed mb-4">
+            For the defaults above, put =FV(7.5%/12, 240, -500, -10000) in a cell: it returns $321,473.53, exactly matching this calculator. The arguments are the monthly rate (7.5% divided by 12), the number of months (20 years times 12), the monthly payment (-500, negative because money leaves your pocket), and the present value (-10000). For a single deposit with no contributions, use =FV(7.5%/12, 240, 0, -10000), which gives $44,608.17.
+          </p>
+          <p class="text-sm text-[#64748B] leading-relaxed">
+            Excel's FV assumes end-of-period payments, which is this calculator's default. Switch the timing to beginning here and the equivalent is =FV(7.5%/12, 240, -500, -10000, 1), which gives $323,203.94 — $1,730.41 more, because each contribution gets one extra month of growth.
+          </p>
+        </section>
+
+        <section class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm">
+          <h2 class="text-xl font-extrabold text-[#0F172A] mb-3">The Rule of 72</h2>
+          <p class="text-sm text-[#64748B] leading-relaxed">
+            Divide 72 by your annual return to estimate the doubling time: at 7.5%, money doubles in about 72 ÷ 7.5 = 9.6 years. The calculator agrees: $1,000 at 7.5% compounded monthly is $2,112.06 after 10 years — just past double. The rule works best for rates between about 6% and 10%; outside that range it drifts, so treat it as a quick check, not a plan.
+          </p>
+        </section>
+
+        <section class="bg-white rounded-3xl border border-[#E2E8F0] p-6 sm:p-8 shadow-sm">
+          <h2 class="text-xl font-extrabold text-[#0F172A] mb-3">What This Projection Leaves Out</h2>
+          <p class="text-sm text-[#64748B] leading-relaxed">
+            The projection assumes one unchanging return for the whole period — real markets do not do that, and a bad sequence of returns early on hurts more than the same bad years late. It ignores taxes, account fees and fund charges, and it counts nominal dollars, not buying power. It also assumes you never withdraw and never miss a contribution. Use it to compare plans and set a savings habit, then check the result against the retirement longevity calculator to see how long the money lasts once you start spending it.
+          </p>
         </section>
 
         <!-- Assumptions & Limitations -->

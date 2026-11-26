@@ -241,7 +241,7 @@ export const tools: ToolItem[] = [
     name: 'Compound Interest Calculator',
     title: 'Compound Interest Calculator – Estimate Growth Over Time',
     shortDescription: 'Explore how money may grow over time.',
-    fullDescription: 'Estimate how an initial amount and regular contributions may grow with compound interest. Compare compounding frequencies and review the assumptions.',
+    fullDescription: 'See how $10,000 plus $500 a month grows with compound interest — compare daily, monthly and annual compounding and check the year-by-year schedule.',
     category: 'investing',
     categoryName: 'Investing',
     icon: 'LineChart',
@@ -277,6 +277,14 @@ export const tools: ToolItem[] = [
       {
         question: 'How does inflation impact compound investment returns?',
         answer: 'Inflation erodes purchasing power over time. To understand real wealth accumulation, subtract your expected inflation rate from your nominal return rate (e.g. 8% nominal return minus 3% inflation yields a 5% real purchasing power return).'
+      },
+      {
+        question: 'How much will $10,000 grow to in 20 years?',
+        answer: 'With $500 added every month at a 7.5% annual return compounded monthly, $10,000 grows to $321,473.53 in 20 years. You put in $130,000 in total — $10,000 at the start plus $120,000 of monthly contributions — and compound interest adds $191,473.53. The growth accelerates: year 1 earns only $986.93 of interest, but year 20 earns $22,922.13. Try your own numbers in the calculator above.'
+      },
+      {
+        question: 'Does it matter whether I contribute at the beginning or the end of the month?',
+        answer: 'Yes, a little. On the same $10,000 plus $500 a month at 7.5% over 20 years, contributing at the beginning of each month ends at $323,203.94 instead of $321,473.53 — $1,730.41 more — because each contribution gets one extra month of growth. The effect is small next to starting early or contributing more, but if your money arrives at the start of the month, choose the “beginning” setting in the calculator.'
       }
     ],
     relatedToolSlugs: ['retirement-savings-calculator', 'how-long-will-my-money-last', 'stock-average-calculator'],

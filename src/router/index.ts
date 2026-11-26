@@ -21,6 +21,9 @@ import LoanPaymentPage from '@/pages/LoanPaymentPage.vue'
 import RoiPage from '@/pages/RoiPage.vue'
 import BreakEvenPage from '@/pages/BreakEvenPage.vue'
 import ArticlePage from '@/pages/ArticlePage.vue'
+// Same treatment for the compound-interest calculator: it was crawled but
+// not indexed (thin content), and the lazy route left the same mount gap.
+import CompoundInterestPage from '@/pages/CompoundInterestPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -71,7 +74,7 @@ const router = createRouter({
     {
       path: '/compound-interest-calculator/',
       name: 'compound-interest-calculator',
-      component: () => import('@/pages/CompoundInterestPage.vue')
+      component: CompoundInterestPage
     },
     {
       path: '/how-long-will-my-money-last/',
